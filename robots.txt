@@ -1,0 +1,3 @@
+ser-agent: *
+Allow: /
+Sitemap: https://sunnykeyz123.github.io/mustardseedschl/sitemap.xml
