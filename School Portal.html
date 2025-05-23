@@ -1,1190 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Management System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Custom styles */
-        .sidebar {
-            transition: all 0.3s ease;
-        }
-        .active-tab {
-            background-color: #3b82f6;
-            color: white;
-        }
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        .form-input {
-            transition: border-color 0.3s ease;
-        }
-        .form-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Mustard Seed School Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: overlay;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .logo-container {
+      width: 100px;
+      height: 100px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+      margin-bottom: 1.5rem;
+      border: 3px solid #f59e0b;
+    }
+    
+    .logo {
+      font-size: 2.5rem;
+      color: #f59e0b;
+    }
+    
+    .login-container {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #f59e0b, #f97316);
+    }
+    
+    .input-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    
+    .input-group i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+    }
+    
+    .input-field {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+    
+    .role-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1em;
+    }
+    
+    .login-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: linear-gradient(90deg, #f59e0b, #f97316);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 0.5rem;
+    }
+    
+    .login-btn:hover {
+      background: linear-gradient(90deg, #f97316, #f59e0b);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+    }
+    
+    .error {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+    
+    .footer-text {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #6b7280;
+      font-size: 0.85rem;
+    }
+    
+    .footer-text a {
+      color: #f59e0b;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .footer-text a:hover {
+      text-decoration: underline;
+    }
+    
+    .school-name {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    
+    .school-motto {
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 font-sans">
-    <div class="flex h-screen overflow-hidden">
-        <!-- Sidebar -->
-        <div class="sidebar bg-blue-800 text-white w-64 flex-shrink-0">
-            <div class="p-4 flex items-center space-x-3 border-b border-blue-700">
-                <i class="fas fa-school text-2xl"></i>
-                <h1 class="text-xl font-bold">EduManage</h1>
-            </div>
-            <nav class="p-4">
-                <ul class="space-y-2">
-                    <li>
-                        <button id="dashboard-tab" class="w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 active-tab">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button id="students-tab" class="w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-blue-700 transition">
-                            <i class="fas fa-users"></i>
-                            <span>Students</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button id="teachers-tab" class="w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-blue-700 transition">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Teachers</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button id="results-tab" class="w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-blue-700 transition">
-                            <i class="fas fa-poll"></i>
-                            <span>Results</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button id="classes-tab" class="w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-blue-700 transition">
-                            <i class="fas fa-door-open"></i>
-                            <span>Classes</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button id="reports-tab" class="w-full text-left px-4 py-3 rounded-lg flex items-center space-x-3 hover:bg-blue-700 transition">
-                            <i class="fas fa-chart-bar"></i>
-                            <span>Reports</span>
-                        </button>
-                    </li>
-                </ul>
-            </nav>
-            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-blue-700">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div>
-                        <p class="font-medium">Admin</p>
-                        <p class="text-xs text-blue-200">Super Admin</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 overflow-auto">
-            <!-- Header -->
-            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
-                <h2 id="page-title" class="text-2xl font-bold text-gray-800">Dashboard</h2>
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <button class="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200">
-                        <i class="fas fa-bell"></i>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Content Area -->
-            <main class="p-6">
-                <!-- Dashboard Content (Default) -->
-                <div id="dashboard-content">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="dashboard-card bg-white p-6 rounded-xl shadow-md transition cursor-pointer">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500">Total Students</p>
-                                    <h3 class="text-3xl font-bold mt-2" id="total-students">0</h3>
-                                </div>
-                                <div class="p-3 rounded-lg bg-blue-100 text-blue-600">
-                                    <i class="fas fa-users text-xl"></i>
-                                </div>
-                            </div>
-                            <p class="text-sm text-green-500 mt-4"><i class="fas fa-arrow-up mr-1"></i> 12% from last month</p>
-                        </div>
-                        <div class="dashboard-card bg-white p-6 rounded-xl shadow-md transition cursor-pointer">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500">Total Teachers</p>
-                                    <h3 class="text-3xl font-bold mt-2" id="total-teachers">0</h3>
-                                </div>
-                                <div class="p-3 rounded-lg bg-green-100 text-green-600">
-                                    <i class="fas fa-chalkboard-teacher text-xl"></i>
-                                </div>
-                            </div>
-                            <p class="text-sm text-green-500 mt-4"><i class="fas fa-arrow-up mr-1"></i> 5% from last month</p>
-                        </div>
-                        <div class="dashboard-card bg-white p-6 rounded-xl shadow-md transition cursor-pointer">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500">Classes</p>
-                                    <h3 class="text-3xl font-bold mt-2" id="total-classes">0</h3>
-                                </div>
-                                <div class="p-3 rounded-lg bg-purple-100 text-purple-600">
-                                    <i class="fas fa-door-open text-xl"></i>
-                                </div>
-                            </div>
-                            <p class="text-sm text-gray-500 mt-4">No change from last month</p>
-                        </div>
-                        <div class="dashboard-card bg-white p-6 rounded-xl shadow-md transition cursor-pointer">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-gray-500">Results Published</p>
-                                    <h3 class="text-3xl font-bold mt-2" id="total-results">0</h3>
-                                </div>
-                                <div class="p-3 rounded-lg bg-yellow-100 text-yellow-600">
-                                    <i class="fas fa-poll text-xl"></i>
-                                </div>
-                            </div>
-                            <p class="text-sm text-red-500 mt-4"><i class="fas fa-arrow-down mr-1"></i> 3% from last term</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow-md lg:col-span-2">
-                            <div class="flex justify-between items-center mb-6">
-                                <h3 class="text-lg font-semibold">Recent Students</h3>
-                                <button class="text-blue-600 hover:text-blue-800">View All</button>
-                            </div>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                        <tr>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="recent-students" class="bg-white divide-y divide-gray-200">
-                                        <!-- Recent students will be populated here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow-md">
-                            <h3 class="text-lg font-semibold mb-6">Quick Actions</h3>
-                            <div class="space-y-4">
-                                <button class="w-full flex items-center space-x-3 p-4 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition">
-                                    <i class="fas fa-user-plus"></i>
-                                    <span>Add New Student</span>
-                                </button>
-                                <button class="w-full flex items-center space-x-3 p-4 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition">
-                                    <i class="fas fa-chalkboard-teacher"></i>
-                                    <span>Add New Teacher</span>
-                                </button>
-                                <button class="w-full flex items-center space-x-3 p-4 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition">
-                                    <i class="fas fa-poll"></i>
-                                    <span>Enter Results</span>
-                                </button>
-                                <button class="w-full flex items-center space-x-3 p-4 rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition">
-                                    <i class="fas fa-envelope"></i>
-                                    <span>Send Notifications</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Students Content (Hidden by default) -->
-                <div id="students-content" class="hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Student Management</h2>
-                        <button id="add-student-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center space-x-2">
-                            <i class="fas fa-plus"></i>
-                            <span>Add Student</span>
-                        </button>
-                    </div>
-
-                    <!-- Student Filter/Search -->
-                    <div class="bg-white p-4 rounded-xl shadow-md mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Class</label>
-                                <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    <option>All Classes</option>
-                                    <option>Grade 1</option>
-                                    <option>Grade 2</option>
-                                    <option>Grade 3</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Section</label>
-                                <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    <option>All Sections</option>
-                                    <option>A</option>
-                                    <option>B</option>
-                                    <option>C</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                                <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    <option>All</option>
-                                    <option>Male</option>
-                                    <option>Female</option>
-                                </select>
-                            </div>
-                            <div class="flex items-end">
-                                <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Filter</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Students Table -->
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DOB</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="students-table-body" class="bg-white divide-y divide-gray-200">
-                                    <!-- Students will be populated here -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
-                            <div class="flex-1 flex justify-between sm:hidden">
-                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                    Previous
-                                </button>
-                                <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                    Next
-                                </button>
-                            </div>
-                            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                                <div>
-                                    <p class="text-sm text-gray-700">
-                                        Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">20</span> results
-                                    </p>
-                                </div>
-                                <div>
-                                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                        <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                            <span class="sr-only">Previous</span>
-                                            <i class="fas fa-chevron-left"></i>
-                                        </button>
-                                        <button aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                            1
-                                        </button>
-                                        <button class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                            2
-                                        </button>
-                                        <button class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                            3
-                                        </button>
-                                        <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                            <span class="sr-only">Next</span>
-                                            <i class="fas fa-chevron-right"></i>
-                                        </button>
-                                    </nav>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Teachers Content (Hidden by default) -->
-                <div id="teachers-content" class="hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Teacher Management</h2>
-                        <button id="add-teacher-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center space-x-2">
-                            <i class="fas fa-plus"></i>
-                            <span>Add Teacher</span>
-                        </button>
-                    </div>
-
-                    <!-- Teachers Table -->
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="teachers-table-body" class="bg-white divide-y divide-gray-200">
-                                    <!-- Teachers will be populated here -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
-                            <div class="flex-1 flex justify-between sm:hidden">
-                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                    Previous
-                                </button>
-                                <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                    Next
-                                </button>
-                            </div>
-                            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                                <div>
-                                    <p class="text-sm text-gray-700">
-                                        Showing <span class="font-medium">1</span> to <span class="font-medium">8</span> of <span class="font-medium">16</span> results
-                                    </p>
-                                </div>
-                                <div>
-                                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                        <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                            <span class="sr-only">Previous</span>
-                                            <i class="fas fa-chevron-left"></i>
-                                        </button>
-                                        <button aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                            1
-                                        </button>
-                                        <button class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                            2
-                                        </button>
-                                        <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                            <span class="sr-only">Next</span>
-                                            <i class="fas fa-chevron-right"></i>
-                                        </button>
-                                    </nav>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Results Content (Hidden by default) -->
-                <div id="results-content" class="hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Results Management</h2>
-                        <button id="add-result-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center space-x-2">
-                            <i class="fas fa-plus"></i>
-                            <span>Add Result</span>
-                        </button>
-                    </div>
-
-                    <!-- Results Filter -->
-                    <div class="bg-white p-4 rounded-xl shadow-md mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Class</label>
-                                <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    <option>All Classes</option>
-                                    <option>Grade 1</option>
-                                    <option>Grade 2</option>
-                                    <option>Grade 3</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Section</label>
-                                <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    <option>All Sections</option>
-                                    <option>A</option>
-                                    <option>B</option>
-                                    <option>C</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Term</label>
-                                <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                    <option>All Terms</option>
-                                    <option>First Term</option>
-                                    <option>Second Term</option>
-                                    <option>Final Term</option>
-                                </select>
-                            </div>
-                            <div class="flex items-end">
-                                <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Filter</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Results Table -->
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Term</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Marks</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="results-table-body" class="bg-white divide-y divide-gray-200">
-                                    <!-- Results will be populated here -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="bg-gray-50 px-6 py-3 flex items-center justify-between border-t border-gray-200">
-                            <div class="flex-1 flex justify-between sm:hidden">
-                                <button class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                    Previous
-                                </button>
-                                <button class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                    Next
-                                </button>
-                            </div>
-                            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                                <div>
-                                    <p class="text-sm text-gray-700">
-                                        Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">24</span> results
-                                    </p>
-                                </div>
-                                <div>
-                                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                        <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                            <span class="sr-only">Previous</span>
-                                            <i class="fas fa-chevron-left"></i>
-                                        </button>
-                                        <button aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                            1
-                                        </button>
-                                        <button class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                            2
-                                        </button>
-                                        <button class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
-                                            3
-                                        </button>
-                                        <button class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                            <span class="sr-only">Next</span>
-                                            <i class="fas fa-chevron-right"></i>
-                                        </button>
-                                    </nav>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Classes Content (Hidden by default) -->
-                <div id="classes-content" class="hidden">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Class Management</h2>
-                        <button id="add-class-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center space-x-2">
-                            <i class="fas fa-plus"></i>
-                            <span>Add Class</span>
-                        </button>
-                    </div>
-
-                    <!-- Classes Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Class cards will be populated here -->
-                        <div id="classes-container"></div>
-                    </div>
-                </div>
-
-                <!-- Reports Content (Hidden by default) -->
-                <div id="reports-content" class="hidden">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Reports & Analytics</h2>
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                        <div class="bg-white p-6 rounded-xl shadow-md">
-                            <h3 class="text-lg font-semibold mb-4">Student Distribution by Class</h3>
-                            <div class="h-64">
-                                <canvas id="classDistributionChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="bg-white p-6 rounded-xl shadow-md">
-                            <h3 class="text-lg font-semibold mb-4">Performance Trend</h3>
-                            <div class="h-64">
-                                <canvas id="performanceTrendChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white p-6 rounded-xl shadow-md">
-                        <h3 class="text-lg font-semibold mb-4">Detailed Reports</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <button class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition flex flex-col items-center">
-                                <i class="fas fa-graduation-cap text-3xl text-blue-500 mb-2"></i>
-                                <span class="font-medium">Class Reports</span>
-                                <span class="text-sm text-gray-500 mt-1">Generate by class</span>
-                            </button>
-                            <button class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition flex flex-col items-center">
-                                <i class="fas fa-user-graduate text-3xl text-green-500 mb-2"></i>
-                                <span class="font-medium">Student Reports</span>
-                                <span class="text-sm text-gray-500 mt-1">Individual student</span>
-                            </button>
-                            <button class="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition flex flex-col items-center">
-                                <i class="fas fa-poll text-3xl text-purple-500 mb-2"></i>
-                                <span class="font-medium">Result Analysis</span>
-                                <span class="text-sm text-gray-500 mt-1">Detailed analysis</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Add Student Modal (Hidden by default) -->
-                <div id="add-student-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                    <div class="bg-white rounded-xl p-6 w-full max-w-md">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold">Add New Student</h3>
-                            <button id="close-student-modal" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <form id="student-form" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                <input type="text" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Class</label>
-                                    <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                        <option value="">Select Class</option>
-                                        <option>Grade 1</option>
-                                        <option>Grade 2</option>
-                                        <option>Grade 3</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Section</label>
-                                    <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                        <option value="">Select Section</option>
-                                        <option>A</option>
-                                        <option>B</option>
-                                        <option>C</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                                    <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                        <option value="">Select Gender</option>
-                                        <option>Male</option>
-                                        <option>Female</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                                    <input type="date" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Parent Name</label>
-                                <input type="text" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
-                                <input type="tel" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                            </div>
-                            <div class="flex justify-end space-x-3 pt-4">
-                                <button type="button" id="cancel-student" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                                    Save Student
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Add Teacher Modal (Hidden by default) -->
-                <div id="add-teacher-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                    <div class="bg-white rounded-xl p-6 w-full max-w-md">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold">Add New Teacher</h3>
-                            <button id="close-teacher-modal" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <form id="teacher-form" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                <input type="text" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input type="email" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                                <input type="tel" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                                <input type="text" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                                    <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                        <option value="">Select Gender</option>
-                                        <option>Male</option>
-                                        <option>Female</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-                                    <input type="date" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                </div>
-                            </div>
-                            <div class="flex justify-end space-x-3 pt-4">
-                                <button type="button" id="cancel-teacher" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                                    Save Teacher
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Add Result Modal (Hidden by default) -->
-                <div id="add-result-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                    <div class="bg-white rounded-xl p-6 w-full max-w-md">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold">Add New Result</h3>
-                            <button id="close-result-modal" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <form id="result-form" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Student</label>
-                                <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                    <option value="">Select Student</option>
-                                    <!-- Students will be populated here -->
-                                </select>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Term</label>
-                                    <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                        <option value="">Select Term</option>
-                                        <option>First Term</option>
-                                        <option>Second Term</option>
-                                        <option>Final Term</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Academic Year</label>
-                                    <input type="text" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" value="2023-2024" required>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Subjects</label>
-                                <div id="subject-inputs" class="space-y-2">
-                                    <!-- Subject inputs will be added here -->
-                                </div>
-                                <button type="button" id="add-subject" class="mt-2 text-blue-600 hover:text-blue-800 text-sm flex items-center">
-                                    <i class="fas fa-plus mr-1"></i> Add Subject
-                                </button>
-                            </div>
-                            <div class="flex justify-end space-x-3 pt-4">
-                                <button type="button" id="cancel-result" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                                    Save Result
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Add Class Modal (Hidden by default) -->
-                <div id="add-class-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-                    <div class="bg-white rounded-xl p-6 w-full max-w-md">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xl font-bold">Add New Class</h3>
-                            <button id="close-class-modal" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <form id="class-form" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Class Name</label>
-                                <input type="text" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. Grade 1" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Class Teacher</label>
-                                <select class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                                    <option value="">Select Teacher</option>
-                                    <!-- Teachers will be populated here -->
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Class Capacity</label>
-                                <input type="number" class="w-full form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" min="1" required>
-                            </div>
-                            <div class="flex justify-end space-x-3 pt-4">
-                                <button type="button" id="cancel-class" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                                    Save Class
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </main>
-        </div>
+<body>
+  <div class="login-container">
+    <div class="logo-container">
+      <i class="fas fa-seedling logo"></i>
     </div>
+    
+    <h1 class="school-name">Mustard Seed School</h1>
+    <p class="school-motto">"Nurturing faith, knowledge, and character"</p>
+    
+    <form id="loginForm">
+      <div class="input-group">
+        <select id="role" class="input-field role-select">
+          <option value="">Select Your Role</option>
+          <option value="admin">Administrator</option>
+          <option value="teacher">Teacher</option>
+          <option value="parent">Parent</option>
+          <option value="student">Student</option>
+        </select>
+      </div>
+      
+      <div class="input-group">
+        <i class="fas fa-user"></i>
+        <input type="text" id="username" class="input-field" placeholder="Username">
+      </div>
+      
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="password" class="input-field" placeholder="Password">
+      </div>
+      
+      <button type="button" onclick="login()" class="login-btn">
+        <i class="fas fa-sign-in-alt mr-2"></i> Login
+      </button>
+      
+      <div class="error" id="error"></div>
+    </form>
+    
+    <p class="footer-text">
+      Need help? <a href="#">Contact support</a> or 
+      <a href="#">reset your password</a>
+    </p>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Mock database
-        const database = {
-            students: [
-                { id: 'S1001', name: 'John Doe', class: 'Grade 1', section: 'A', gender: 'Male', dob: '2015-05-12', parent: 'Jane Doe', contact: '1234567890' },
-                { id: 'S1002', name: 'Emma Smith', class: 'Grade 2', section: 'B', gender: 'Female', dob: '2014-08-23', parent: 'Robert Smith', contact: '2345678901' },
-                { id: 'S1003', name: 'Michael Johnson', class: 'Grade 3', section: 'C', gender: 'Male', dob: '2013-11-15', parent: 'Sarah Johnson', contact: '3456789012' },
-                { id: 'S1004', name: 'Sophia Williams', class: 'Grade 1', section: 'A', gender: 'Female', dob: '2015-03-28', parent: 'David Williams', contact: '4567890123' },
-                { id: 'S1005', name: 'James Brown', class: 'Grade 2', section: 'B', gender: 'Male', dob: '2014-07-19', parent: 'Lisa Brown', contact: '5678901234' }
-            ],
-            teachers: [
-                { id: 'T2001', name: 'Dr. Sarah Miller', subject: 'Mathematics', email: 'sarah.m@school.edu', phone: '1234567890', gender: 'Female', dob: '1980-04-15' },
-                { id: 'T2002', name: 'Mr. David Wilson', subject: 'Science', email: 'david.w@school.edu', phone: '2345678901', gender: 'Male', dob: '1975-09-22' },
-                { id: 'T2003', name: 'Ms. Jennifer Lee', subject: 'English', email: 'jennifer.l@school.edu', phone: '3456789012', gender: 'Female', dob: '1982-12-05' },
-                { id: 'T2004', name: 'Mr. Robert Taylor', subject: 'History', email: 'robert.t@school.edu', phone: '4567890123', gender: 'Male', dob: '1978-06-30' }
-            ],
-            results: [
-                { studentId: 'S1001', name: 'John Doe', class: 'Grade 1', term: 'First Term', marks: { 'Math': 85, 'Science': 78, 'English': 92 }, total: 255, grade: 'A' },
-                { studentId: 'S1002', name: 'Emma Smith', class: 'Grade 2', term: 'First Term', marks: { 'Math': 92, 'Science': 88, 'English': 95 }, total: 275, grade: 'A+' },
-                { studentId: 'S1003', name: 'Michael Johnson', class: 'Grade 3', term: 'First Term', marks: { 'Math': 78, 'Science': 85, 'English': 80 }, total: 243, grade: 'B+' },
-                { studentId: 'S1004', name: 'Sophia Williams', class: 'Grade 1', term: 'First Term', marks: { 'Math': 90, 'Science': 82, 'English': 88 }, total: 260, grade: 'A' },
-                { studentId: 'S1005', name: 'James Brown', class: 'Grade 2', term: 'First Term', marks: { 'Math': 65, 'Science': 70, 'English': 75 }, total: 210, grade: 'B' }
-            ],
-            classes: [
-                { name: 'Grade 1', teacher: 'Dr. Sarah Miller', capacity: 30, students: 25 },
-                { name: 'Grade 2', teacher: 'Mr. David Wilson', capacity: 30, students: 28 },
-                { name: 'Grade 3', teacher: 'Ms. Jennifer Lee', capacity: 30, students: 22 }
-            ]
-        };
+  <script>
+    function login() {
+      const role = document.getElementById('role').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const error = document.getElementById('error');
 
-        // DOM Elements
-        const tabs = {
-            dashboard: document.getElementById('dashboard-tab'),
-            students: document.getElementById('students-tab'),
-            teachers: document.getElementById('teachers-tab'),
-            results: document.getElementById('results-tab'),
-            classes: document.getElementById('classes-tab'),
-            reports: document.getElementById('reports-tab')
-        };
+      error.textContent = '';
+      
+      // Validate fields
+      if (!role) {
+        error.textContent = 'Please select your role.';
+        return;
+      }
+      
+      if (!username || !password) {
+        error.textContent = 'Both username and password are required.';
+        return;
+      }
 
-        const contents = {
-            dashboard: document.getElementById('dashboard-content'),
-            students: document.getElementById('students-content'),
-            teachers: document.getElementById('teachers-content'),
-            results: document.getElementById('results-content'),
-            classes: document.getElementById('classes-content'),
-            reports: document.getElementById('reports-content')
-        };
+      // Demo users for now
+      const users = {
+        admin: { username: 'admin', password: 'admin123' },
+        teacher: { username: 'teacher', password: 'teach123' },
+        parent: { username: 'parent', password: 'parent123' },
+        student: { username: 'student', password: 'student123' }
+      };
 
-        const pageTitle = document.getElementById('page-title');
-        const modals = {
-            student: document.getElementById('add-student-modal'),
-            teacher: document.getElementById('add-teacher-modal'),
-            result: document.getElementById('add-result-modal'),
-            class: document.getElementById('add-class-modal')
-        };
-
-        const modalButtons = {
-            student: {
-                open: document.getElementById('add-student-btn'),
-                close: document.getElementById('close-student-modal'),
-                cancel: document.getElementById('cancel-student')
-            },
-            teacher: {
-                open: document.getElementById('add-teacher-btn'),
-                close: document.getElementById('close-teacher-modal'),
-                cancel: document.getElementById('cancel-teacher')
-            },
-            result: {
-                open: document.getElementById('add-result-btn'),
-                close: document.getElementById('close-result-modal'),
-                cancel: document.getElementById('cancel-result')
-            },
-            class: {
-                open: document.getElementById('add-class-btn'),
-                close: document.getElementById('close-class-modal'),
-                cancel: document.getElementById('cancel-class')
-            }
-        };
-
-        // Initialize the dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set active tab
-            setActiveTab('dashboard');
-            
-            // Update dashboard stats
-            updateDashboardStats();
-            
-            // Populate recent students
-            populateRecentStudents();
-            
-            // Populate students table
-            populateStudentsTable();
-            
-            // Populate teachers table
-            populateTeachersTable();
-            
-            // Populate results table
-            populateResultsTable();
-            
-            // Populate classes
-            populateClasses();
-            
-            // Initialize charts
-            initializeCharts();
-            
-            // Set up event listeners
-            setupEventListeners();
-        });
-
-        function setActiveTab(tabName) {
-            // Reset all tabs and contents
-            Object.values(tabs).forEach(tab => tab.classList.remove('active-tab'));
-            Object.values(contents).forEach(content => content.classList.add('hidden'));
-            
-            // Set active tab and show corresponding content
-            tabs[tabName].classList.add('active-tab');
-            contents[tabName].classList.remove('hidden');
-            
-            // Update page title
-            const titles = {
-                dashboard: 'Dashboard',
-                students: 'Student Management',
-                teachers: 'Teacher Management',
-                results: 'Result Management',
-                classes: 'Class Management',
-                reports: 'Reports & Analytics'
-            };
-            pageTitle.textContent = titles[tabName];
-        }
-
-        function updateDashboardStats() {
-            document.getElementById('total-students').textContent = database.students.length;
-            document.getElementById('total-teachers').textContent = database.teachers.length;
-            document.getElementById('total-classes').textContent = database.classes.length;
-            document.getElementById('total-results').textContent = database.results.length;
-        }
-
-        function populateRecentStudents() {
-            const container = document.getElementById('recent-students');
-            container.innerHTML = '';
-            
-            // Get recent 5 students
-            const recentStudents = database.students.slice(0, 5);
-            
-            recentStudents.forEach(student => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${student.id}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${student.name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${student.class} ${student.section}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                    </td>
-                `;
-                container.appendChild(row);
-            });
-        }
-
-        function populateStudentsTable() {
-            const container = document.getElementById('students-table-body');
-            container.innerHTML = '';
-            
-            database.students.forEach(student => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${student.id}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${student.name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${student.class} ${student.section}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${student.gender}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(student.dob)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <button class="text-blue-600 hover:text-blue-900 mr-3 edit-student" data-id="${student.id}"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-600 hover:text-red-900 delete-student" data-id="${student.id}"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                container.appendChild(row);
-            });
-        }
-
-        function populateTeachersTable() {
-            const container = document.getElementById('teachers-table-body');
-            container.innerHTML = '';
-            
-            database.teachers.forEach(teacher => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${teacher.id}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${teacher.name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${teacher.subject}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${teacher.email}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${teacher.phone}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <button class="text-blue-600 hover:text-blue-900 mr-3 edit-teacher" data-id="${teacher.id}"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-600 hover:text-red-900 delete-teacher" data-id="${teacher.id}"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                container.appendChild(row);
-            });
-        }
-
-        function populateResultsTable() {
-            const container = document.getElementById('results-table-body');
-            container.innerHTML = '';
-            
-            database.results.forEach(result => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${result.studentId}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${result.name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${result.class}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${result.term}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${result.total}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getGradeColor(result.grade)}">${result.grade}</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <button class="text-blue-600 hover:text-blue-900 mr-3 view-result" data-id="${result.studentId}"><i class="fas fa-eye"></i></button>
-                        <button class="text-red-600 hover:text-red-900 delete-result" data-id="${result.studentId}"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                container.appendChild(row);
-            });
-        }
-
-        function populateClasses() {
-            const container = document.getElementById('classes-container');
-            container.innerHTML = '';
-            
-            database.classes.forEach(cls => {
-                const progress = (cls.students / cls.capacity) * 100;
-                const progressColor = progress > 90 ? 'bg-red-500' : progress > 75 ? 'bg-yellow-500' : 'bg-green-500';
-                
-                const card = document.createElement('div');
-                card.className = 'bg-white p-6 rounded-xl shadow-md transition cursor-pointer';
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <h3 class="text-lg font-semibold">${cls.name}</h3>
-                            <p class="text-sm text-gray-500">Class Teacher: ${cls.teacher}</p>
-                        </div>
-                        <div class="p-2 rounded-lg bg-blue-100 text-blue-600">
-                            <i class="fas fa-door-open text-xl"></i>
-                        </div>
-                    </div>
-                    <div class="mb-2">
-                        <div class="flex justify-between text-sm mb-1">
-                            <span>Students</span>
-                            <span>${cls.students}/${cls.capacity}</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="h-2 rounded-full ${progressColor}" style="width: ${progress}%"></div>
-                        </div>
-                    </div>
-                    <div class="flex justify-between text-sm text-gray-500">
-                        <button class="text-blue-600 hover:text-blue-800"><i class="fas fa-list mr-1"></i> View Students</button>
-                        <button class="text-green-600 hover:text-green-800"><i class="fas fa-chart-pie mr-1"></i> Analytics</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function initializeCharts() {
-            // Class distribution chart
-            const classCtx = document.getElementById('classDistributionChart').getContext('2d');
-            const classLabels = database.classes.map(cls => cls.name);
-            const classData = database.classes.map(cls => cls.students);
-            
-            new Chart(classCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: classLabels,
-                    datasets: [{
-                        data: classData,
-                        backgroundColor: [
-                            'rgba(59, 130, 246, 0.7)',
-                            'rgba(16, 185, 129, 0.7)',
-                            'rgba(139, 92, 246, 0.7)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-            
-            // Performance trend chart
-            const performanceCtx = document.getElementById('performanceTrendChart').getContext('2d');
-            const performanceLabels = database.results.map(result => result.name);
-            const performanceData = database.results.map(result => result.total);
-            
-            new Chart(performanceCtx, {
-                type: 'bar',
-                data: {
-                    labels: performanceLabels,
-                    datasets: [{
-                        label: 'Total Marks',
-                        data: performanceData,
-                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 300
-                        }
-                    }
-                }
-            });
-        }
-
-        function setupEventListeners() {
-            // Tab navigation
-            tabs.dashboard.addEventListener('click', () => setActiveTab('dashboard'));
-            tabs.students.addEventListener('click', () => setActiveTab('students'));
-            tabs.teachers.addEventListener('click', () => setActiveTab('teachers'));
-            tabs.results.addEventListener('click', () => setActiveTab('results'));
-            tabs.classes.addEventListener('click', () => setActiveTab('classes'));
-            tabs.reports.addEventListener('click', () => setActiveTab('reports'));
-            
-            // Modal open/close
-            modalButtons.student.open.addEventListener('click', () => modals.student.classList.remove('hidden'));
-            modalButtons.student.close.addEventListener('click', () => modals.student.classList.add('hidden'));
-            modalButtons.student.cancel.addEventListener('click', () => modals.student.classList.add('hidden'));
-            
-            modalButtons.teacher.open.addEventListener('click', () => modals.teacher.classList.remove('hidden'));
-            modalButtons.teacher.close.addEventListener('click', () => modals.teacher.classList.add('hidden'));
-            modalButtons.teacher.cancel.addEventListener('click', () => modals.teacher.classList.add('hidden'));
-            
-            modalButtons.result.open.addEventListener('click', () => modals.result.classList.remove('hidden'));
-            modalButtons.result.close.addEventListener('click', () => modals.result.classList.add('hidden'));
-            modalButtons.result.cancel.addEventListener('click', () => modals.result.classList.add('hidden'));
-            
-            modalButtons.class.open.addEventListener('click', () => modals.class.classList.remove('hidden'));
-            modalButtons.class.close.addEventListener('click', () => modals.class.classList.add('hidden'));
-            modalButtons.class.cancel.addEventListener('click', () => modals.class.classList.add('hidden'));
-            
-            // Add subject button
-            document.getElementById('add-subject').addEventListener('click', function() {
-                const container = document.getElementById('subject-inputs');
-                const div = document.createElement('div');
-                div.className = 'flex items-center space-x-2';
-                div.innerHTML = `
-                    <input type="text" placeholder="Subject" class="flex-1 form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                    <input type="number" placeholder="Marks" min="0" max="100" class="w-20 form-input px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                    <button type="button" class="remove-subject text-red-500 hover:text-red-700">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-                container.appendChild(div);
-                
-                // Add event listener to remove button
-                div.querySelector('.remove-subject').addEventListener('click', function() {
-                    container.removeChild(div);
-                });
-            });
-            
-            // Form submissions
-            document.getElementById('student-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                // In a real app, you would save the student data here
-                alert('Student added successfully!');
-                modals.student.classList.add('hidden');
-                // Refresh the students table
-                populateStudentsTable();
-                updateDashboardStats();
-            });
-            
-            document.getElementById('teacher-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                // In a real app, you would save the teacher data here
-                alert('Teacher added successfully!');
-                modals.teacher.classList.add('hidden');
-                // Refresh the teachers table
-                populateTeachersTable();
-                updateDashboardStats();
-            });
-            
-            document.getElementById('result-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                // In a real app, you would save the result data here
-                alert('Result added successfully!');
-                modals.result.classList.add('hidden');
-                // Refresh the results table
-                populateResultsTable();
-                updateDashboardStats();
-            });
-            
-            document.getElementById('class-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                // In a real app, you would save the class data here
-                alert('Class added successfully!');
-                modals.class.classList.add('hidden');
-                // Refresh the classes display
-                populateClasses();
-                updateDashboardStats();
-            });
-        }
-
-        // Helper functions
-        function formatDate(dateString) {
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString(undefined, options);
-        }
-
-        function getGradeColor(grade) {
-            switch(grade) {
-                case 'A+': return 'bg-purple-100 text-purple-800';
-                case 'A': return 'bg-green-100 text-green-800';
-                case 'B+': return 'bg-blue-100 text-blue-800';
-                case 'B': return 'bg-yellow-100 text-yellow-800';
-                case 'C': return 'bg-orange-100 text-orange-800';
-                default: return 'bg-red-100 text-red-800';
-            }
-        }
-    </script>
+      if (username === users[role]?.username && password === users[role]?.password) {
+        // Show success animation
+        const btn = document.querySelector('.login-btn');
+        btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Success!';
+        btn.style.background = '#10b981';
+        
+        setTimeout(() => {
+          alert(`Welcome ${username}! You have logged in as ${role}.`);
+          // Redirect to role dashboard (to be built next)
+        }, 1000);
+      } else {
+        error.textContent = 'Invalid credentials. Please try again.';
+        document.getElementById('password').value = '';
+      }
+    }
+    
+    // Add focus effects
+    document.querySelectorAll('.input-field').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.parentElement.querySelector('i').style.color = '#f59e0b';
+      });
+      
+      input.addEventListener('blur', function() {
+        this.parentElement.querySelector('i').style.color = '#9ca3af';
+      });
+    });
+  </script>
 </body>
 </html>
