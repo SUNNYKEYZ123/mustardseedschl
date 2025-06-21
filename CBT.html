@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart CBT System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom styles */
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .timer {
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse {
+            from { opacity: 1; }
+            to { opacity: 0.7; }
+        }
+        .option-selected {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .option-correct {
+            background-color: #10b981;
+            color: white;
+        }
+        .option-wrong {
+            background-color: #ef4444;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .nav-tab {
+            cursor: pointer;
+        }
+        .nav-tab.active {
+            border-bottom: 3px solid #3b82f6;
+            color: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-blue-600">Smart<span class="text-gray-800">CBT</span></h1>
+                <p class="text-gray-600">Computer Based Test Platform</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="toggleMode" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    <i class="fas fa-user-shield mr-2"></i>Admin Mode
+                </button>
+                <div id="userInfo" class="hidden">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                            <i class="fas fa-user text-blue-600"></i>
+                        </div>
+                        <span class="font-medium">Admin</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main>
+            <!-- Student View -->
+            <div id="studentView">
+                <!-- Exam Info -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-800">Mathematics Assessment</h2>
+                            <p class="text-gray-600">Class: Senior Secondary 2</p>
+                        </div>
+                        <div class="mt-4 md:mt-0">
+                            <div class="flex items-center space-x-4">
+                                <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg flex items-center">
+                                    <i class="fas fa-clock mr-2"></i>
+                                    <span id="timer" class="font-bold">30:00</span>
+                                </div>
+                                <div class="bg-green-100 text-green-800 px-4 py-2 rounded-lg">
+                                    <span id="questionCounter">0</span>/<span id="totalQuestions">20</span> Questions
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="flex border-b mb-6">
+                    <div class="nav-tab active px-4 py-2 font-medium" data-tab="test">Test</div>
+                    <div class="nav-tab px-4 py-2 font-medium" data-tab="review">Review</div>
+                    <div class="nav-tab px-4 py-2 font-medium" data-tab="results">Results</div>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="tab-content active" id="testTab">
+                    <!-- Current Question -->
+                    <div class="bg-white rounded-xl shadow-md p-6 mb-6 question-card">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-semibold text-gray-800">Question <span id="currentQuestionNumber">1</span></h3>
+                            <div class="flex space-x-2">
+                                <button class="p-2 text-gray-500 hover:text-blue-600">
+                                    <i class="fas fa-flag"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <p id="questionText" class="text-gray-700 text-lg">What is the value of π (pi) rounded to two decimal places?</p>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="option p-4 border rounded-lg hover:bg-blue-50 cursor-pointer" data-option="A">
+                                <span class="font-medium mr-2">A.</span>
+                                <span>3.14</span>
+                            </div>
+                            <div class="option p-4 border rounded-lg hover:bg-blue-50 cursor-pointer" data-option="B">
+                                <span class="font-medium mr-2">B.</span>
+                                <span>3.16</span>
+                            </div>
+                            <div class="option p-4 border rounded-lg hover:bg-blue-50 cursor-pointer" data-option="C">
+                                <span class="font-medium mr-2">C.</span>
+                                <span>3.18</span>
+                            </div>
+                            <div class="option p-4 border rounded-lg hover:bg-blue-50 cursor-pointer" data-option="D">
+                                <span class="font-medium mr-2">D.</span>
+                                <span>3.12</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="flex justify-between mt-6">
+                        <button id="prevQuestion" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition disabled:opacity-50" disabled>
+                            <i class="fas fa-arrow-left mr-2"></i>Previous
+                        </button>
+                        <div class="flex space-x-4">
+                            <button id="clearSelection" class="px-6 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition">
+                                <i class="fas fa-eraser mr-2"></i>Clear
+                            </button>
+                            <button id="nextQuestion" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                Next<i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Question Navigation Grid -->
+                    <div class="mt-8">
+                        <h4 class="text-lg font-medium mb-4 text-gray-700">Question Navigation</h4>
+                        <div id="questionGrid" class="grid grid-cols-5 md:grid-cols-10 gap-2">
+                            <!-- Generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Tab -->
+                <div class="tab-content" id="reviewTab">
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-800">Review Your Answers</h3>
+                        <div id="reviewQuestions" class="space-y-4">
+                            <!-- Generated by JavaScript -->
+                        </div>
+                        <div class="mt-6 flex justify-end">
+                            <button id="submitTest" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                                <i class="fas fa-paper-plane mr-2"></i>Submit Test
+                            </button>
+                            <button id="viewResults" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition ml-4">
+                                <i class="fas fa-chart-bar mr-2"></i>View Results
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Tab -->
+                <div class="tab-content" id="resultsTab">
+                    <div class="bg-white rounded-xl shadow-md p-6">
+                        <div class="text-center mb-8">
+                            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-trophy text-4xl text-green-600"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-800">Test Completed!</h3>
+                            <p class="text-gray-600">Here's your performance summary</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <div class="text-blue-600 mb-2">
+                                    <i class="fas fa-check-circle text-2xl"></i>
+                                </div>
+                                <h4 class="font-medium text-gray-800">Correct Answers</h4>
+                                <p class="text-3xl font-bold text-blue-600"><span id="correctAnswers">0</span></p>
+                            </div>
+                            <div class="bg-red-50 p-4 rounded-lg">
+                                <div class="text-red-600 mb-2">
+                                    <i class="fas fa-times-circle text-2xl"></i>
+                                </div>
+                                <h4 class="font-medium text-gray-800">Wrong Answers</h4>
+                                <p class="text-3xl font-bold text-red-600"><span id="wrongAnswers">0</span></p>
+                            </div>
+                            <div class="bg-yellow-50 p-4 rounded-lg">
+                                <div class="text-yellow-600 mb-2">
+                                    <i class="fas fa-percentage text-2xl"></i>
+                                </div>
+                                <h4 class="font-medium text-gray-800">Score Percentage</h4>
+                                <p class="text-3xl font-bold text-yellow-600"><span id="scorePercentage">0</span>%</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="text-lg font-medium mb-4 text-gray-700">Detailed Results</h4>
+                            <div id="detailedResults" class="space-y-4">
+                                <!-- Generated by JavaScript -->
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center">
+                            <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                <i class="fas fa-download mr-2"></i>Download Results
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin View (Hidden by default) -->
+            <div id="passwordPrompt" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+                    <h3 class="text-xl font-semibold mb-4">Admin Authentication</h3>
+                    <input type="password" id="adminPassword" class="w-full px-4 py-2 border rounded-lg mb-4" placeholder="Enter admin password">
+                    <div class="flex justify-end space-x-3">
+                        <button id="cancelAuth" class="px-4 py-2 bg-gray-200 rounded-lg">Cancel</button>
+                        <button id="confirmAuth" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Continue</button>
+                    </div>
+                </div>
+            </div>
+            <div id="adminView" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Test Management</h2>
+                    <div class="flex space-x-3">
+                        <button id="newTestBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            <i class="fas fa-plus mr-2"></i>New Test
+                        </button>
+                        <button id="saveTestBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-save mr-2"></i>Save Test
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Test Configuration -->
+                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Test Configuration</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-gray-700 mb-2">Test Title</label>
+                            <input type="text" id="testTitle" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" value="Mathematics Assessment">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Class/Group</label>
+                            <input type="text" id="testClass" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" value="Senior Secondary 2">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Duration (minutes)</label>
+                            <input type="number" id="testDuration" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" value="30">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 mb-2">Total Questions</label>
+                            <input type="number" id="totalQuestionsAdmin" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" value="20" min="1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions Management -->
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Questions</h3>
+                        <button id="addQuestionBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            <i class="fas fa-plus mr-2"></i>Add Question
+                        </button>
+                    </div>
+                    
+                    <div id="questionsList" class="space-y-6">
+                        <!-- Question 1 -->
+                        <div class="question-item border rounded-lg p-4" data-question-id="1">
+                            <div class="flex justify-between items-start mb-3">
+                                <h4 class="font-medium text-gray-800">Question #1</h4>
+                                <div class="flex space-x-2">
+                                    <button class="p-2 text-gray-500 hover:text-red-600 delete-question">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Question Text</label>
+                                <textarea class="question-text w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" rows="3">What is the value of π (pi) rounded to two decimal places?</textarea>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Option A</label>
+                                    <div class="flex">
+                                        <input type="text" class="option-text w-full px-4 py-2 border rounded-l-lg focus:ring-blue-500 focus:border-blue-500" data-option="A" value="3.14">
+                                        <button class="correct-option px-3 bg-gray-200 border rounded-r-lg hover:bg-gray-300" data-option="A">
+                                            <i class="fas fa-check text-green-600"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Option B</label>
+                                    <div class="flex">
+                                        <input type="text" class="option-text w-full px-4 py-2 border rounded-l-lg focus:ring-blue-500 focus:border-blue-500" data-option="B" value="3.16">
+                                        <button class="correct-option px-3 bg-gray-200 border rounded-r-lg hover:bg-gray-300" data-option="B">
+                                            <i class="far fa-check-circle text-gray-500"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Option C</label>
+                                    <div class="flex">
+                                        <input type="text" class="option-text w-full px-4 py-2 border rounded-l-lg focus:ring-blue-500 focus:border-blue-500" data-option="C" value="3.18">
+                                        <button class="correct-option px-3 bg-gray-200 border rounded-r-lg hover:bg-gray-300" data-option="C">
+                                            <i class="far fa-check-circle text-gray-500"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 mb-2">Option D</label>
+                                    <div class="flex">
+                                        <input type="text" class="option-text w-full px-4 py-2 border rounded-l-lg focus:ring-blue-500 focus:border-blue-500" data-option="D" value="3.12">
+                                        <button class="correct-option px-3 bg-gray-200 border rounded-r-lg hover:bg-gray-300" data-option="D">
+                                            <i class="far fa-check-circle text-gray-500"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Explanation (Optional)</label>
+                                <textarea class="explanation w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" rows="2">π (pi) is a mathematical constant representing the ratio of a circle's circumference to its diameter. Its approximate value is 3.14159, which rounds to 3.14 to two decimal places.</textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- More questions will be added here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-gray-600">
+            <p>© 2023 SmartCBT. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sample test data
+            let testData = {
+                title: "Mathematics Assessment",
+                class: "Senior Secondary 2",
+                duration: 30, // minutes
+                questions: [
+                    {
+                        id: 1,
+                        text: "What is the value of π (pi) rounded to two decimal places?",
+                        options: {
+                            A: "3.14",
+                            B: "3.16",
+                            C: "3.18",
+                            D: "3.12"
+                        },
+                        correctAnswer: "A",
+                        explanation: "π (pi) is a mathematical constant representing the ratio of a circle's circumference to its diameter. Its approximate value is 3.14159, which rounds to 3.14 to two decimal places."
+                    },
+                    {
+                        id: 2,
+                        text: "What is the square root of 144?",
+                        options: {
+                            A: "11",
+                            B: "12",
+                            C: "13",
+                            D: "14"
+                        },
+                        correctAnswer: "B",
+                        explanation: "12 × 12 = 144, so the square root of 144 is 12."
+                    },
+                    {
+                        id: 3,
+                        text: "Solve for x: 2x + 5 = 15",
+                        options: {
+                            A: "5",
+                            B: "7",
+                            C: "10",
+                            D: "15"
+                        },
+                        correctAnswer: "A",
+                        explanation: "Subtract 5 from both sides: 2x = 10. Then divide both sides by 2: x = 5."
+                    }
+                ]
+            };
+
+            // Student test state
+            let studentState = {
+                currentQuestion: 0,
+                answers: {},
+                timeLeft: testData.duration * 60, // in seconds
+                timerInterval: null,
+                testSubmitted: false
+            };
+
+            // DOM Elements - Student View
+            const studentView = document.getElementById('studentView');
+            const adminView = document.getElementById('adminView');
+            const toggleModeBtn = document.getElementById('toggleMode');
+            const userInfo = document.getElementById('userInfo');
+            const timerElement = document.getElementById('timer');
+            const questionCounter = document.getElementById('questionCounter');
+            const totalQuestionsElement = document.getElementById('totalQuestions');
+            const currentQuestionNumber = document.getElementById('currentQuestionNumber');
+            const questionText = document.getElementById('questionText');
+            const options = document.querySelectorAll('.option');
+            const prevQuestionBtn = document.getElementById('prevQuestion');
+            const nextQuestionBtn = document.getElementById('nextQuestion');
+            const clearSelectionBtn = document.getElementById('clearSelection');
+            const questionGrid = document.getElementById('questionGrid');
+            const reviewQuestions = document.getElementById('reviewQuestions');
+            const submitTestBtn = document.getElementById('submitTest');
+            const correctAnswersElement = document.getElementById('correctAnswers');
+            const wrongAnswersElement = document.getElementById('wrongAnswers');
+            const scorePercentageElement = document.getElementById('scorePercentage');
+            const detailedResults = document.getElementById('detailedResults');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const navTabs = document.querySelectorAll('.nav-tab');
+
+            // DOM Elements - Admin View
+            const testTitle = document.getElementById('testTitle');
+            const testClass = document.getElementById('testClass');
+            const testDuration = document.getElementById('testDuration');
+            const totalQuestionsAdmin = document.getElementById('totalQuestionsAdmin');
+            const questionsList = document.getElementById('questionsList');
+            const addQuestionBtn = document.getElementById('addQuestionBtn');
+            const newTestBtn = document.getElementById('newTestBtn');
+            const saveTestBtn = document.getElementById('saveTestBtn');
+
+            // Initialize the test
+            function initTest() {
+                // Set total questions
+                totalQuestionsElement.textContent = testData.questions.length;
+                totalQuestionsAdmin.value = testData.questions.length;
+                
+                // Initialize question navigation grid
+                updateQuestionGrid();
+                
+                // Load first question
+                loadQuestion(0);
+                
+                // Start timer
+                startTimer();
+            }
+
+            // Load a question
+            function loadQuestion(index) {
+                if (index < 0 || index >= testData.questions.length) return;
+                
+                const question = testData.questions[index];
+                studentState.currentQuestion = index;
+                
+                // Update UI
+                currentQuestionNumber.textContent = index + 1;
+                questionText.textContent = question.text;
+                
+                // Update options
+                options.forEach(option => {
+                    const optionLetter = option.dataset.option;
+                    option.querySelector('span:last-child').textContent = question.options[optionLetter];
+                    
+                    // Remove all classes
+                    option.classList.remove('option-selected', 'option-correct', 'option-wrong');
+                    
+                    // Check if this option was selected
+                    if (studentState.answers[index] === optionLetter) {
+                        option.classList.add('option-selected');
+                    }
+                });
+                
+                // Update navigation buttons
+                prevQuestionBtn.disabled = index === 0;
+                nextQuestionBtn.disabled = index === testData.questions.length - 1;
+                
+                // Change next button to submit on last question
+                if (index === testData.questions.length - 1) {
+                    nextQuestionBtn.innerHTML = 'Submit<i class="fas fa-paper-plane ml-2"></i>';
+                    nextQuestionBtn.id = 'submitBtn';
+                    nextQuestionBtn.addEventListener('click', submitTest);
+                } else {
+                    nextQuestionBtn.innerHTML = 'Next<i class="fas fa-arrow-right ml-2"></i>';
+                    nextQuestionBtn.id = 'nextQuestion';
+                    nextQuestionBtn.addEventListener('click', () => {
+                        loadQuestion(studentState.currentQuestion + 1);
+                    });
+                }
+                
+                // Update question counter
+                questionCounter.textContent = index + 1;
+                
+                // Update active question in grid
+                updateActiveQuestionInGrid();
+            }
+
+            // Start the timer
+            function startTimer() {
+                if (studentState.timerInterval) {
+                    clearInterval(studentState.timerInterval);
+                }
+                
+                updateTimerDisplay();
+                
+                studentState.timerInterval = setInterval(() => {
+                    studentState.timeLeft--;
+                    updateTimerDisplay();
+                    
+                    if (studentState.timeLeft <= 0) {
+                        clearInterval(studentState.timerInterval);
+                        submitTest();
+                    }
+                }, 1000);
+            }
+
+            // Update timer display
+            function updateTimerDisplay() {
+                const minutes = Math.floor(studentState.timeLeft / 60);
+                const seconds = studentState.timeLeft % 60;
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                // Change color when time is running low
+                if (studentState.timeLeft <= 300) { // 5 minutes
+                    timerElement.parentElement.classList.remove('bg-blue-100', 'text-blue-800');
+                    timerElement.parentElement.classList.add('bg-red-100', 'text-red-800');
+                }
+            }
+
+            // Update question navigation grid
+            function updateQuestionGrid() {
+                questionGrid.innerHTML = '';
+                
+                testData.questions.forEach((question, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = `w-10 h-10 rounded-full flex items-center justify-center ${
+                        index === studentState.currentQuestion ? 'bg-blue-600 text-white' : 
+                        studentState.answers[index] ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                    }`;
+                    btn.textContent = index + 1;
+                    btn.dataset.questionIndex = index;
+                    
+                    btn.addEventListener('click', () => {
+                        loadQuestion(index);
+                        document.getElementById('testTab').classList.add('active');
+                        document.getElementById('reviewTab').classList.remove('active');
+                        document.getElementById('resultsTab').classList.remove('active');
+                        
+                        // Update active tab
+                        navTabs.forEach(tab => {
+                            if (tab.dataset.tab === 'test') {
+                                tab.classList.add('active');
+                            } else {
+                                tab.classList.remove('active');
+                            }
+                        });
+                    });
+                    
+                    questionGrid.appendChild(btn);
+                });
+            }
+
+            // Update active question in grid
+            function updateActiveQuestionInGrid() {
+                const questionButtons = questionGrid.querySelectorAll('button');
+                
+                questionButtons.forEach((btn, index) => {
+                    if (index === studentState.currentQuestion) {
+                        btn.classList.remove('bg-blue-100', 'bg-gray-100');
+                        btn.classList.add('bg-blue-600', 'text-white');
+                    } else {
+                        btn.classList.remove('bg-blue-600', 'text-white');
+                        btn.classList.add(studentState.answers[index] ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800');
+                    }
+                });
+            }
+
+            // Submit the test
+            function submitTest() {
+                studentState.testSubmitted = true;
+                
+                // Calculate results
+                let correct = 0;
+                let wrong = 0;
+                
+                testData.questions.forEach((question, index) => {
+                    if (studentState.answers[index] === question.correctAnswer) {
+                        correct++;
+                    } else if (studentState.answers[index]) {
+                        wrong++;
+                    }
+                });
+                
+                const percentage = Math.round((correct / testData.questions.length) * 100);
+                
+                // Update results display
+                correctAnswersElement.textContent = correct;
+                wrongAnswersElement.textContent = wrong;
+                scorePercentageElement.textContent = percentage;
+                
+                // Show detailed results
+                detailedResults.innerHTML = '';
+                
+                testData.questions.forEach((question, index) => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'border rounded-lg p-4';
+                    
+                    const questionText = document.createElement('p');
+                    questionText.className = 'font-medium mb-2';
+                    questionText.textContent = `Q${index + 1}: ${question.text}`;
+                    
+                    const answerStatus = document.createElement('p');
+                    answerStatus.className = 'mb-2';
+                    
+                    if (studentState.answers[index] === question.correctAnswer) {
+                        answerStatus.innerHTML = `<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i> Correct</span>`;
+                    } else if (studentState.answers[index]) {
+                        answerStatus.innerHTML = `<span class="text-red-600"><i class="fas fa-times-circle mr-1"></i> Incorrect</span> - Correct answer was ${question.correctAnswer}`;
+                    } else {
+                        answerStatus.innerHTML = `<span class="text-gray-600"><i class="fas fa-minus-circle mr-1"></i> Not answered</span>`;
+                    }
+                    
+                    const explanation = document.createElement('p');
+                    explanation.className = 'text-sm text-gray-600 bg-gray-50 p-2 rounded';
+                    explanation.textContent = question.explanation || 'No explanation provided.';
+                    
+                    resultItem.appendChild(questionText);
+                    resultItem.appendChild(answerStatus);
+                    resultItem.appendChild(explanation);
+                    
+                    detailedResults.appendChild(resultItem);
+                });
+                
+                // Switch to results tab
+                document.getElementById('testTab').classList.remove('active');
+                document.getElementById('reviewTab').classList.remove('active');
+                document.getElementById('resultsTab').classList.add('active');
+                
+                // Update active tab
+                navTabs.forEach(tab => {
+                    if (tab.dataset.tab === 'results') {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                
+                // Stop timer
+                clearInterval(studentState.timerInterval);
+            }
+
+            // Update review tab
+            function updateReviewTab() {
+                reviewQuestions.innerHTML = '';
+                
+                testData.questions.forEach((question, index) => {
+                    const reviewItem = document.createElement('div');
+                    reviewItem.className = 'border rounded-lg p-4';
+                    
+                    const questionText = document.createElement('p');
+                    questionText.className = 'font-medium mb-2';
+                    questionText.textContent = `Q${index + 1}: ${question.text}`;
+                    
+                    const selectedAnswer = document.createElement('p');
+                    selectedAnswer.className = 'mb-2';
+                    
+                    if (studentState.answers[index]) {
+                        selectedAnswer.innerHTML = `Your answer: <span class="font-medium">${studentState.answers[index]}</span>`;
+                    } else {
+                        selectedAnswer.innerHTML = `<span class="text-gray-500">Not answered yet</span>`;
+                    }
+                    
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 text-sm';
+                    editBtn.innerHTML = '<i class="fas fa-edit mr-1"></i> Edit';
+                    editBtn.addEventListener('click', () => {
+                        loadQuestion(index);
+                        document.getElementById('testTab').classList.add('active');
+                        document.getElementById('reviewTab').classList.remove('active');
+                        document.getElementById('resultsTab').classList.remove('active');
+                        
+                        // Update active tab
+                        navTabs.forEach(tab => {
+                            if (tab.dataset.tab === 'test') {
+                                tab.classList.add('active');
+                            } else {
+                                tab.classList.remove('active');
+                            }
+                        });
+                    });
+                    
+                    reviewItem.appendChild(questionText);
+                    reviewItem.appendChild(selectedAnswer);
+                    reviewItem.appendChild(editBtn);
+                    
+                    reviewQuestions.appendChild(reviewItem);
+                });
+            }
+
+            // Admin functions
+            const ADMIN_PASSWORD = "mustard123"; // Simple password for demo
+            let isAdmin = false;
+
+            function toggleAdminMode() {
+                if (!isAdmin) {
+                    document.getElementById('passwordPrompt').classList.remove('hidden');
+                    return;
+                }
+
+                if (adminView.classList.contains('hidden')) {
+                    // Switch to admin mode
+                    adminView.classList.remove('hidden');
+                    studentView.classList.add('hidden');
+                    userInfo.classList.remove('hidden');
+                    toggleModeBtn.innerHTML = '<i class="fas fa-user-graduate mr-2"></i>Student Mode';
+                    
+                    // Load admin data
+                    testTitle.value = testData.title;
+                    testClass.value = testData.class;
+                    testDuration.value = testData.duration;
+                    totalQuestionsAdmin.value = testData.questions.length;
+                    
+                    // Render questions in admin view
+                    renderAdminQuestions();
+                } else {
+                    // Switch to student mode
+                    adminView.classList.add('hidden');
+                    studentView.classList.remove('hidden');
+                    userInfo.classList.add('hidden');
+                    toggleModeBtn.innerHTML = '<i class="fas fa-user-shield mr-2"></i>Admin Mode';
+                    
+                    // Reset student state
+                    studentState = {
+                        currentQuestion: 0,
+                        answers: {},
+                        timeLeft: testData.duration * 60,
+                        timerInterval: null,
+                        testSubmitted: false
+                    };
+                    
+                    // Reinitialize test
+                    initTest();
+                }
+            }
+
+            // Render questions in admin view
+            function renderAdminQuestions() {
+                questionsList.innerHTML = '';
+                
+                testData.questions.forEach((question, index) => {
+                    const questionItem = createQuestionElement(question, index + 1);
+                    questionsList.appendChild(questionItem);
+                });
+            }
+
+            // Create question element for admin
+            function createQuestionElement(question, number) {
+                const questionItem = document.createElement('div');
+                questionItem.className = 'question-item border rounded-lg p-4';
+                questionItem.dataset.questionId = question.id;
+                
+                const questionHeader = document.createElement('div');
+                questionHeader.className = 'flex justify-between items-start mb-3';
+                
+                const questionTitle = document.createElement('h4');
+                questionTitle.className = 'font-medium text-gray-800';
+                questionTitle.textContent = `Question #${number}`;
+                
+                const questionActions = document.createElement('div');
+                questionActions.className = 'flex space-x-2';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'p-2 text-gray-500 hover:text-red-600 delete-question';
+                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                deleteBtn.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to delete this question?')) {
+                        deleteQuestion(question.id);
+                    }
+                });
+                
+                questionActions.appendChild(deleteBtn);
+                questionHeader.appendChild(questionTitle);
+                questionHeader.appendChild(questionActions);
+                
+                const questionTextArea = document.createElement('div');
+                questionTextArea.className = 'mb-4';
+                
+                const questionLabel = document.createElement('label');
+                questionLabel.className = 'block text-gray-700 mb-2';
+                questionLabel.textContent = 'Question Text';
+                
+                const questionTextInput = document.createElement('textarea');
+                questionTextInput.className = 'question-text w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500';
+                questionTextInput.rows = 3;
+                questionTextInput.value = question.text;
+                
+                questionTextArea.appendChild(questionLabel);
+                questionTextArea.appendChild(questionTextInput);
+                
+                const optionsGrid = document.createElement('div');
+                optionsGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 mb-4';
+                
+                // Create options
+                for (const optionLetter of ['A', 'B', 'C', 'D']) {
+                    const optionDiv = document.createElement('div');
+                    
+                    const optionLabel = document.createElement('label');
+                    optionLabel.className = 'block text-gray-700 mb-2';
+                    optionLabel.textContent = `Option ${optionLetter}`;
+                    
+                    const optionInputGroup = document.createElement('div');
+                    optionInputGroup.className = 'flex';
+                    
+                    const optionInput = document.createElement('input');
+                    optionInput.type = 'text';
+                    optionInput.className = 'option-text w-full px-4 py-2 border rounded-l-lg focus:ring-blue-500 focus:border-blue-500';
+                    optionInput.dataset.option = optionLetter;
+                    optionInput.value = question.options[optionLetter];
+                    
+                    const optionCorrectBtn = document.createElement('button');
+                    optionCorrectBtn.className = 'correct-option px-3 bg-gray-200 border rounded-r-lg hover:bg-gray-300';
+                    optionCorrectBtn.dataset.option = optionLetter;
+                    
+                    const correctIcon = document.createElement('i');
+                    correctIcon.className = question.correctAnswer === optionLetter ? 
+                        'fas fa-check text-green-600' : 'far fa-check-circle text-gray-500';
+                    
+                    optionCorrectBtn.appendChild(correctIcon);
+                    optionCorrectBtn.addEventListener('click', () => {
+                        setCorrectAnswer(questionItem, optionLetter);
+                    });
+                    
+                    optionInputGroup.appendChild(optionInput);
+                    optionInputGroup.appendChild(optionCorrectBtn);
+                    
+                    optionDiv.appendChild(optionLabel);
+                    optionDiv.appendChild(optionInputGroup);
+                    
+                    optionsGrid.appendChild(optionDiv);
+                }
+                
+                const explanationDiv = document.createElement('div');
+                
+                const explanationLabel = document.createElement('label');
+                explanationLabel.className = 'block text-gray-700 mb-2';
+                explanationLabel.textContent = 'Explanation (Optional)';
+                
+                const explanationInput = document.createElement('textarea');
+                explanationInput.className = 'explanation w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500';
+                explanationInput.rows = 2;
+                explanationInput.value = question.explanation || '';
+                
+                explanationDiv.appendChild(explanationLabel);
+                explanationDiv.appendChild(explanationInput);
+                
+                questionItem.appendChild(questionHeader);
+                questionItem.appendChild(questionTextArea);
+                questionItem.appendChild(optionsGrid);
+                questionItem.appendChild(explanationDiv);
+                
+                return questionItem;
+            }
+
+            // Set correct answer in admin
+            function setCorrectAnswer(questionItem, optionLetter) {
+                const correctOptionBtns = questionItem.querySelectorAll('.correct-option');
+                
+                correctOptionBtns.forEach(btn => {
+                    const icon = btn.querySelector('i');
+                    
+                    if (btn.dataset.option === optionLetter) {
+                        icon.className = 'fas fa-check text-green-600';
+                    } else {
+                        icon.className = 'far fa-check-circle text-gray-500';
+                    }
+                });
+            }
+
+            // Add new question in admin
+            function addNewQuestion() {
+                const newQuestionId = testData.questions.length > 0 ? 
+                    Math.max(...testData.questions.map(q => q.id)) + 1 : 1;
+                
+                const newQuestion = {
+                    id: newQuestionId,
+                    text: "New question text",
+                    options: {
+                        A: "Option A",
+                        B: "Option B",
+                        C: "Option C",
+                        D: "Option D"
+                    },
+                    correctAnswer: "A",
+                    explanation: ""
+                };
+                
+                testData.questions.push(newQuestion);
+                totalQuestionsAdmin.value = testData.questions.length;
+                
+                const questionItem = createQuestionElement(newQuestion, testData.questions.length);
+                questionsList.appendChild(questionItem);
+            }
+
+            // Delete question in admin
+            function deleteQuestion(questionId) {
+                testData.questions = testData.questions.filter(q => q.id !== questionId);
+                totalQuestionsAdmin.value = testData.questions.length;
+                renderAdminQuestions();
+            }
+
+            // Save test in admin
+            function saveTest() {
+                // Update test metadata
+                testData.title = testTitle.value;
+                testData.class = testClass.value;
+                testData.duration = parseInt(testDuration.value);
+                
+                // Update questions
+                const questionItems = questionsList.querySelectorAll('.question-item');
+                testData.questions = [];
+                
+                questionItems.forEach(item => {
+                    const questionId = parseInt(item.dataset.questionId);
+                    const questionText = item.querySelector('.question-text').value;
+                    
+                    const options = {};
+                    const optionInputs = item.querySelectorAll('.option-text');
+                    optionInputs.forEach(input => {
+                        options[input.dataset.option] = input.value;
+                    });
+                    
+                    const correctAnswerBtn = item.querySelector('.correct-option i.fa-check.text-green-600');
+                    const correctAnswer = correctAnswerBtn ? correctAnswerBtn.parentElement.dataset.option : 'A';
+                    
+                    const explanation = item.querySelector('.explanation').value;
+                    
+                    testData.questions.push({
+                        id: questionId,
+                        text: questionText,
+                        options: options,
+                        correctAnswer: correctAnswer,
+                        explanation: explanation
+                    });
+                });
+                
+                alert('Test saved successfully!');
+            }
+
+            // Create new test in admin
+            function newTest() {
+                if (confirm('Are you sure you want to create a new test? All unsaved changes will be lost.')) {
+                    testData = {
+                        title: "New Test",
+                        class: "",
+                        duration: 30,
+                        questions: []
+                    };
+                    
+                    // Reset form
+                    testTitle.value = testData.title;
+                    testClass.value = testData.class;
+                    testDuration.value = testData.duration;
+                    totalQuestionsAdmin.value = 0;
+                    questionsList.innerHTML = '';
+                }
+            }
+
+            // Event listeners - Student View
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    const optionLetter = option.dataset.option;
+                    studentState.answers[studentState.currentQuestion] = optionLetter;
+                    
+                    // Update UI
+                    options.forEach(opt => {
+                        opt.classList.remove('option-selected');
+                    });
+                    option.classList.add('option-selected');
+                    
+                    // Update question grid
+                    updateQuestionGrid();
+                });
+            });
+
+            prevQuestionBtn.addEventListener('click', () => {
+                if (studentState.currentQuestion > 0) {
+                    loadQuestion(studentState.currentQuestion - 1);
+                }
+            });
+
+            nextQuestionBtn.addEventListener('click', () => {
+                if (studentState.currentQuestion < testData.questions.length - 1) {
+                    loadQuestion(studentState.currentQuestion + 1);
+                }
+            });
+
+            clearSelectionBtn.addEventListener('click', () => {
+                delete studentState.answers[studentState.currentQuestion];
+                options.forEach(opt => {
+                    opt.classList.remove('option-selected');
+                });
+                updateQuestionGrid();
+            });
+
+            submitTestBtn.addEventListener('click', submitTest);
+
+            // Tab navigation
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.dataset.tab;
+                    
+                    // Update active tab
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Update active content
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(`${tabName}Tab`).classList.add('active');
+                    
+                    // Update review tab if needed
+                    if (tabName === 'review') {
+                        updateReviewTab();
+                    }
+                });
+            });
+
+            // Event listeners - Admin View
+            // View results button
+            document.getElementById('viewResults').addEventListener('click', function() {
+                document.getElementById('testTab').classList.remove('active');
+                document.getElementById('reviewTab').classList.remove('active');
+                document.getElementById('resultsTab').classList.add('active');
+                
+                // Update active tab
+                navTabs.forEach(tab => {
+                    if (tab.dataset.tab === 'results') {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+                
+                // Calculate and show results
+                submitTest();
+            });
+
+            // Admin mode with password protection
+            toggleModeBtn.addEventListener('click', function() {
+                if (!isAdmin) {
+                    document.getElementById('passwordPrompt').classList.remove('hidden');
+                } else {
+                    toggleAdminMode();
+                }
+            });
+
+            document.getElementById('confirmAuth').addEventListener('click', function() {
+                const password = document.getElementById('adminPassword').value;
+                if (password === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    document.getElementById('passwordPrompt').classList.add('hidden');
+                    toggleAdminMode();
+                } else {
+                    alert('Incorrect password. Only school administrators can access this mode.');
+                }
+            });
+
+            document.getElementById('cancelAuth').addEventListener('click', function() {
+                document.getElementById('passwordPrompt').classList.add('hidden');
+            });
+            addQuestionBtn.addEventListener('click', addNewQuestion);
+            saveTestBtn.addEventListener('click', saveTest);
+            newTestBtn.addEventListener('click', newTest);
+
+            // Initialize the test
+            initTest();
+        });
+    </script>
+</body>
+</html>
