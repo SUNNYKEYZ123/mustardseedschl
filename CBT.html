@@ -3,1096 +3,1089 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart CBT System</title>
+    <title>CBT Exam Application</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- React and ReactDOM CDNs -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel CDN for JSX transformation in browser (NOT for production) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Firebase CDNs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Expose Firebase modules to the global scope for the Babel script
+        window.firebase = { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where };
+    </script>
+
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles */
-        .question-card {
-            transition: all 0.3s ease;
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .question-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        /* Simple fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-        .timer {
-            animation: pulse 1s infinite alternate;
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes pulse {
-            from { opacity: 1; }
-            to { opacity: 0.7; }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
         }
-        .option-selected {
-            background-color: #3b82f6;
-            color: white;
-        }
-        .option-correct {
-            background-color: #10b981;
-            color: white;
-        }
-        .option-wrong {
-            background-color: #ef4444;
-            color: white;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .nav-tab {
-            cursor: pointer;
-        }
-        .nav-tab.active {
-            border-bottom: 3px solid #3b82f6;
-            color: #3b82f6;
+        .animate-fade-in-down {
+            animation: fadeInDown 0.8s ease-out forwards;
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Header -->
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <h1 class="text-3xl font-bold text-blue-600">Smart<span class="text-gray-800">CBT</span></h1>
-                <p class="text-gray-600">Computer Based Test Platform</p>
-            </div>
-            <div class="flex items-center space-x-4">
-                <button id="toggleMode" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                    <i class="fas fa-user-shield mr-2"></i>Admin Mode
-                </button>
-                <div id="userInfo" class="hidden">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                            <i class="fas fa-user text-blue-600"></i>
-                        </div>
-                        <span class="font-medium">Admin</span>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content Area -->
-        <main>
-            <!-- Student View -->
-            <div id="studentView">
-                <!-- Exam Info -->
-                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-800">Mathematics Assessment</h2>
-                            <p class="text-gray-600">Class: Senior Secondary 2</p>
-                        </div>
-                        <div class="mt-4 md:mt-0">
-                            <div class="flex items-center space-x-4">
-                                <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg flex items-center">
-                                    <i class="fas fa-clock mr-2"></i>
-                                    <span id="timer" class="font-bold">30:00</span>
-                                </div>
-                                <div class="bg-green-100 text-green-800 px-4 py-2 rounded-lg">
-                                    <span id="questionCounter">0</span>/<span id="totalQuestions">20</span> Questions
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Navigation Tabs -->
-                <div class="flex border-b mb-6">
-                    <div class="nav-tab active px-4 py-2 font-medium" data-tab="test">Test</div>
-                    <div class="nav-tab px-4 py-2 font-medium" data-tab="review">Review</div>
-                    <div class="nav-tab px-4 py-2 font-medium" data-tab="results">Results</div>
-                </div>
-
-                <!-- Tab Contents -->
-                <div class="tab-content active" id="testTab">
-                    <!-- Current Question -->
-                    <div class="bg-white rounded-xl shadow-md p-6 mb-6 question-card">
-                        <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-semibold text-gray-800">Question <span id="currentQuestionNumber">1</span></h3>
-                            <div class="flex space-x-2">
-                                <button class="p-2 text-gray-500 hover:text-blue-600">
-                                    <i class="fas fa-flag"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="mb-6">
-                            <p id="questionText" class="text-gray-700 text-lg">What is the value of π (pi) rounded to two decimal places?</p>
-                        </div>
-                        <div class="space-y-3">
-                            <div class="option p-4 border rounded-lg hover:bg-blue-50 cursor-pointer" data-option="A">
-                                <span class="font-medium mr-2">A.</span>
-                                <span>3.14</span>
-                            </div>
-                            <div class="option p-4 border rounded-lg hover:bg-blue-50 cursor-pointer" data-option="B">
-                                <span class="font-medium mr-2">B.</span>
-                                <span>3.16</span>
-                            </div>
-                            <div class="option p-4 border rounded-lg hover:bg-blue-50 cursor-pointer" data-option="C">
-                                <span class="font-medium mr-2">C.</span>
-                                <span>3.18</span>
-                            </div>
-                            <div class="option p-4 border rounded-lg hover:bg-blue-50 cursor-pointer" data-option="D">
-                                <span class="font-medium mr-2">D.</span>
-                                <span>3.12</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Navigation Buttons -->
-                    <div class="flex justify-between mt-6">
-                        <button id="prevQuestion" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition disabled:opacity-50" disabled>
-                            <i class="fas fa-arrow-left mr-2"></i>Previous
-                        </button>
-                        <div class="flex space-x-4">
-                            <button id="clearSelection" class="px-6 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition">
-                                <i class="fas fa-eraser mr-2"></i>Clear
-                            </button>
-                            <button id="nextQuestion" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                                Next<i class="fas fa-arrow-right ml-2"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Question Navigation Grid -->
-                    <div class="mt-8">
-                        <h4 class="text-lg font-medium mb-4 text-gray-700">Question Navigation</h4>
-                        <div id="questionGrid" class="grid grid-cols-5 md:grid-cols-10 gap-2">
-                            <!-- Generated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Review Tab -->
-                <div class="tab-content" id="reviewTab">
-                    <div class="bg-white rounded-xl shadow-md p-6">
-                        <h3 class="text-xl font-semibold mb-4 text-gray-800">Review Your Answers</h3>
-                        <div id="reviewQuestions" class="space-y-4">
-                            <!-- Generated by JavaScript -->
-                        </div>
-                        <div class="mt-6 flex justify-end">
-                            <button id="submitTest" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                                <i class="fas fa-paper-plane mr-2"></i>Submit Test
-                            </button>
-                            <button id="viewResults" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition ml-4">
-                                <i class="fas fa-chart-bar mr-2"></i>View Results
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Results Tab -->
-                <div class="tab-content" id="resultsTab">
-                    <div class="bg-white rounded-xl shadow-md p-6">
-                        <div class="text-center mb-8">
-                            <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-trophy text-4xl text-green-600"></i>
-                            </div>
-                            <h3 class="text-2xl font-bold text-gray-800">Test Completed!</h3>
-                            <p class="text-gray-600">Here's your performance summary</p>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div class="bg-blue-50 p-4 rounded-lg">
-                                <div class="text-blue-600 mb-2">
-                                    <i class="fas fa-check-circle text-2xl"></i>
-                                </div>
-                                <h4 class="font-medium text-gray-800">Correct Answers</h4>
-                                <p class="text-3xl font-bold text-blue-600"><span id="correctAnswers">0</span></p>
-                            </div>
-                            <div class="bg-red-50 p-4 rounded-lg">
-                                <div class="text-red-600 mb-2">
-                                    <i class="fas fa-times-circle text-2xl"></i>
-                                </div>
-                                <h4 class="font-medium text-gray-800">Wrong Answers</h4>
-                                <p class="text-3xl font-bold text-red-600"><span id="wrongAnswers">0</span></p>
-                            </div>
-                            <div class="bg-yellow-50 p-4 rounded-lg">
-                                <div class="text-yellow-600 mb-2">
-                                    <i class="fas fa-percentage text-2xl"></i>
-                                </div>
-                                <h4 class="font-medium text-gray-800">Score Percentage</h4>
-                                <p class="text-3xl font-bold text-yellow-600"><span id="scorePercentage">0</span>%</p>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-6">
-                            <h4 class="text-lg font-medium mb-4 text-gray-700">Detailed Results</h4>
-                            <div id="detailedResults" class="space-y-4">
-                                <!-- Generated by JavaScript -->
-                            </div>
-                        </div>
-                        
-                        <div class="flex justify-center">
-                            <button class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                                <i class="fas fa-download mr-2"></i>Download Results
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin View (Hidden by default) -->
-            <div id="passwordPrompt" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-                    <h3 class="text-xl font-semibold mb-4">Admin Authentication</h3>
-                    <input type="password" id="adminPassword" class="w-full px-4 py-2 border rounded-lg mb-4" placeholder="Enter admin password">
-                    <div class="flex justify-end space-x-3">
-                        <button id="cancelAuth" class="px-4 py-2 bg-gray-200 rounded-lg">Cancel</button>
-                        <button id="confirmAuth" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Continue</button>
-                    </div>
-                </div>
-            </div>
-            <div id="adminView" class="hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Test Management</h2>
-                    <div class="flex space-x-3">
-                        <button id="newTestBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                            <i class="fas fa-plus mr-2"></i>New Test
-                        </button>
-                        <button id="saveTestBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-save mr-2"></i>Save Test
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Test Configuration -->
-                <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                    <h3 class="text-xl font-semibold mb-4 text-gray-800">Test Configuration</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-gray-700 mb-2">Test Title</label>
-                            <input type="text" id="testTitle" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" value="Mathematics Assessment">
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 mb-2">Class/Group</label>
-                            <input type="text" id="testClass" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" value="Senior Secondary 2">
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 mb-2">Duration (minutes)</label>
-                            <input type="number" id="testDuration" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" value="30">
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 mb-2">Total Questions</label>
-                            <input type="number" id="totalQuestionsAdmin" class="w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" value="20" min="1">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Questions Management -->
-                <div class="bg-white rounded-xl shadow-md p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold text-gray-800">Questions</h3>
-                        <button id="addQuestionBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                            <i class="fas fa-plus mr-2"></i>Add Question
-                        </button>
-                    </div>
-                    
-                    <div id="questionsList" class="space-y-6">
-                        <!-- Question 1 -->
-                        <div class="question-item border rounded-lg p-4" data-question-id="1">
-                            <div class="flex justify-between items-start mb-3">
-                                <h4 class="font-medium text-gray-800">Question #1</h4>
-                                <div class="flex space-x-2">
-                                    <button class="p-2 text-gray-500 hover:text-red-600 delete-question">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <label class="block text-gray-700 mb-2">Question Text</label>
-                                <textarea class="question-text w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" rows="3">What is the value of π (pi) rounded to two decimal places?</textarea>
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label class="block text-gray-700 mb-2">Option A</label>
-                                    <div class="flex">
-                                        <input type="text" class="option-text w-full px-4 py-2 border rounded-l-lg focus:ring-blue-500 focus:border-blue-500" data-option="A" value="3.14">
-                                        <button class="correct-option px-3 bg-gray-200 border rounded-r-lg hover:bg-gray-300" data-option="A">
-                                            <i class="fas fa-check text-green-600"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 mb-2">Option B</label>
-                                    <div class="flex">
-                                        <input type="text" class="option-text w-full px-4 py-2 border rounded-l-lg focus:ring-blue-500 focus:border-blue-500" data-option="B" value="3.16">
-                                        <button class="correct-option px-3 bg-gray-200 border rounded-r-lg hover:bg-gray-300" data-option="B">
-                                            <i class="far fa-check-circle text-gray-500"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 mb-2">Option C</label>
-                                    <div class="flex">
-                                        <input type="text" class="option-text w-full px-4 py-2 border rounded-l-lg focus:ring-blue-500 focus:border-blue-500" data-option="C" value="3.18">
-                                        <button class="correct-option px-3 bg-gray-200 border rounded-r-lg hover:bg-gray-300" data-option="C">
-                                            <i class="far fa-check-circle text-gray-500"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 mb-2">Option D</label>
-                                    <div class="flex">
-                                        <input type="text" class="option-text w-full px-4 py-2 border rounded-l-lg focus:ring-blue-500 focus:border-blue-500" data-option="D" value="3.12">
-                                        <button class="correct-option px-3 bg-gray-200 border rounded-r-lg hover:bg-gray-300" data-option="D">
-                                            <i class="far fa-check-circle text-gray-500"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 mb-2">Explanation (Optional)</label>
-                                <textarea class="explanation w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500" rows="2">π (pi) is a mathematical constant representing the ratio of a circle's circumference to its diameter. Its approximate value is 3.14159, which rounds to 3.14 to two decimal places.</textarea>
-                            </div>
-                        </div>
-                        
-                        <!-- More questions will be added here by JavaScript -->
-                    </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-gray-600">
-            <p>© 2023 SmartCBT. All rights reserved.</p>
-        </footer>
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+        <!-- Your React app will render here -->
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Sample test data
-            let testData = {
-                title: "Mathematics Assessment",
-                class: "Senior Secondary 2",
-                duration: 30, // minutes
-                questions: [
-                    {
-                        id: 1,
-                        text: "What is the value of π (pi) rounded to two decimal places?",
-                        options: {
-                            A: "3.14",
-                            B: "3.16",
-                            C: "3.18",
-                            D: "3.12"
-                        },
-                        correctAnswer: "A",
-                        explanation: "π (pi) is a mathematical constant representing the ratio of a circle's circumference to its diameter. Its approximate value is 3.14159, which rounds to 3.14 to two decimal places."
-                    },
-                    {
-                        id: 2,
-                        text: "What is the square root of 144?",
-                        options: {
-                            A: "11",
-                            B: "12",
-                            C: "13",
-                            D: "14"
-                        },
-                        correctAnswer: "B",
-                        explanation: "12 × 12 = 144, so the square root of 144 is 12."
-                    },
-                    {
-                        id: 3,
-                        text: "Solve for x: 2x + 5 = 15",
-                        options: {
-                            A: "5",
-                            B: "7",
-                            C: "10",
-                            D: "15"
-                        },
-                        correctAnswer: "A",
-                        explanation: "Subtract 5 from both sides: 2x = 10. Then divide both sides by 2: x = 5."
-                    }
-                ]
+    <script type="text/babel">
+        // Access Firebase modules from the global scope
+        const { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where } = window.firebase;
+
+        // Create a context for Firebase services and user data
+        const AppContext = React.createContext(null);
+
+        // Helper to map option index to letter (A, B, C, D)
+        const optionLetters = ['A', 'B', 'C', 'D'];
+
+        // Admin Password (hardcoded for this example as per request)
+        const ADMIN_PASSWORD = 'SUNNYKEYZ2025@';
+
+        // Modal Component for alerts and confirmations
+        const Modal = ({ message, onConfirm, onCancel, showCancel = false }) => {
+          if (!message) return null;
+
+          return (
+            <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full border border-gray-200">
+                <p className="text-gray-800 text-lg font-semibold mb-6 text-center">{message}</p>
+                <div className="flex justify-center space-x-4">
+                  {showCancel && (
+                    <button
+                      onClick={onCancel}
+                      className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition duration-200 ease-in-out"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                  <button
+                    onClick={onConfirm}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        // Home Page Component
+        const HomePage = () => {
+          const { setCurrentPage, userId } = React.useContext(AppContext);
+
+          return (
+            <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+              <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-lg w-full transform transition-all duration-300 hover:scale-105 border border-blue-200">
+                <h1 className="text-4xl font-extrabold text-gray-800 mb-6 animate-fade-in-down">
+                  Welcome to CBT Exam App
+                </h1>
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed animate-fade-in">
+                  This is a computer-based testing platform for your school.
+                </p>
+                <div className="space-y-4">
+                  <button
+                    onClick={() => setCurrentPage('admin')}
+                    className="w-full px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Login as Admin
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage('exam')}
+                    className="w-full px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Take an Exam
+                  </button>
+                </div>
+                <p className="text-sm text-gray-500 mt-8">
+                  Your User ID: <span className="font-mono text-gray-700 break-all">{userId}</span>
+                </p>
+              </div>
+            </div>
+          );
+        };
+
+        // Admin Page Component
+        const AdminPage = () => {
+          const { db, appId, showModal, setCurrentPage } = React.useContext(AppContext);
+          const [adminPasswordInput, setAdminPasswordInput] = React.useState('');
+          const [isAdminAuthenticated, setIsAdminAuthenticated] = React.useState(false);
+
+          const [questionText, setQuestionText] = React.useState('');
+          const [options, setOptions] = React.useState(['', '', '', '']);
+          const [correctOptionIndex, setCorrectOptionIndex] = React.useState(0);
+          const [questions, setQuestions] = React.useState([]);
+          const [loading, setLoading] = React.useState(true);
+          const [bulkQuestionInput, setBulkQuestionInput] = React.useState('');
+          const [aiQuestionTopic, setAiQuestionTopic] = React.useState('');
+          const [isGeneratingAiQuestions, setIsGeneratingAiQuestions] = React.useState(false);
+          const [studentScores, setStudentScores] = React.useState([]);
+          const [loadingScores, setLoadingScores] = React.useState(true);
+
+
+          // Authenticate admin
+          const handleAdminLogin = () => {
+            if (adminPasswordInput === ADMIN_PASSWORD) {
+              setIsAdminAuthenticated(true);
+              setAdminPasswordInput('');
+            } else {
+              showModal("Incorrect password. Please try again.", () => {});
+            }
+          };
+
+          // Fetch questions from Firestore in real-time
+          React.useEffect(() => {
+            if (!db || !appId || !isAdminAuthenticated) return;
+
+            const questionsCollectionRef = collection(db, `artifacts/${appId}/public/data/questions`);
+            const unsubscribe = onSnapshot(questionsCollectionRef, (snapshot) => {
+              const fetchedQuestions = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+              }));
+              setQuestions(fetchedQuestions);
+              setLoading(false);
+            }, (error) => {
+              console.error("Error fetching questions:", error);
+              showModal("An error occurred while fetching questions. Please try again.", () => {});
+              setLoading(false);
+            });
+
+            return () => unsubscribe();
+          }, [db, appId, isAdminAuthenticated, showModal]);
+
+          // Fetch all student scores
+          React.useEffect(() => {
+            if (!db || !appId || !isAdminAuthenticated) return;
+
+            const fetchAllStudentScores = async () => {
+              setLoadingScores(true);
+              const allScores = [];
+              try {
+                const usersCollectionRef = collection(db, `artifacts/${appId}/users`);
+                const usersSnapshot = await getDocs(usersCollectionRef);
+
+                for (const userDoc of usersSnapshot.docs) {
+                  const userId = userDoc.id;
+                  const examsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/exams`);
+                  const examsSnapshot = await getDocs(examsCollectionRef);
+
+                  examsSnapshot.docs.forEach(examDoc => {
+                    allScores.push({
+                      id: examDoc.id,
+                      firebaseUid: userId,
+                      ...examDoc.data()
+                    });
+                  });
+                }
+                allScores.sort((a, b) => (b.examDate?.seconds || 0) - (a.examDate?.seconds || 0));
+                setStudentScores(allScores);
+              } catch (error) {
+                console.error("Error fetching all student scores:", error);
+                showModal("An error occurred while fetching student scores. Please ensure your Firebase rules allow admin read access.", () => {});
+              } finally {
+                setLoadingScores(false);
+              }
             };
 
-            // Student test state
-            let studentState = {
-                currentQuestion: 0,
-                answers: {},
-                timeLeft: testData.duration * 60, // in seconds
-                timerInterval: null,
-                testSubmitted: false
-            };
+            fetchAllStudentScores();
 
-            // DOM Elements - Student View
-            const studentView = document.getElementById('studentView');
-            const adminView = document.getElementById('adminView');
-            const toggleModeBtn = document.getElementById('toggleMode');
-            const userInfo = document.getElementById('userInfo');
-            const timerElement = document.getElementById('timer');
-            const questionCounter = document.getElementById('questionCounter');
-            const totalQuestionsElement = document.getElementById('totalQuestions');
-            const currentQuestionNumber = document.getElementById('currentQuestionNumber');
-            const questionText = document.getElementById('questionText');
-            const options = document.querySelectorAll('.option');
-            const prevQuestionBtn = document.getElementById('prevQuestion');
-            const nextQuestionBtn = document.getElementById('nextQuestion');
-            const clearSelectionBtn = document.getElementById('clearSelection');
-            const questionGrid = document.getElementById('questionGrid');
-            const reviewQuestions = document.getElementById('reviewQuestions');
-            const submitTestBtn = document.getElementById('submitTest');
-            const correctAnswersElement = document.getElementById('correctAnswers');
-            const wrongAnswersElement = document.getElementById('wrongAnswers');
-            const scorePercentageElement = document.getElementById('scorePercentage');
-            const detailedResults = document.getElementById('detailedResults');
-            const tabContents = document.querySelectorAll('.tab-content');
-            const navTabs = document.querySelectorAll('.nav-tab');
+          }, [db, appId, isAdminAuthenticated, showModal]);
 
-            // DOM Elements - Admin View
-            const testTitle = document.getElementById('testTitle');
-            const testClass = document.getElementById('testClass');
-            const testDuration = document.getElementById('testDuration');
-            const totalQuestionsAdmin = document.getElementById('totalQuestionsAdmin');
-            const questionsList = document.getElementById('questionsList');
-            const addQuestionBtn = document.getElementById('addQuestionBtn');
-            const newTestBtn = document.getElementById('newTestBtn');
-            const saveTestBtn = document.getElementById('saveTestBtn');
 
-            // Initialize the test
-            function initTest() {
-                // Set total questions
-                totalQuestionsElement.textContent = testData.questions.length;
-                totalQuestionsAdmin.value = testData.questions.length;
-                
-                // Initialize question navigation grid
-                updateQuestionGrid();
-                
-                // Load first question
-                loadQuestion(0);
-                
-                // Start timer
-                startTimer();
+          // Handle adding a new question
+          const handleAddQuestion = async () => {
+            if (!questionText.trim() || options.some(opt => !opt.trim())) {
+              showModal("Please fill in all question and option fields.", () => {});
+              return;
             }
 
-            // Load a question
-            function loadQuestion(index) {
-                if (index < 0 || index >= testData.questions.length) return;
-                
-                const question = testData.questions[index];
-                studentState.currentQuestion = index;
-                
-                // Update UI
-                currentQuestionNumber.textContent = index + 1;
-                questionText.textContent = question.text;
-                
-                // Update options
-                options.forEach(option => {
-                    const optionLetter = option.dataset.option;
-                    option.querySelector('span:last-child').textContent = question.options[optionLetter];
-                    
-                    // Remove all classes
-                    option.classList.remove('option-selected', 'option-correct', 'option-wrong');
-                    
-                    // Check if this option was selected
-                    if (studentState.answers[index] === optionLetter) {
-                        option.classList.add('option-selected');
-                    }
-                });
-                
-                // Update navigation buttons
-                prevQuestionBtn.disabled = index === 0;
-                nextQuestionBtn.disabled = index === testData.questions.length - 1;
-                
-                // Change next button to submit on last question
-                if (index === testData.questions.length - 1) {
-                    nextQuestionBtn.innerHTML = 'Submit<i class="fas fa-paper-plane ml-2"></i>';
-                    nextQuestionBtn.id = 'submitBtn';
-                    nextQuestionBtn.addEventListener('click', submitTest);
+            try {
+              const questionsCollectionRef = collection(db, `artifacts/${appId}/public/data/questions`);
+              await addDoc(questionsCollectionRef, {
+                questionText: questionText.trim(),
+                options: options.map(opt => opt.trim()),
+                correctOptionIndex: parseInt(correctOptionIndex),
+                createdAt: new Date()
+              });
+              setQuestionText('');
+              setOptions(['', '', '', '']);
+              setCorrectOptionIndex(0);
+              showModal("Question added successfully!", () => {});
+            } catch (e) {
+              console.error("Error adding document: ", e);
+              showModal("An error occurred while adding the question. Please try again.", () => {});
+            }
+          };
+
+          // Handle deleting a question
+          const handleDeleteQuestion = async (id) => {
+            showModal("Are you sure you want to delete this question?", async () => {
+              try {
+                const questionDocRef = doc(db, `artifacts/${appId}/public/data/questions`, id);
+                await deleteDoc(questionDocRef);
+                showModal("Question deleted successfully!", () => {});
+              } catch (e) {
+                console.error("Error deleting document: ", e);
+                showModal("An error occurred while deleting the question. Please try again.", () => {});
+              }
+            }, true);
+          };
+
+          // Handle option change for single question add
+          const handleOptionChange = (index, value) => {
+            const newOptions = [...options];
+            newOptions[index] = value;
+            setOptions(newOptions);
+          };
+
+          // Parse bulk questions from pasted text
+          const parseBulkQuestions = (text) => {
+            const questionBlocks = text.split(/\n\s*\n/).filter(block => block.trim() !== '');
+            const parsedQuestions = [];
+            let errors = [];
+
+            questionBlocks.forEach((block, blockIndex) => {
+              const lines = block.split('\n').map(line => line.trim()).filter(line => line !== '');
+              if (lines.length < 6) {
+                errors.push(`Block ${blockIndex + 1}: Insufficient lines. Expected at least 6, got ${lines.length}.`);
+                return;
+              }
+
+              const questionText = lines[0];
+              const currentOptions = [];
+              let correctIndex = -1;
+
+              for (let i = 1; i <= 4; i++) {
+                const optionLine = lines[i];
+                const match = optionLine.match(/^([A-D])\.\s*(.*)/);
+                if (match) {
+                  currentOptions.push(match[2]);
                 } else {
-                    nextQuestionBtn.innerHTML = 'Next<i class="fas fa-arrow-right ml-2"></i>';
-                    nextQuestionBtn.id = 'nextQuestion';
-                    nextQuestionBtn.addEventListener('click', () => {
-                        loadQuestion(studentState.currentQuestion + 1);
-                    });
+                  errors.push(`Block ${blockIndex + 1}: Option ${optionLetters[i-1]} format incorrect: "${optionLine}"`);
+                  return;
                 }
-                
-                // Update question counter
-                questionCounter.textContent = index + 1;
-                
-                // Update active question in grid
-                updateActiveQuestionInGrid();
-            }
+              }
 
-            // Start the timer
-            function startTimer() {
-                if (studentState.timerInterval) {
-                    clearInterval(studentState.timerInterval);
+              const correctLine = lines[5];
+              const correctMatch = correctLine.match(/^Correct:\s*([A-D])/i);
+              if (correctMatch) {
+                correctIndex = optionLetters.indexOf(correctMatch[1].toUpperCase());
+                if (correctIndex === -1) {
+                  errors.push(`Block ${blockIndex + 1}: Invalid correct option letter: "${correctMatch[1]}". Must be A, B, C, or D.`);
+                  return;
                 }
-                
-                updateTimerDisplay();
-                
-                studentState.timerInterval = setInterval(() => {
-                    studentState.timeLeft--;
-                    updateTimerDisplay();
-                    
-                    if (studentState.timeLeft <= 0) {
-                        clearInterval(studentState.timerInterval);
-                        submitTest();
-                    }
-                }, 1000);
+              } else {
+                errors.push(`Block ${blockIndex + 1}: Correct answer line format incorrect: "${correctLine}"`);
+                return;
+              }
+
+              if (currentOptions.length === 4 && correctIndex !== -1) {
+                parsedQuestions.push({
+                  questionText,
+                  options: currentOptions,
+                  correctOptionIndex: correctIndex,
+                  createdAt: new Date()
+                });
+              } else {
+                errors.push(`Block ${blockIndex + 1}: Failed to parse all parts correctly.`);
+              }
+            });
+
+            return { parsedQuestions, errors };
+          };
+
+          // Handle bulk adding questions
+          const handleBulkAddQuestions = async () => {
+            if (!bulkQuestionInput.trim()) {
+              showModal("Please paste questions into the text area.", () => {});
+              return;
             }
 
-            // Update timer display
-            function updateTimerDisplay() {
-                const minutes = Math.floor(studentState.timeLeft / 60);
-                const seconds = studentState.timeLeft % 60;
-                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                // Change color when time is running low
-                if (studentState.timeLeft <= 300) { // 5 minutes
-                    timerElement.parentElement.classList.remove('bg-blue-100', 'text-blue-800');
-                    timerElement.parentElement.classList.add('bg-red-100', 'text-red-800');
+            const { parsedQuestions, errors } = parseBulkQuestions(bulkQuestionInput);
+
+            if (errors.length > 0) {
+              showModal(`Errors found in bulk input:\n${errors.join('\n')}`, () => {});
+              return;
+            }
+            if (parsedQuestions.length === 0) {
+              showModal("No valid questions found in the pasted text. Please check the format.", () => {});
+              return;
+            }
+
+            showModal(`Are you sure you want to add ${parsedQuestions.length} questions?`, async () => {
+              try {
+                const questionsCollectionRef = collection(db, `artifacts/${appId}/public/data/questions`);
+                const addPromises = parsedQuestions.map(q => addDoc(questionsCollectionRef, q));
+                await Promise.all(addPromises);
+                setBulkQuestionInput('');
+                showModal(`${parsedQuestions.length} questions added successfully!`, () => {});
+              } catch (e) {
+                console.error("Error adding bulk documents: ", e);
+                showModal("An error occurred while adding bulk questions. Please try again.", () => {});
+              }
+            }, true);
+          };
+
+          // Handle AI question generation
+          const handleGenerateAiQuestions = async () => {
+            if (!aiQuestionTopic.trim()) {
+              showModal("Please enter a topic for AI question generation.", () => {});
+              return;
+            }
+
+            setIsGeneratingAiQuestions(true);
+            setBulkQuestionInput('');
+
+            try {
+              const prompt = `Generate 3 multiple-choice questions about "${aiQuestionTopic}". Each question must have exactly 4 options (A, B, C, D) and specify the correct option letter. Provide the output as a JSON array of objects, where each object has 'questionText' (string), 'options' (array of 4 strings), and 'correctOptionLetter' (string: 'A', 'B', 'C', or 'D').`;
+
+              let chatHistory = [];
+              chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+              const payload = {
+                contents: chatHistory,
+                generationConfig: {
+                  responseMimeType: "application/json",
+                  responseSchema: {
+                    type: "ARRAY",
+                    items: {
+                      type: "OBJECT",
+                      properties: {
+                        "questionText": { "type": "STRING" },
+                        "options": {
+                          "type": "ARRAY",
+                          "items": { "type": "STRING" },
+                          "minItems": 4,
+                          "maxItems": 4
+                        },
+                        "correctOptionLetter": { "type": "STRING", "enum": ["A", "B", "C", "D"] }
+                      },
+                      "required": ["questionText", "options", "correctOptionLetter"]
+                    }
+                  }
                 }
+              };
+
+              const apiKey = "";
+              const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+              const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+
+              const result = await response.json();
+
+              if (result.candidates && result.candidates.length > 0 &&
+                  result.candidates[0].content && result.candidates[0].content.parts &&
+                  result.candidates[0].content.parts.length > 0) {
+                const jsonString = result.candidates[0].content.parts[0].text;
+                const generatedQuestions = JSON.parse(jsonString);
+
+                let formattedText = '';
+                generatedQuestions.forEach(q => {
+                  formattedText += `${q.questionText}\n`;
+                  q.options.forEach((opt, idx) => {
+                    formattedText += `${optionLetters[idx]}. ${opt}\n`;
+                  });
+                  formattedText += `Correct: ${q.correctOptionLetter}\n\n`;
+                });
+                setBulkQuestionInput(formattedText);
+                showModal("AI questions generated! Review them in the 'Bulk Upload Questions' section and click 'Upload Questions' to add them.", () => {});
+
+              } else {
+                showModal("Failed to generate questions from AI. Please try a different topic or try again.", () => {});
+              }
+
+            } catch (error) {
+              console.error("Error generating AI questions:", error);
+              showModal("An error occurred during AI question generation. Please check your network or try again.", () => {});
+            } finally {
+              setIsGeneratingAiQuestions(false);
+            }
+          };
+
+
+          if (!isAdminAuthenticated) {
+            return (
+              <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4">
+                <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-purple-200">
+                  <h2 className="text-3xl font-extrabold text-gray-800 mb-6">Admin Login</h2>
+                  <p className="text-gray-600 mb-6">Enter the admin password to proceed.</p>
+                  <input
+                    type="password"
+                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-purple-400 focus:border-transparent transition duration-200 ease-in-out"
+                    value={adminPasswordInput}
+                    onChange={(e) => setAdminPasswordInput(e.target.value)}
+                    placeholder="Enter admin password"
+                  />
+                  <button
+                    onClick={handleAdminLogin}
+                    className="w-full px-6 py-3 bg-purple-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Login
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 sm:p-6 lg:p-8">
+              <div className="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-2xl border border-purple-200">
+                <div className="flex justify-between items-center mb-8">
+                  <h2 className="text-3xl font-extrabold text-gray-800 text-center flex-grow">
+                    Admin Panel - Add/Manage Questions & Scores
+                  </h2>
+                  <button
+                    onClick={() => setCurrentPage('home')}
+                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition duration-200 ease-in-out text-sm"
+                  >
+                    Back to Home
+                  </button>
+                </div>
+
+                {/* Add Single Question Form */}
+                <div className="mb-12 p-6 bg-gray-50 rounded-xl shadow-inner border border-gray-200">
+                  <h3 className="text-2xl font-bold text-gray-700 mb-6">Add New Question</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="questionText" className="block text-gray-700 text-sm font-semibold mb-2">
+                        Question Text:
+                      </label>
+                      <textarea
+                        id="questionText"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent transition duration-200 ease-in-out resize-y min-h-[80px]"
+                        value={questionText}
+                        onChange={(e) => setQuestionText(e.target.value)}
+                        placeholder="Enter your question here..."
+                      ></textarea>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {options.map((option, index) => (
+                        <div key={index}>
+                          <label htmlFor={`option-${index}`} className="block text-gray-700 text-sm font-semibold mb-2">
+                            Option {optionLetters[index]}:
+                          </label>
+                          <input
+                            type="text"
+                            id={`option-${index}`}
+                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent transition duration-200 ease-in-out"
+                            value={option}
+                            onChange={(e) => handleOptionChange(index, e.target.value)}
+                            placeholder={`Enter option ${optionLetters[index]}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <label htmlFor="correctOption" className="block text-gray-700 text-sm font-semibold mb-2">
+                        Correct Option:
+                      </label>
+                      <select
+                        id="correctOption"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent transition duration-200 ease-in-out bg-white"
+                        value={correctOptionIndex}
+                        onChange={(e) => setCorrectOptionIndex(e.target.value)}
+                      >
+                        {options.map((_, index) => (
+                          <option key={index} value={index}>
+                            Option {optionLetters[index]}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button
+                      onClick={handleAddQuestion}
+                      className="w-full px-6 py-3 bg-purple-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
+                    >
+                      Add Question
+                    </button>
+                  </div>
+                </div>
+
+                {/* AI Question Generation Section ✨ */}
+                <div className="mb-12 p-6 bg-blue-50 rounded-xl shadow-inner border border-blue-200">
+                  <h3 className="text-2xl font-bold text-gray-700 mb-6">Generate Questions with AI ✨</h3>
+                  <p className="text-gray-600 mb-4 text-sm">
+                    Enter a topic, and AI will generate multiple-choice questions for you.
+                  </p>
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out"
+                    value={aiQuestionTopic}
+                    onChange={(e) => setAiQuestionTopic(e.target.value)}
+                    placeholder="e.g., 'History of Nigeria', 'Basic Algebra'"
+                  />
+                  <button
+                    onClick={handleGenerateAiQuestions}
+                    disabled={isGeneratingAiQuestions}
+                    className={`w-full px-6 py-3 text-white text-lg font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105
+                      ${isGeneratingAiQuestions ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                  >
+                    {isGeneratingAiQuestions ? 'Generating...' : 'Generate Questions'}
+                  </button>
+                  {isGeneratingAiQuestions && (
+                    <p className="text-center text-blue-600 mt-4">AI is working, please wait...</p>
+                  )}
+                </div>
+
+
+                {/* Bulk Upload Section */}
+                <div className="mb-12 p-6 bg-gray-50 rounded-xl shadow-inner border border-gray-200">
+                  <h3 className="text-2xl font-bold text-gray-700 mb-6">Bulk Upload Questions</h3>
+                  <div className="text-gray-600 mb-4 text-sm">
+                    Paste multiple questions here. Use the format:
+                    <pre className="bg-gray-100 p-3 rounded-md mt-2 text-xs overflow-auto">
+                      Question text?<br/>
+                      A. Option A<br/>
+                      B. Option B<br/>
+                      C. Option C<br/>
+                      D. Option D<br/>
+                      Correct: B<br/>
+                      <br/>
+                      Question text 2?<br/>
+                      A. Option A for Q2<br/>
+                      ...
+                    </pre>
+                  </div>
+                  <textarea
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent transition duration-200 ease-in-out resize-y min-h-[150px]"
+                    value={bulkQuestionInput}
+                    onChange={(e) => setBulkQuestionInput(e.target.value)}
+                    placeholder="Paste your questions here in the specified format..."
+                  ></textarea>
+                  <button
+                    onClick={handleBulkAddQuestions}
+                    className="w-full mt-4 px-6 py-3 bg-indigo-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Upload Questions
+                  </button>
+                </div>
+
+
+                {/* Existing Questions List */}
+                <div className="p-6 bg-white rounded-xl shadow-inner border border-gray-200">
+                  <h3 className="text-2xl font-bold text-gray-700 mb-6">Existing Questions</h3>
+                  {loading ? (
+                    <p className="text-center text-gray-500">Loading questions...</p>
+                  ) : questions.length === 0 ? (
+                    <p className="text-center text-gray-500">No questions added yet.</p>
+                  ) : (
+                    <ul className="space-y-6">
+                      {questions.map((q) => (
+                        <li key={q.id} className="p-4 bg-purple-50 rounded-lg shadow-sm border border-purple-100">
+                          <p className="font-semibold text-gray-800 mb-2">{q.questionText}</p>
+                          <ul className="list-disc list-inside text-gray-700 mb-3">
+                            {q.options.map((opt, idx) => (
+                              <li key={idx} className={idx === q.correctOptionIndex ? 'font-bold text-green-700' : ''}>
+                                {optionLetters[idx]}. {opt} {idx === q.correctOptionIndex && '(Correct)'}
+                              </li>
+                            ))}
+                          </ul>
+                          <button
+                            onClick={() => handleDeleteQuestion(q.id)}
+                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-200 ease-in-out text-sm"
+                          >
+                            Delete
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Student Scores Dashboard Section */}
+                <div className="mt-12 p-6 bg-green-50 rounded-xl shadow-inner border border-green-200">
+                  <h3 className="text-2xl font-bold text-gray-700 mb-6">Student Exam Scores</h3>
+                  {loadingScores ? (
+                    <p className="text-center text-gray-500">Loading student scores...</p>
+                  ) : studentScores.length === 0 ? (
+                    <p className="text-center text-gray-500">No student exam scores found yet.</p>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full bg-white rounded-lg shadow-md">
+                        <thead>
+                          <tr className="bg-green-100 text-gray-700 uppercase text-sm leading-normal">
+                            <th className="py-3 px-6 text-left">Student Name</th>
+                            <th className="py-3 px-6 text-left">Student ID</th>
+                            <th className="py-3 px-6 text-left">Score</th>
+                            <th className="py-3 px-6 text-left">Total Questions</th>
+                            <th className="py-3 px-6 text-left">Date</th>
+                          </tr>
+                        </thead>
+                        <tbody className="text-gray-600 text-sm font-light">
+                          {studentScores.map((score, index) => (
+                            <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
+                              <td className="py-3 px-6 text-left whitespace-nowrap">{score.studentName}</td>
+                              <td className="py-3 px-6 text-left">{score.studentId}</td>
+                              <td className="py-3 px-6 text-left font-medium">{score.score}</td>
+                              <td className="py-3 px-6 text-left">{score.totalQuestions}</td>
+                              <td className="py-3 px-6 text-left">
+                                {score.examDate ? new Date(score.examDate.seconds * 1000).toLocaleString() : 'N/A'}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        // Student Exam Page Component
+        const StudentExamPage = () => {
+          const { db, appId, showModal, setCurrentPage, userId } = React.useContext(AppContext);
+          const [studentIdInput, setStudentIdInput] = React.useState('');
+          const [studentNameInput, setStudentNameInput] = React.useState('');
+          const [currentStudentId, setCurrentStudentId] = React.useState('');
+          const [currentStudentName, setCurrentStudentName] = React.useState('');
+
+          const [questions, setQuestions] = React.useState([]);
+          const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
+          const [selectedAnswers, setSelectedAnswers] = React.useState({});
+          const [examSubmitted, setExamSubmitted] = React.useState(false);
+          const [score, setScore] = React.useState(0);
+          const [loadingQuestions, setLoadingQuestions] = React.useState(true);
+          const [examAlreadyTaken, setExamAlreadyTaken] = React.useState(false);
+
+
+          // Fetch questions from Firestore in real-time
+          React.useEffect(() => {
+            if (!db || !appId) return;
+
+            const questionsCollectionRef = collection(db, `artifacts/${appId}/public/data/questions`);
+            const unsubscribe = onSnapshot(questionsCollectionRef, (snapshot) => {
+              const fetchedQuestions = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+              }));
+              const shuffledQuestions = fetchedQuestions.sort(() => Math.random() - 0.5);
+              setQuestions(shuffledQuestions);
+              setLoadingQuestions(false);
+            }, (error) => {
+              console.error("Error fetching questions for exam:", error);
+              showModal("An error occurred while fetching exam questions.", () => {});
+              setLoadingQuestions(false);
+            });
+
+            return () => unsubscribe();
+          }, [db, appId, showModal]);
+
+          // Handle student ID and Name submission
+          const handleStudentLogin = async () => {
+            if (!studentIdInput.trim() || !studentNameInput.trim()) {
+              showModal("Please enter both your Student ID and Name to start the exam.", () => {});
+              return;
+            }
+            if (!userId || userId === 'loading...') {
+              showModal("Firebase authentication not ready. Please wait a moment and try again.", () => {});
+              return;
             }
 
-            // Update question navigation grid
-            function updateQuestionGrid() {
-                questionGrid.innerHTML = '';
-                
-                testData.questions.forEach((question, index) => {
-                    const btn = document.createElement('button');
-                    btn.className = `w-10 h-10 rounded-full flex items-center justify-center ${
-                        index === studentState.currentQuestion ? 'bg-blue-600 text-white' : 
-                        studentState.answers[index] ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-                    }`;
-                    btn.textContent = index + 1;
-                    btn.dataset.questionIndex = index;
-                    
-                    btn.addEventListener('click', () => {
-                        loadQuestion(index);
-                        document.getElementById('testTab').classList.add('active');
-                        document.getElementById('reviewTab').classList.remove('active');
-                        document.getElementById('resultsTab').classList.remove('active');
-                        
-                        // Update active tab
-                        navTabs.forEach(tab => {
-                            if (tab.dataset.tab === 'test') {
-                                tab.classList.add('active');
-                            } else {
-                                tab.classList.remove('active');
-                            }
-                        });
-                    });
-                    
-                    questionGrid.appendChild(btn);
-                });
+            try {
+              const studentExamsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/exams`);
+              const q = query(studentExamsCollectionRef, where('studentId', '==', studentIdInput.trim()));
+              const querySnapshot = await getDocs(q);
+
+              if (!querySnapshot.empty) {
+                setExamAlreadyTaken(true);
+                showModal("You have already completed an exam with this ID. You cannot retake the exam.", () => {});
+                return;
+              }
+            } catch (e) {
+              console.error("Error checking for previous exams:", e);
+              showModal("An error occurred while checking for previous exams. Please try again.", () => {});
+              return;
             }
 
-            // Update active question in grid
-            function updateActiveQuestionInGrid() {
-                const questionButtons = questionGrid.querySelectorAll('button');
-                
-                questionButtons.forEach((btn, index) => {
-                    if (index === studentState.currentQuestion) {
-                        btn.classList.remove('bg-blue-100', 'bg-gray-100');
-                        btn.classList.add('bg-blue-600', 'text-white');
-                    } else {
-                        btn.classList.remove('bg-blue-600', 'text-white');
-                        btn.classList.add(studentState.answers[index] ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800');
-                    }
-                });
+            setCurrentStudentId(studentIdInput.trim());
+            setCurrentStudentName(studentNameInput.trim());
+            setExamSubmitted(false);
+            setSelectedAnswers({});
+            setScore(0);
+            setCurrentQuestionIndex(0);
+            setExamAlreadyTaken(false);
+          };
+
+          // Handle selecting an answer option
+          const handleOptionSelect = (questionId, optionIndex) => {
+            setSelectedAnswers(prev => ({
+              ...prev,
+              [questionId]: optionIndex
+            }));
+          };
+
+          // Navigate to the next question
+          const handleNextQuestion = () => {
+            if (currentQuestionIndex < questions.length - 1) {
+              setCurrentQuestionIndex(prev => prev + 1);
             }
+          };
 
-            // Submit the test
-            function submitTest() {
-                studentState.testSubmitted = true;
-                
-                // Calculate results
-                let correct = 0;
-                let wrong = 0;
-                
-                testData.questions.forEach((question, index) => {
-                    if (studentState.answers[index] === question.correctAnswer) {
-                        correct++;
-                    } else if (studentState.answers[index]) {
-                        wrong++;
-                    }
-                });
-                
-                const percentage = Math.round((correct / testData.questions.length) * 100);
-                
-                // Update results display
-                correctAnswersElement.textContent = correct;
-                wrongAnswersElement.textContent = wrong;
-                scorePercentageElement.textContent = percentage;
-                
-                // Show detailed results
-                detailedResults.innerHTML = '';
-                
-                testData.questions.forEach((question, index) => {
-                    const resultItem = document.createElement('div');
-                    resultItem.className = 'border rounded-lg p-4';
-                    
-                    const questionText = document.createElement('p');
-                    questionText.className = 'font-medium mb-2';
-                    questionText.textContent = `Q${index + 1}: ${question.text}`;
-                    
-                    const answerStatus = document.createElement('p');
-                    answerStatus.className = 'mb-2';
-                    
-                    if (studentState.answers[index] === question.correctAnswer) {
-                        answerStatus.innerHTML = `<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i> Correct</span>`;
-                    } else if (studentState.answers[index]) {
-                        answerStatus.innerHTML = `<span class="text-red-600"><i class="fas fa-times-circle mr-1"></i> Incorrect</span> - Correct answer was ${question.correctAnswer}`;
-                    } else {
-                        answerStatus.innerHTML = `<span class="text-gray-600"><i class="fas fa-minus-circle mr-1"></i> Not answered</span>`;
-                    }
-                    
-                    const explanation = document.createElement('p');
-                    explanation.className = 'text-sm text-gray-600 bg-gray-50 p-2 rounded';
-                    explanation.textContent = question.explanation || 'No explanation provided.';
-                    
-                    resultItem.appendChild(questionText);
-                    resultItem.appendChild(answerStatus);
-                    resultItem.appendChild(explanation);
-                    
-                    detailedResults.appendChild(resultItem);
-                });
-                
-                // Switch to results tab
-                document.getElementById('testTab').classList.remove('active');
-                document.getElementById('reviewTab').classList.remove('active');
-                document.getElementById('resultsTab').classList.add('active');
-                
-                // Update active tab
-                navTabs.forEach(tab => {
-                    if (tab.dataset.tab === 'results') {
-                        tab.classList.add('active');
-                    } else {
-                        tab.classList.remove('active');
-                    }
-                });
-                
-                // Stop timer
-                clearInterval(studentState.timerInterval);
+          // Navigate to the previous question
+          const handlePreviousQuestion = () => {
+            if (currentQuestionIndex > 0) {
+              setCurrentQuestionIndex(prev => prev - 1);
             }
+          };
 
-            // Update review tab
-            function updateReviewTab() {
-                reviewQuestions.innerHTML = '';
-                
-                testData.questions.forEach((question, index) => {
-                    const reviewItem = document.createElement('div');
-                    reviewItem.className = 'border rounded-lg p-4';
-                    
-                    const questionText = document.createElement('p');
-                    questionText.className = 'font-medium mb-2';
-                    questionText.textContent = `Q${index + 1}: ${question.text}`;
-                    
-                    const selectedAnswer = document.createElement('p');
-                    selectedAnswer.className = 'mb-2';
-                    
-                    if (studentState.answers[index]) {
-                        selectedAnswer.innerHTML = `Your answer: <span class="font-medium">${studentState.answers[index]}</span>`;
-                    } else {
-                        selectedAnswer.innerHTML = `<span class="text-gray-500">Not answered yet</span>`;
-                    }
-                    
-                    const editBtn = document.createElement('button');
-                    editBtn.className = 'px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 text-sm';
-                    editBtn.innerHTML = '<i class="fas fa-edit mr-1"></i> Edit';
-                    editBtn.addEventListener('click', () => {
-                        loadQuestion(index);
-                        document.getElementById('testTab').classList.add('active');
-                        document.getElementById('reviewTab').classList.remove('active');
-                        document.getElementById('resultsTab').classList.remove('active');
-                        
-                        // Update active tab
-                        navTabs.forEach(tab => {
-                            if (tab.dataset.tab === 'test') {
-                                tab.classList.add('active');
-                            } else {
-                                tab.classList.remove('active');
-                            }
-                        });
-                    });
-                    
-                    reviewItem.appendChild(questionText);
-                    reviewItem.appendChild(selectedAnswer);
-                    reviewItem.appendChild(editBtn);
-                    
-                    reviewQuestions.appendChild(reviewItem);
-                });
-            }
+          // Submit the exam
+          const handleSubmitExam = async () => {
+            showModal("Are you sure you want to submit this exam? You cannot retake it once submitted.", async () => {
+              let correctCount = 0;
+              questions.forEach(q => {
+                if (selectedAnswers[q.id] === q.correctOptionIndex) {
+                  correctCount++;
+                }
+              });
+              setScore(correctCount);
 
-            // Admin functions
-            const ADMIN_PASSWORD = "mustard123"; // Simple password for demo
-            let isAdmin = false;
-
-            function toggleAdminMode() {
-                if (!isAdmin) {
-                    document.getElementById('passwordPrompt').classList.remove('hidden');
-                    return;
+              try {
+                if (!currentStudentId || !currentStudentName || !userId) {
+                  showModal("Error: Student ID, Name, or User ID missing. Please re-enter your details.", () => {});
+                  return;
                 }
 
-                if (adminView.classList.contains('hidden')) {
-                    // Switch to admin mode
-                    adminView.classList.remove('hidden');
-                    studentView.classList.add('hidden');
-                    userInfo.classList.remove('hidden');
-                    toggleModeBtn.innerHTML = '<i class="fas fa-user-graduate mr-2"></i>Student Mode';
-                    
-                    // Load admin data
-                    testTitle.value = testData.title;
-                    testClass.value = testData.class;
-                    testDuration.value = testData.duration;
-                    totalQuestionsAdmin.value = testData.questions.length;
-                    
-                    // Render questions in admin view
-                    renderAdminQuestions();
+                const studentExamsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/exams`);
+                await addDoc(studentExamsCollectionRef, {
+                  studentId: currentStudentId,
+                  studentName: currentStudentName,
+                  examDate: new Date(),
+                  score: correctCount,
+                  totalQuestions: questions.length,
+                  answers: questions.map(q => ({
+                    questionId: q.id,
+                    questionText: q.questionText,
+                    options: q.options,
+                    selectedOptionIndex: selectedAnswers[q.id] !== undefined ? selectedAnswers[q.id] : -1,
+                    correctOptionIndex: q.correctOptionIndex,
+                    isCorrect: selectedAnswers[q.id] === q.correctOptionIndex
+                  }))
+                });
+                setExamSubmitted(true);
+                showModal(`Exam submitted! You scored ${correctCount} out of ${questions.length}.`, () => {});
+              } catch (e) {
+                console.error("Error submitting exam: ", e);
+                showModal("An error occurred while submitting your exam. Please try again.", () => {});
+              }
+            }, true);
+          };
+
+          const currentQuestion = questions[currentQuestionIndex];
+
+          if (!currentStudentId) {
+            return (
+              <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-teal-100 p-4">
+                <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-green-200">
+                  <h2 className="text-3xl font-extrabold text-gray-800 mb-6">Enter Your Details</h2>
+                  <p className="text-gray-600 mb-6">Please enter your Student ID and Name to begin the exam.</p>
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-green-400 focus:border-transparent transition duration-200 ease-in-out"
+                    value={studentIdInput}
+                    onChange={(e) => setStudentIdInput(e.target.value)}
+                    placeholder="e.g., YourStudentID123"
+                  />
+                  <input
+                    type="text"
+                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-green-400 focus:border-transparent transition duration-200 ease-in-out"
+                    value={studentNameInput}
+                    onChange={(e) => setStudentNameInput(e.target.value)}
+                    placeholder="e.g., John Doe"
+                  />
+                  <button
+                    onClick={handleStudentLogin}
+                    className="w-full px-6 py-3 bg-green-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Start Exam
+                  </button>
+                  {examAlreadyTaken && (
+                     <p className="text-red-500 mt-4 text-sm">You have already completed an exam with this ID. You cannot retake it.</p>
+                  )}
+                </div>
+              </div>
+            );
+          }
+
+          if (loadingQuestions) {
+            return (
+              <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-teal-100">
+                <p className="text-xl text-gray-700">Loading exam questions...</p>
+              </div>
+            );
+          }
+
+          if (questions.length === 0) {
+            return (
+              <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-teal-100">
+                <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-green-200">
+                  <h2 className="text-3xl font-extrabold text-gray-800 mb-4">No Questions Found</h2>
+                  <p className="text-gray-600">Please contact the administrator to add questions.</p>
+                  <button
+                    onClick={() => setCurrentPage('home')}
+                    className="mt-6 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition duration-200 ease-in-out text-lg"
+                  >
+                    Back to Home
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          if (examSubmitted) {
+            return (
+              <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-teal-100 p-4">
+                <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-lg w-full border border-green-200">
+                  <h2 className="text-4xl font-extrabold text-gray-800 mb-6">Exam Completed!</h2>
+                  <p className="text-2xl text-gray-700 mb-4">
+                    You scored <span className="font-bold text-green-600">{score}</span> out of <span className="font-bold text-gray-800">{questions.length}</span>.
+                  </p>
+                  <p className="text-lg text-gray-600 mb-8">
+                    Student Name: <span className="font-mono text-gray-700 break-all">{currentStudentName}</span><br/>
+                    Student ID: <span className="font-mono text-gray-700 break-all">{currentStudentId}</span>
+                  </p>
+                  <button
+                    onClick={() => {
+                      setStudentIdInput('');
+                      setStudentNameInput('');
+                      setCurrentStudentId('');
+                      setCurrentStudentName('');
+                      setExamSubmitted(false);
+                      setSelectedAnswers({});
+                      setScore(0);
+                      setCurrentQuestionIndex(0);
+                      setCurrentPage('home');
+                    }}
+                    className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Go Back to Home
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-teal-50 to-lime-100 p-4 sm:p-6 lg:p-8">
+              <div className="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-2xl border border-teal-200">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-3xl font-extrabold text-gray-800 text-center flex-grow">
+                    CBT Exam - Student: <span className="text-teal-600 break-all">{currentStudentName} ({currentStudentId})</span>
+                  </h2>
+                  <button
+                    onClick={() => setCurrentPage('home')}
+                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition duration-200 ease-in-out text-sm"
+                  >
+                    Back to Home
+                  </button>
+                </div>
+
+                {/* Question Counter */}
+                <p className="text-right text-gray-600 text-lg mb-4 font-semibold">
+                  Question {currentQuestionIndex + 1} of {questions.length}
+                </p>
+
+                {/* Current Question */}
+                <div className="mb-8 p-6 bg-teal-50 rounded-xl shadow-inner border border-teal-100">
+                  <p className="text-xl font-semibold text-gray-800 mb-4 leading-relaxed">
+                    {currentQuestion.questionText}
+                  </p>
+                  <div className="space-y-3">
+                    {currentQuestion.options.map((option, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleOptionSelect(currentQuestion.id, index)}
+                        className={`w-full text-left p-4 border rounded-lg transition duration-200 ease-in-out
+                          ${selectedAnswers[currentQuestion.id] === index
+                            ? 'bg-teal-600 text-white border-teal-700 shadow-md transform scale-105'
+                            : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100 hover:border-teal-400'
+                          }
+                          focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75`}
+                      >
+                        {optionLetters[index]}. {option}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Navigation Buttons */}
+                <div className="flex justify-between items-center mt-8">
+                  <button
+                    onClick={handlePreviousQuestion}
+                    disabled={currentQuestionIndex === 0}
+                    className={`px-6 py-3 rounded-lg shadow-md text-lg font-semibold transition duration-300 ease-in-out
+                      ${currentQuestionIndex === 0
+                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                        : 'bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transform hover:scale-105'
+                      }`}
+                  >
+                    Previous Question
+                  </button>
+
+                  {currentQuestionIndex === questions.length - 1 ? (
+                    <button
+                      onClick={handleSubmitExam}
+                      className="px-8 py-3 bg-green-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
+                    >
+                      Submit Exam
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleNextQuestion}
+                      className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
+                    >
+                      Next Question
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+
+        // Main App Component
+        const App = () => {
+          const [db, setDb] = React.useState(null);
+          const [auth, setAuth] = React.useState(null);
+          const [appId, setAppId] = React.useState('default-app-id');
+          const [userId, setUserId] = React.useState('loading...');
+
+          const [currentPage, setCurrentPage] = React.useState('home');
+
+          const [modalMessage, setModalMessage] = React.useState('');
+          const [modalOnConfirm, setModalOnConfirm] = React.useState(() => () => {});
+          const [modalOnCancel, setModalOnCancel] = React.useState(() => () => {});
+          const [modalShowCancel, setModalShowCancel] = React.useState(false);
+
+          const showModal = (message, onConfirm, showCancel = false, onCancel = () => {}) => {
+            setModalMessage(message);
+            setModalOnConfirm(() => {
+              return () => {
+                onConfirm();
+                setModalMessage('');
+              };
+            });
+            setModalShowCancel(showCancel);
+            setModalOnCancel(() => {
+              return () => {
+                onCancel();
+                setModalMessage('');
+              };
+            });
+          };
+
+          React.useEffect(() => {
+            try {
+              // REPLACE THIS firebaseConfig OBJECT WITH YOUR ACTUAL FIREBASE PROJECT'S CONFIG
+              const firebaseConfig = {
+                apiKey: "YOUR_API_KEY_HERE",
+                authDomain: "YOUR_AUTH_DOMAIN_HERE",
+                projectId: "YOUR_PROJECT_ID_HERE",
+                storageBucket: "YOUR_STORAGE_BUCKET_HERE",
+                messagingSenderId: "YOUR_MESSAGING_SENDER_ID_HERE",
+                appId: "YOUR_FIREBASE_APP_ID_HERE",
+                // measurementId: "YOUR_MEASUREMENT_ID_HERE" // Include if present
+              };
+
+              const app = initializeApp(firebaseConfig);
+              const firestore = getFirestore(app);
+              const firebaseAuth = getAuth(app);
+
+              setDb(firestore);
+              setAuth(firebaseAuth);
+
+              // Use projectId from your firebaseConfig as the appId for consistent paths in Firestore
+              setAppId(firebaseConfig.projectId);
+
+              const signIn = async () => {
+                try {
+                  // For local/hosted environment, we don't have __initial_auth_token.
+                  // We sign in anonymously.
+                  const userCredential = await signInAnonymously(firebaseAuth);
+                  setUserId(userCredential.user.uid);
+                } catch (error) {
+                  console.error("Firebase authentication error:", error);
+                  showModal("An error occurred while signing in to Firebase. Please try again.", () => {});
+                }
+              };
+              signIn();
+
+              const unsubscribeAuth = onAuthStateChanged(firebaseAuth, (user) => {
+                if (user) {
+                  setUserId(user.uid);
                 } else {
-                    // Switch to student mode
-                    adminView.classList.add('hidden');
-                    studentView.classList.remove('hidden');
-                    userInfo.classList.add('hidden');
-                    toggleModeBtn.innerHTML = '<i class="fas fa-user-shield mr-2"></i>Admin Mode';
-                    
-                    // Reset student state
-                    studentState = {
-                        currentQuestion: 0,
-                        answers: {},
-                        timeLeft: testData.duration * 60,
-                        timerInterval: null,
-                        testSubmitted: false
-                    };
-                    
-                    // Reinitialize test
-                    initTest();
+                  setUserId('anonymous');
                 }
+              });
+
+              return () => unsubscribeAuth();
+            } catch (error) {
+              console.error("Error initializing Firebase:", error);
+              showModal("An error occurred while initializing Firebase. Please try again.", () => {});
             }
+          }, []);
 
-            // Render questions in admin view
-            function renderAdminQuestions() {
-                questionsList.innerHTML = '';
-                
-                testData.questions.forEach((question, index) => {
-                    const questionItem = createQuestionElement(question, index + 1);
-                    questionsList.appendChild(questionItem);
-                });
-            }
 
-            // Create question element for admin
-            function createQuestionElement(question, number) {
-                const questionItem = document.createElement('div');
-                questionItem.className = 'question-item border rounded-lg p-4';
-                questionItem.dataset.questionId = question.id;
-                
-                const questionHeader = document.createElement('div');
-                questionHeader.className = 'flex justify-between items-start mb-3';
-                
-                const questionTitle = document.createElement('h4');
-                questionTitle.className = 'font-medium text-gray-800';
-                questionTitle.textContent = `Question #${number}`;
-                
-                const questionActions = document.createElement('div');
-                questionActions.className = 'flex space-x-2';
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'p-2 text-gray-500 hover:text-red-600 delete-question';
-                deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
-                deleteBtn.addEventListener('click', () => {
-                    if (confirm('Are you sure you want to delete this question?')) {
-                        deleteQuestion(question.id);
-                    }
-                });
-                
-                questionActions.appendChild(deleteBtn);
-                questionHeader.appendChild(questionTitle);
-                questionHeader.appendChild(questionActions);
-                
-                const questionTextArea = document.createElement('div');
-                questionTextArea.className = 'mb-4';
-                
-                const questionLabel = document.createElement('label');
-                questionLabel.className = 'block text-gray-700 mb-2';
-                questionLabel.textContent = 'Question Text';
-                
-                const questionTextInput = document.createElement('textarea');
-                questionTextInput.className = 'question-text w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500';
-                questionTextInput.rows = 3;
-                questionTextInput.value = question.text;
-                
-                questionTextArea.appendChild(questionLabel);
-                questionTextArea.appendChild(questionTextInput);
-                
-                const optionsGrid = document.createElement('div');
-                optionsGrid.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 mb-4';
-                
-                // Create options
-                for (const optionLetter of ['A', 'B', 'C', 'D']) {
-                    const optionDiv = document.createElement('div');
-                    
-                    const optionLabel = document.createElement('label');
-                    optionLabel.className = 'block text-gray-700 mb-2';
-                    optionLabel.textContent = `Option ${optionLetter}`;
-                    
-                    const optionInputGroup = document.createElement('div');
-                    optionInputGroup.className = 'flex';
-                    
-                    const optionInput = document.createElement('input');
-                    optionInput.type = 'text';
-                    optionInput.className = 'option-text w-full px-4 py-2 border rounded-l-lg focus:ring-blue-500 focus:border-blue-500';
-                    optionInput.dataset.option = optionLetter;
-                    optionInput.value = question.options[optionLetter];
-                    
-                    const optionCorrectBtn = document.createElement('button');
-                    optionCorrectBtn.className = 'correct-option px-3 bg-gray-200 border rounded-r-lg hover:bg-gray-300';
-                    optionCorrectBtn.dataset.option = optionLetter;
-                    
-                    const correctIcon = document.createElement('i');
-                    correctIcon.className = question.correctAnswer === optionLetter ? 
-                        'fas fa-check text-green-600' : 'far fa-check-circle text-gray-500';
-                    
-                    optionCorrectBtn.appendChild(correctIcon);
-                    optionCorrectBtn.addEventListener('click', () => {
-                        setCorrectAnswer(questionItem, optionLetter);
-                    });
-                    
-                    optionInputGroup.appendChild(optionInput);
-                    optionInputGroup.appendChild(optionCorrectBtn);
-                    
-                    optionDiv.appendChild(optionLabel);
-                    optionDiv.appendChild(optionInputGroup);
-                    
-                    optionsGrid.appendChild(optionDiv);
-                }
-                
-                const explanationDiv = document.createElement('div');
-                
-                const explanationLabel = document.createElement('label');
-                explanationLabel.className = 'block text-gray-700 mb-2';
-                explanationLabel.textContent = 'Explanation (Optional)';
-                
-                const explanationInput = document.createElement('textarea');
-                explanationInput.className = 'explanation w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500';
-                explanationInput.rows = 2;
-                explanationInput.value = question.explanation || '';
-                
-                explanationDiv.appendChild(explanationLabel);
-                explanationDiv.appendChild(explanationInput);
-                
-                questionItem.appendChild(questionHeader);
-                questionItem.appendChild(questionTextArea);
-                questionItem.appendChild(optionsGrid);
-                questionItem.appendChild(explanationDiv);
-                
-                return questionItem;
-            }
+          const contextValue = {
+            db,
+            auth,
+            appId,
+            userId,
+            setCurrentPage,
+            showModal
+          };
 
-            // Set correct answer in admin
-            function setCorrectAnswer(questionItem, optionLetter) {
-                const correctOptionBtns = questionItem.querySelectorAll('.correct-option');
-                
-                correctOptionBtns.forEach(btn => {
-                    const icon = btn.querySelector('i');
-                    
-                    if (btn.dataset.option === optionLetter) {
-                        icon.className = 'fas fa-check text-green-600';
-                    } else {
-                        icon.className = 'far fa-check-circle text-gray-500';
-                    }
-                });
-            }
+          return (
+            <AppContext.Provider value={contextValue}>
+              <div className="min-h-screen">
+                {modalMessage && (
+                  <Modal
+                    message={modalMessage}
+                    onConfirm={modalOnConfirm}
+                    onCancel={modalOnCancel}
+                    showCancel={modalShowCancel}
+                  />
+                )}
+                {currentPage === 'home' && <HomePage />}
+                {currentPage === 'admin' && <AdminPage />}
+                {currentPage === 'exam' && <StudentExamPage />}
+              </div>
+            </AppContext.Provider>
+          );
+        };
 
-            // Add new question in admin
-            function addNewQuestion() {
-                const newQuestionId = testData.questions.length > 0 ? 
-                    Math.max(...testData.questions.map(q => q.id)) + 1 : 1;
-                
-                const newQuestion = {
-                    id: newQuestionId,
-                    text: "New question text",
-                    options: {
-                        A: "Option A",
-                        B: "Option B",
-                        C: "Option C",
-                        D: "Option D"
-                    },
-                    correctAnswer: "A",
-                    explanation: ""
-                };
-                
-                testData.questions.push(newQuestion);
-                totalQuestionsAdmin.value = testData.questions.length;
-                
-                const questionItem = createQuestionElement(newQuestion, testData.questions.length);
-                questionsList.appendChild(questionItem);
-            }
-
-            // Delete question in admin
-            function deleteQuestion(questionId) {
-                testData.questions = testData.questions.filter(q => q.id !== questionId);
-                totalQuestionsAdmin.value = testData.questions.length;
-                renderAdminQuestions();
-            }
-
-            // Save test in admin
-            function saveTest() {
-                // Update test metadata
-                testData.title = testTitle.value;
-                testData.class = testClass.value;
-                testData.duration = parseInt(testDuration.value);
-                
-                // Update questions
-                const questionItems = questionsList.querySelectorAll('.question-item');
-                testData.questions = [];
-                
-                questionItems.forEach(item => {
-                    const questionId = parseInt(item.dataset.questionId);
-                    const questionText = item.querySelector('.question-text').value;
-                    
-                    const options = {};
-                    const optionInputs = item.querySelectorAll('.option-text');
-                    optionInputs.forEach(input => {
-                        options[input.dataset.option] = input.value;
-                    });
-                    
-                    const correctAnswerBtn = item.querySelector('.correct-option i.fa-check.text-green-600');
-                    const correctAnswer = correctAnswerBtn ? correctAnswerBtn.parentElement.dataset.option : 'A';
-                    
-                    const explanation = item.querySelector('.explanation').value;
-                    
-                    testData.questions.push({
-                        id: questionId,
-                        text: questionText,
-                        options: options,
-                        correctAnswer: correctAnswer,
-                        explanation: explanation
-                    });
-                });
-                
-                alert('Test saved successfully!');
-            }
-
-            // Create new test in admin
-            function newTest() {
-                if (confirm('Are you sure you want to create a new test? All unsaved changes will be lost.')) {
-                    testData = {
-                        title: "New Test",
-                        class: "",
-                        duration: 30,
-                        questions: []
-                    };
-                    
-                    // Reset form
-                    testTitle.value = testData.title;
-                    testClass.value = testData.class;
-                    testDuration.value = testData.duration;
-                    totalQuestionsAdmin.value = 0;
-                    questionsList.innerHTML = '';
-                }
-            }
-
-            // Event listeners - Student View
-            options.forEach(option => {
-                option.addEventListener('click', () => {
-                    const optionLetter = option.dataset.option;
-                    studentState.answers[studentState.currentQuestion] = optionLetter;
-                    
-                    // Update UI
-                    options.forEach(opt => {
-                        opt.classList.remove('option-selected');
-                    });
-                    option.classList.add('option-selected');
-                    
-                    // Update question grid
-                    updateQuestionGrid();
-                });
-            });
-
-            prevQuestionBtn.addEventListener('click', () => {
-                if (studentState.currentQuestion > 0) {
-                    loadQuestion(studentState.currentQuestion - 1);
-                }
-            });
-
-            nextQuestionBtn.addEventListener('click', () => {
-                if (studentState.currentQuestion < testData.questions.length - 1) {
-                    loadQuestion(studentState.currentQuestion + 1);
-                }
-            });
-
-            clearSelectionBtn.addEventListener('click', () => {
-                delete studentState.answers[studentState.currentQuestion];
-                options.forEach(opt => {
-                    opt.classList.remove('option-selected');
-                });
-                updateQuestionGrid();
-            });
-
-            submitTestBtn.addEventListener('click', submitTest);
-
-            // Tab navigation
-            navTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabName = tab.dataset.tab;
-                    
-                    // Update active tab
-                    navTabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    
-                    // Update active content
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    document.getElementById(`${tabName}Tab`).classList.add('active');
-                    
-                    // Update review tab if needed
-                    if (tabName === 'review') {
-                        updateReviewTab();
-                    }
-                });
-            });
-
-            // Event listeners - Admin View
-            // View results button
-            document.getElementById('viewResults').addEventListener('click', function() {
-                document.getElementById('testTab').classList.remove('active');
-                document.getElementById('reviewTab').classList.remove('active');
-                document.getElementById('resultsTab').classList.add('active');
-                
-                // Update active tab
-                navTabs.forEach(tab => {
-                    if (tab.dataset.tab === 'results') {
-                        tab.classList.add('active');
-                    } else {
-                        tab.classList.remove('active');
-                    }
-                });
-                
-                // Calculate and show results
-                submitTest();
-            });
-
-            // Admin mode with password protection
-            toggleModeBtn.addEventListener('click', function() {
-                if (!isAdmin) {
-                    document.getElementById('passwordPrompt').classList.remove('hidden');
-                } else {
-                    toggleAdminMode();
-                }
-            });
-
-            document.getElementById('confirmAuth').addEventListener('click', function() {
-                const password = document.getElementById('adminPassword').value;
-                if (password === ADMIN_PASSWORD) {
-                    isAdmin = true;
-                    document.getElementById('passwordPrompt').classList.add('hidden');
-                    toggleAdminMode();
-                } else {
-                    alert('Incorrect password. Only school administrators can access this mode.');
-                }
-            });
-
-            document.getElementById('cancelAuth').addEventListener('click', function() {
-                document.getElementById('passwordPrompt').classList.add('hidden');
-            });
-            addQuestionBtn.addEventListener('click', addNewQuestion);
-            saveTestBtn.addEventListener('click', saveTest);
-            newTestBtn.addEventListener('click', newTest);
-
-            // Initialize the test
-            initTest();
-        });
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
