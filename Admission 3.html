@@ -218,7 +218,7 @@
                 
                 <div class="mt-4">
     <label for="subjects" class="block text-sm font-medium text-gray-700 mb-1">
-        Preferred Subjects (Select up to 5)
+        Preferred Subjects (Select up to 9)
     </label>
 
     <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
@@ -353,7 +353,7 @@
                     if (currentSection === 2) { // Academic section
                         const subjectCheckboxes = document.querySelectorAll('input[name="subjects"]:checked');
                         if (subjectCheckboxes.length > 9) {
-                            alert('Please select no more than 5 subjects.');
+                            alert('Please select no more than 9 subjects.');
                             isValid = false;
                         }
                     }
@@ -456,7 +456,7 @@
             subjectCheckboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', function() {
                     const checkedCount = document.querySelectorAll('input[name="subjects"]:checked').length;
-                    if (checkedCount > 5) {
+                    if (checkedCount > 9) {
                         this.checked = false;
                     }
                 });
@@ -465,6 +465,7 @@
     </script>
 </body>
 </html>
+
 
 
 
