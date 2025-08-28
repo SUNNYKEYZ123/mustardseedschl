@@ -349,10 +349,10 @@
                         }
                     });
                     
-                    // Special validation for subjects (max 5)
+                    // Special validation for subjects (max 9)
                     if (currentSection === 2) { // Academic section
                         const subjectCheckboxes = document.querySelectorAll('input[name="subjects"]:checked');
-                        if (subjectCheckboxes.length > 5) {
+                        if (subjectCheckboxes.length > 9) {
                             alert('Please select no more than 5 subjects.');
                             isValid = false;
                         }
@@ -465,6 +465,7 @@
     </script>
 </body>
 </html>
+
 
 
 
