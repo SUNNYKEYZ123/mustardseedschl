@@ -463,8 +463,47 @@
             });
         });
     </script>
+    <!-- Admission Popup -->
+<div id="admissionPopup" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center relative animate-bounce">
+    
+    <!-- Close Button -->
+    <button onclick="closePopup()" class="absolute top-3 right-3 text-gray-600 hover:text-red-500">
+      ✖
+    </button>
+    
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-green-700 mb-4">📢 Admission is Available!</h2>
+    
+    <!-- Message -->
+    <p class="text-gray-700 mb-6">
+      You can now apply for your Admission Form online at 
+      <span class="font-semibold text-green-600">Mustard Seed School, Ibokun</span>.
+    </p>
+    
+    <!-- Apply Button -->
+    <a href="admission.html" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl shadow-md">
+      Apply Now
+    </a>
+  </div>
+</div>
+
+<script>
+  // Show popup after 2 seconds
+  window.onload = function() {
+    setTimeout(() => {
+      document.getElementById('admissionPopup').classList.remove('hidden');
+    }, 2000);
+  }
+
+  // Close popup
+  function closePopup() {
+    document.getElementById('admissionPopup').classList.add('hidden');
+  }
+</script>
 </body>
 </html>
+
 
 
 
