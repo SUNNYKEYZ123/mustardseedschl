@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+     </script>
+    <!-- Firebase App (the core Firebase SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+
+<!-- Firebase Analytics (optional, if you want analytics) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
+
+<!-- Firebase Auth -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CBT Exam Application</title>
@@ -1086,6 +1098,24 @@
         };
 
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
-    </script>
+    <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBCqk-qzKgwoyD2vz-7LLQAYuA8GiwJUAo",
+    authDomain: "ss3-cbt-system.firebaseapp.com",
+    projectId: "ss3-cbt-system",
+    storageBucket: "ss3-cbt-system.firebasestorage.app",
+    messagingSenderId: "389022277843",
+    appId: "1:389022277843:web:9618ea4790c67fc110b426",
+    measurementId: "G-7NQJGZ1T12"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  if (firebase.analytics) {
+    firebase.analytics();
+  }
+</script>
 </body>
 </html>
+
