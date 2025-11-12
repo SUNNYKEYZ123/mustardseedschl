@@ -2,67 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Computer Practical Results </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Computer Practical Results</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f9f9f9;
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f2f5;
+    }
+
+    header {
+      background-color: #023e8a;
+      color: white;
+      padding: 25px;
       text-align: center;
-    }
-    h1 {
-      color: #333;
-    }
-    .result-container {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-    .result-card {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      width: 300px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .result-card img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 5px;
-    }
-    .caption {
-      margin-top: 10px;
+      font-size: 28px;
       font-weight: bold;
-      color: #555;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      max-width: 1100px; /* wider than before */
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .result-card {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      margin-bottom: 40px;
+      overflow: hidden;
+      border: 2px solid #ddd;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .result-card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .result-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .caption {
+      background-color: #f8f9fa;
+      padding: 15px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      color: #023e8a;
+      border-top: 1px solid #ddd;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        font-size: 22px;
+      }
+      .caption {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>Computer Practical Results</h1>
+  <header>Computer Practical Results</header>
 
-  <div class="result-container">
+  <div class="container">
     <div class="result-card">
-      <img src="images/Com 1.png" alt="Page1" />
-      <div class="caption">Page 1</div>
+      <img src="images/Com 1.png" alt="Result pg1">
+      <div class="caption">Com 1</div>
     </div>
 
     <div class="result-card">
-      <img src="images/Com 2.png" alt="Page2" />
-      <div class="caption">Page 2</div>
+      <img src="images/Com 2.png" alt="Result pg2">
+      <div class="caption">Com 2</div>
     </div>
 
     <div class="result-card">
-      <img src="images/Com 3.png" alt="Page 3" />
-      <div class="caption">Page3</div>
+      <img src="images/Com 3.png" alt="Result pg3">
+      <div class="caption">Com 3</div>
     </div>
   </div>
 
 </body>
 </html>
-
-
