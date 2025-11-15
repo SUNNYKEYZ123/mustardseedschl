@@ -132,7 +132,7 @@
 
         // Admin Page Component
         const AdminPage = () => {
-          const { db, appId, showModal, setCurrentPage } = React.useContext(AppContext);
+        const { db, appId, showModal, setCurrentPage, userId, isAdminAuthenticated } = React.useContext(AppContext);
           const [adminPasswordInput, setAdminPasswordInput] = React.useState('');
           const [isAdminAuthenticated, setIsAdminAuthenticated] = React.useState(false);
 
@@ -1101,5 +1101,3 @@ React.useEffect(() => {
     </script>
 </body>
 </html>
-
-
