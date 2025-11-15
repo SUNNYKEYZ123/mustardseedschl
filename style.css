@@ -3,6 +3,10 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f8fafc;
 }
+body {
+  background: url('images/in.png') no-repeat center center fixed;
+  background-size: cover;
+}
 
 .progress-step {
     transition: all 0.3s ease;
@@ -105,4 +109,5 @@ input[type="radio"]:checked::after {
 
 .form-section.active {
     animation: fadeIn 0.3s ease forwards;
+
 }
