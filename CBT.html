@@ -179,44 +179,56 @@
             return () => unsubscribe();
           }, [db, appId, isAdminAuthenticated, showModal]);
 
-          // Fetch all student scores
-          React.useEffect(() => {
-            if (!db || !appId || !isAdminAuthenticated) return;
+         // Assume 'userId' is available from your AppContext.
+// Fetch all student scores
+React.useEffect(() => {
+    // 1. Initial check for core dependencies.
+    if (!db || !appId) return; 
 
-            const fetchAllStudentScores = async () => {
-              setLoadingScores(true);
-              const allScores = [];
-              try {
-                const usersCollectionRef = collection(db, `artifacts/${appId}/users`);
-                const usersSnapshot = await getDocs(usersCollectionRef);
+    const fetchAllStudentScores = async () => {
+        
+        // 🛑 FIX: The essential Guard Clause 🛑
+        // Stops the fetch from running until the Admin's UID is successfully loaded.
+        if (!userId || userId === 'loading...') { 
+            console.log("Admin UID not ready. Skipping score fetch.");
+            setStudentScores([]); 
+            setLoadingScores(false);
+            return;
+        }
 
-                for (const userDoc of usersSnapshot.docs) {
-                  const userId = userDoc.id;
-                  const examsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/exams`);
-                  const examsSnapshot = await getDocs(examsCollectionRef);
+        setLoadingScores(true);
+        const allScores = [];
+        
+        try {
+            // ✅ FIX: Directly query the correct collection (Admin's UID)
+            // This is ONE quick database read, not a slow, error-prone loop.
+            const examsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/exams`);
+            
+            const examsSnapshot = await getDocs(examsCollectionRef);
 
-                  examsSnapshot.docs.forEach(examDoc => {
-                    allScores.push({
-                      id: examDoc.id,
-                      firebaseUid: userId,
-                      ...examDoc.data()
-                    });
-                  });
-                }
-                allScores.sort((a, b) => (b.examDate?.seconds || 0) - (a.examDate?.seconds || 0));
-                setStudentScores(allScores);
-              } catch (error) {
-                console.error("Error fetching all student scores:", error);
-                showModal("An error occurred while fetching student scores. Please ensure your Firebase rules allow admin read access.", () => {});
-              } finally {
-                setLoadingScores(false);
-              }
-            };
+            examsSnapshot.docs.forEach(examDoc => {
+                allScores.push({
+                    id: examDoc.id,
+                    firebaseUid: userId,
+                    ...examDoc.data()
+                });
+            });
 
-            fetchAllStudentScores();
+            allScores.sort((a, b) => (b.examDate?.seconds || 0) - (a.examDate?.seconds || 0));
+            setStudentScores(allScores);
 
-          }, [db, appId, isAdminAuthenticated, showModal]);
+        } catch (error) {
+            console.error("Error fetching all student scores:", error);
+            showModal("An error occurred while fetching student scores. Please ensure your Firebase rules allow admin read access.", () => {});
+        } finally {
+            setLoadingScores(false);
+        }
+    };
 
+    fetchAllStudentScores();
+
+    // ✅ FIX: The hook now depends on the specific 'userId' variable
+}, [db, appId, userId, showModal]);
 
           // Handle adding a new question
           const handleAddQuestion = async () => {
@@ -1089,4 +1101,5 @@
     </script>
 </body>
 </html>
+
 
