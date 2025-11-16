@@ -13,13 +13,13 @@ body {
 }
 
 .progress-step.active {
-    background-color: #059669;
+    background-color: #1310b9;
     color: white;
     border-color: #059669;
 }
 
 .progress-step.completed {
-    background-color: #10b981;
+    background-color: #1310b9;
     color: white;
     border-color: #10b981;
 }
@@ -111,3 +111,4 @@ input[type="radio"]:checked::after {
     animation: fadeIn 0.3s ease forwards;
 
 }
+
