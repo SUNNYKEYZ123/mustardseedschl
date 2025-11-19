@@ -202,7 +202,7 @@ React.useEffect(() => {
         try {
             // ✅ FIX: Directly query the correct collection (Admin's UID)
             // This is ONE quick database read, not a slow, error-prone loop.
-            const examsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/exams`);
+            const examsCollectionRef = collection(db, `artifacts/${appId}/scores`);
             
             const examsSnapshot = await getDocs(examsCollectionRef);
 
@@ -1099,5 +1099,6 @@ React.useEffect(() => {
     </script>
 </body>
 </html>
+
 
 
