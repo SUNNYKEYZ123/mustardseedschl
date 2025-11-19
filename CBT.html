@@ -163,7 +163,7 @@
             if (!db || !appId || !isAdminAuthenticated) return;
 
             const questionsCollectionRef = collection(db, `artifacts/${appId}/public/data/questions`);
-           const unsubscribe = onSnapshot(questionsCollectionRef, (snapshot) => {
+            const unsubscribe = onSnapshot(questionsCollectionRef, (snapshot) => {
               const fetchedQuestions = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
@@ -470,7 +470,7 @@ React.useEffect(() => {
 
           return (
             <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 sm:p-6 lg:p-8">
-              <div className=w-full"max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-2xl border border-purple-200">
+              <div className="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-2xl border border-purple-200">
                 <div className="flex justify-between items-center mb-8">
                   <h2 className="text-3xl font-extrabold text-gray-800 text-center flex-grow">
                     Admin Panel - Add/Manage Questions & Scores
@@ -935,7 +935,7 @@ React.useEffect(() => {
                       <button
                         key={index}
                         onClick={() => handleOptionSelect(currentQuestion.id, index)}
-                        className={`w-full text-left p-4 mb-3 border rounded-lg transition duration-200 ease-in-out
+                        className={`w-full text-left p-4 border rounded-lg transition duration-200 ease-in-out
                           ${selectedAnswers[currentQuestion.id] === index
                             ? 'bg-teal-600 text-white border-teal-700 shadow-md transform scale-105'
                             : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100 hover:border-teal-400'
@@ -949,11 +949,11 @@ React.useEffect(() => {
                 </div>
 
                 {/* Navigation Buttons */}
-              <div className="flex flex-col sm:flex-row justify-between items-center mt-8 space-y-4 sm:space-y-0">
+                <div className="flex justify-between items-center mt-8">
                   <button
                     onClick={handlePreviousQuestion}
                     disabled={currentQuestionIndex === 0}
-                    className={`w-full px-6 py-3 rounded-lg shadow-md text-lg font-semibold transition duration-300 ease-in-out
+                    className={`px-6 py-3 rounded-lg shadow-md text-lg font-semibold transition duration-300 ease-in-out
                       ${currentQuestionIndex === 0
                         ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
                         : 'bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transform hover:scale-105'
@@ -965,14 +965,14 @@ React.useEffect(() => {
                   {currentQuestionIndex === questions.length - 1 ? (
                     <button
                       onClick={handleSubmitExam}
-                      className="w-full px-8 py-3 bg-green-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
+                      className="px-8 py-3 bg-green-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
                     >
                       Submit Exam
                     </button>
                   ) : (
                     <button
                       onClick={handleNextQuestion}
-                      className="w-full px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
+                      className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
                     >
                       Next Question
                     </button>
@@ -1099,4 +1099,3 @@ React.useEffect(() => {
     </script>
 </body>
 </html>
-
