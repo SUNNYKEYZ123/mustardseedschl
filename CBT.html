@@ -725,8 +725,8 @@ React.useEffect(() => {
             }
 
             try {
-              const studentExamsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/exams`);
-              const q = query(studentExamsCollectionRef, where('studentId', '==', studentIdInput.trim()));
+              const scoresCollectionRef = collection(db, `artifacts/${appId}/scores`);
+              const q = query(scoresCollectionRef, where('studentId', '==', studentIdInput.trim()));
               const querySnapshot = await getDocs(q);
 
               if (!querySnapshot.empty) {
@@ -787,7 +787,7 @@ React.useEffect(() => {
                 }
 
                const scoresCollectionRef = collection(db, `artifacts/${appId}/scores`);
-                await addDoc(studentExamsCollectionRef, {
+                await addDoc(scoresCollectionRef, {
                   studentId: currentStudentId,
                   studentName: currentStudentName,
                   examDate: new Date(),
@@ -1099,6 +1099,7 @@ React.useEffect(() => {
     </script>
 </body>
 </html>
+
 
 
 
