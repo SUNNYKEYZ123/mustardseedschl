@@ -770,7 +770,6 @@ React.useEffect(() => {
               setCurrentQuestionIndex(prev => prev - 1);
             }
           };
-
           // Submit the exam
           const handleSubmitExam = async () => {
             showModal("Are you sure you want to submit this exam? You cannot retake it once submitted.", async () => {
@@ -781,14 +780,13 @@ React.useEffect(() => {
                 }
               });
               setScore(correctCount);
-
               try {
                 if (!currentStudentId || !currentStudentName || !userId) {
                   showModal("Error: Student ID, Name, or User ID missing. Please re-enter your details.", () => {});
                   return;
                 }
 
-                const studentExamsCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/exams`);
+               const scoresCollectionRef = collection(db, `artifacts/${appId}/scores`);
                 await addDoc(studentExamsCollectionRef, {
                   studentId: currentStudentId,
                   studentName: currentStudentName,
@@ -1101,3 +1099,4 @@ React.useEffect(() => {
     </script>
 </body>
 </html>
+
