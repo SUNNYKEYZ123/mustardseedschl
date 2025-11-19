@@ -163,7 +163,7 @@
             if (!db || !appId || !isAdminAuthenticated) return;
 
             const questionsCollectionRef = collection(db, `artifacts/${appId}/public/data/questions`);
-            const unsubscribe = onSnapshot(questionsCollectionRef, (snapshot) => {
+           const unsubscribe = onSnapshot(questionsCollectionRef, (snapshot) => {
               const fetchedQuestions = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
@@ -906,17 +906,20 @@ React.useEffect(() => {
           }
 
           return (
-           <div className="flex justify-between items-center mb-6">
-    <h2 className="text-3xl font-extrabold text-gray-800 text-center flex-grow">
-        CBT Exam - Student: <span className="text-teal-600 break-all">{currentStudentName} ({currentStudentId})</span>
-    </h2>
-    <button
-        onClick={() => setCurrentPage('home')}
-        className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition duration-200 ease-in-out text-sm"
-    >
-        Back to Home
-    </button>
-</div>
+            <div className="min-h-screen bg-gradient-to-br from-teal-50 to-lime-100 p-4 sm:p-6 lg:p-8">
+              <div className="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-2xl border border-teal-200">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-3xl font-extrabold text-gray-800 text-center flex-grow">
+                    CBT Exam - Student: <span className="text-teal-600 break-all">{currentStudentName} ({currentStudentId})</span>
+                  </h2>
+                  <button
+                    onClick={() => setCurrentPage('home')}
+                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition duration-200 ease-in-out text-sm"
+                  >
+                    Back to Home
+                  </button>
+                </div>
+
                 {/* Question Counter */}
                 <p className="text-right text-gray-600 text-lg mb-4 font-semibold">
                   Question {currentQuestionIndex + 1} of {questions.length}
@@ -924,7 +927,7 @@ React.useEffect(() => {
 
                 {/* Current Question */}
                 <div className="mb-8 p-6 bg-teal-50 rounded-xl shadow-inner border border-teal-100">
-                  <p className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 leading-relaxed">
+                  <p className="text-xl font-semibold text-gray-800 mb-4 leading-relaxed">
                     {currentQuestion.questionText}
                   </p>
                   <div className="space-y-3">
@@ -1096,13 +1099,3 @@ React.useEffect(() => {
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
