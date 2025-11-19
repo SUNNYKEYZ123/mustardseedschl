@@ -163,7 +163,7 @@
             if (!db || !appId || !isAdminAuthenticated) return;
 
             const questionsCollectionRef = collection(db, `artifacts/${appId}/public/data/questions`);
-            const unsubscribe = onSnapshot(questionsCollectionRef, (snapshot) => {
+            const unsubscribe = onSnapshot(scoresCollectionRef, (snapshot) => {
               const fetchedQuestions = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
@@ -1099,4 +1099,5 @@ React.useEffect(() => {
     </script>
 </body>
 </html>
+
 
