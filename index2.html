@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mustard Seed | Result Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-indigo-900 mb-2">SunnyKeyz Report Calculator</h1>
+            <p class="text-gray-600 font-medium">...Position & Average Calculator...</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1 no-print">
+                <div class="bg-white p-6 rounded-2xl shadow-xl border border-white">
+                    <h2 class="text-xl font-bold mb-4 text-indigo-800">Add Student</h2>
+<div class="mt-8 pt-6 border-t border-gray-100 no-print">
+    <p class="text-xs text-gray-400 mb-2 uppercase font-bold tracking-wider">Danger Zone</p>
+    <button onclick="resetSystem()" class="w-full bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all duration-300">
+        <i data-feather="refresh-cw" class="mr-2" style="width:16px"></i> Clear All Data
+    </button>
+</div>                   
+ <form id="studentForm" class="space-y-4">
+                        <input type="text" id="studentName" placeholder="Full Name/ID No" required class="form-input">
+                        <input type="number" id="aggregateScore" placeholder="Total Score" required class="form-input">
+                        <input type="number" id="totalSubjects" placeholder="No. of Subjects Obtained" required class="form-input">
+                        <button type="submit" class="submit-btn">Calculate Position</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div class="flex justify-between items-center mb-4 no-print">
+                    <h2 class="text-xl font-bold text-indigo-800">CLASS LEADERBOARD</h2>
+                    <button onclick="window.print()" class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-green-700 transition">
+                        <i data-feather="printer" class="mr-2" style="width:16px"></i> Print Report
+                    </button>
+<div class="flex gap-2 no-print">
+    <button onclick="window.print()" class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-green-700 transition">
+        <i data-feather="printer" class="mr-2" style="width:16px"></i> Print
+    </button>
+    
+    <button onclick="exportToExcel()" class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700 transition">
+        <i data-feather="download" class="mr-2" style="width:16px"></i> Export Excel
+    </button>
+</div>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-white">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead class="bg-indigo-900 text-white">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase">Rank</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase">Student</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase">Total Score</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase">Average (%)</th>
+                                    <th class="px-6 py-4 text-right text-xs font-bold uppercase no-print">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentTableBody" class="divide-y divide-gray-100">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
