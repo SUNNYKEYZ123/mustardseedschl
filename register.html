@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Mustard Seed School</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1470&q=80');
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: overlay;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .login-container {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 5px;
+      background: linear-gradient(90deg, #be0bf5, #f59e0b);
+    }
+
+    .input-group { position: relative; margin-bottom: 1.2rem; }
+    .input-group i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #9ca3af; }
+    .input-field { width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid #e5e7eb; border-radius: 0.5rem; }
+    .input-field:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
+
+    .reg-btn {
+      width: 100%; padding: 0.75rem;
+      background: linear-gradient(90deg, #f50bce, #164bf9);
+      color: white; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: 0.3s;
+    }
+    .reg-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+    .error { color: #ef4444; font-size: 0.85rem; text-align: center; margin-top: 0.5rem; }
+    .footer-text { text-align: center; margin-top: 1.5rem; color: #6b7280; font-size: 0.85rem; }
+    .footer-text a { color: #f59e0b; font-weight: 500; }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Create Account</h2>
+    <p class="text-center text-gray-500 mb-6 text-sm">Join the Mustard Seed School</p>
+
+    <form id="registerForm">
+      <div class="input-group">
+        <i class="fas fa-user"></i>
+        <input type="text" id="regUsername" class="input-field" placeholder="Choose Username">
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-envelope"></i>
+        <input type="@gmail" id="regEmail" class="input-field" placeholder="Email Address">
+      </div>
+
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="regPassword" class="input-field" placeholder="Create Password">
+      </div>
+
+      <button type="button" onclick="handleRegister()" class="reg-btn">
+        <i class="fas fa-user-plus mr-2"></i> Register Now
+      </button>
+
+      <div class="error" id="regError"></div>
+    </form>
+
+    <p class="footer-text">
+      Already have an account? <a href="login.html">Login here</a>
+    </p>
+  </div>
+
+  <script>
+    // 1. Initialize Supabase
+    const SB_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
+    
+    // Check if the library is loaded first
+    if (!window.supabase) {
+        alert("Supabase library is missing! Please add the script tag to your <head>.");
+    }
+
+    const mySupabase = window.supabase.createClient(SB_URL, SB_KEY);
+
+    async function handleRegister() {
+        console.log("Button clicked!");
+        
+        const usernameEl = document.getElementById('regUsername');
+        const emailEl = document.getElementById('regEmail');
+        const passwordEl = document.getElementById('regPassword');
+        const errorDiv = document.getElementById('regError');
+
+        if (!usernameEl || !emailEl || !passwordEl) {
+            console.error("One or more input IDs (regUsername, regEmail, regPassword) are missing in HTML.");
+            return;
+        }
+
+        const username = usernameEl.value.toUpperCase();
+        const email = emailEl.value.trim();
+        const password = passwordEl.value;
+        errorDiv.textContent = "";
+
+        // --- VALIDATION ---
+        if (!email.endsWith("@gmail.com")) {
+            errorDiv.textContent = "Only @gmail.com addresses are allowed.";
+            return;
+        }
+        if (password.length < 6) {
+            errorDiv.textContent = "Password must be at least 6 characters.";
+            return;
+        }
+
+        try {
+            // --- STEP 1: AUTH (Notice we use mySupabase now) ---
+            const { data, error: authError } = await mySupabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: { display_name: username, role: 'student' }
+                }
+            });
+
+            if (authError) {
+                errorDiv.textContent = authError.message;
+                return;
+            }
+
+            // --- STEP 2: SAVE TO TABLE ---
+            if (data.user) {
+                const { error: tableError } = await mySupabase
+                    .from('students') 
+                    .insert([
+                        { 
+                            id: data.user.id, 
+                            username: username, 
+                            email: email, 
+                            role: 'student' 
+                        }
+                    ]);
+
+                if (tableError) {
+                    console.error("Database Error:", tableError);
+                    errorDiv.textContent = "Profile creation failed: " + tableError.message;
+                    return;
+                }
+
+                alert("Registration successful! Check your Gmail for a confirmation link.");
+                window.location.href = 'login.html';
+            }
+        } catch (err) {
+            console.error("Unexpected crash:", err);
+            errorDiv.textContent = "An error occurred. Please check the console.";
+        }
+    }
+</script>
+</body>
+</html>
