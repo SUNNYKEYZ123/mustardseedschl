@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <!-- 🔷 Browser Tab Icon (Favicon) -->
+<link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Mustard Seed School Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');
+      background-size: cover;
+      background-position: center;
+      background-blend-mode: overlay;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .logo-container {
+      width: 100px;
+      height: 100px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      margin: 0 auto;
+      margin-bottom: 1.5rem;
+      border: 3px solid #c60bf5;
+    }
+    
+    .logo {
+      font-size: 2.5rem;
+      color: #f59e0b;
+    }
+    
+    .login-container {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(#be0bf5, #f59e0b, ##5c0bdf);
+    }
+    
+    .input-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+    
+    .input-group i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+    }
+    
+    .input-field {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+    
+    .role-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1em;
+    }
+    
+    .login-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: linear-gradient(90deg, #f50bce, #164bf9);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 0.5rem;
+    }
+    
+    .login-btn:hover {
+      background: linear-gradient(90deg,  #16f921, #0bf580);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+    }
+    
+    .error {
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+    
+    .footer-text {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #6b7280;
+      font-size: 0.85rem;
+    }
+    
+    .footer-text a {
+      color: #f59e0b;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .footer-text a:hover {
+      text-decoration: underline;
+    }
+    
+    .school-name {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    
+    .school-motto {
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo-container">
+      <img src="images/Logo.png" alt="School Logo" style="width: 80px; height: auto; display: block; margin: auto;" />
+    </div>
+    <h1 class="school-name">Mustard Seed School</h1>
+    <p class="school-motto">"Christ is Our Cornerstone"</p>
+    
+    <form id="loginForm">
+      <div class="input-group">
+        <select id="role" class="input-field role-select">
+          <option value="">Select Your Role</option>
+          <option value="admin">Administrator</option>
+          <option value="teacher">Teacher</option>
+          <option value="parent">Parent</option>
+          <option value="student">Student</option>
+        </select>
+      </div>
+      
+      <div class="input-group">
+        <i class="fas fa-user"></i>
+        <input type="text" id="username" class="input-field" placeholder="Username">
+      </div>
+      
+      <div class="input-group">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="password" class="input-field" placeholder="Password">
+      </div>
+      
+      <button type="button" onclick="login()" class="login-btn">
+        <i class="fas fa-sign-in-alt mr-2"></i> Login
+      </button>
+      
+      <div class="error" id="error"></div>
+    </form>
+    
+    <p class="footer-text">
+      Don't Have Account? <a href="register.html">Sign Up/Create Acct</a> or 
+      <a href="#">reset your password</a>
+    </p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    // 1. Initialize Supabase
+    const SB_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
+    const mySupabase = window.supabase.createClient(SB_URL, SB_KEY);
+
+    async function login() {
+        const role = document.getElementById('role').value;
+        const email = document.getElementById('username').value.trim(); // Using the username field as email
+        const password = document.getElementById('password').value;
+        const errorDiv = document.getElementById('error');
+        const btn = document.querySelector('.login-btn');
+
+        errorDiv.textContent = '';
+        
+        // --- VALIDATION ---
+        if (!role) {
+            errorDiv.textContent = 'Please select your role.';
+            return;
+        }
+        if (!email || !password) {
+            errorDiv.textContent = 'Email and password are required.';
+            return;
+        }
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Verifying...';
+        btn.disabled = true;
+
+        try {
+            // STEP 1: Log in to Supabase Auth
+            const { data, error: authError } = await mySupabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (authError) {
+                throw new Error("Invalid email or password.");
+            }
+
+            // STEP 2: Verify the role matches what's in our 'students' table
+            // This prevents a student from trying to log in as an 'admin'
+            const { data: profile, error: profileError } = await mySupabase
+                .from('students')
+                .select('username, role')
+                .eq('id', data.user.id)
+                .single();
+
+            if (profileError || !profile) {
+                throw new Error("Profile not found. Please contact admin.");
+            }
+
+            if (profile.role !== role) {
+                throw new Error(`Access denied. You are registered as a ${profile.role}, not ${role}.`);
+            }
+
+            // SUCCESS!
+            btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Success!';
+            btn.style.background = '#10b981';
+
+            // Store user info for the Dashboard
+            localStorage.setItem('user_name', profile.username);
+            localStorage.setItem('user_role', profile.role);
+
+            setTimeout(() => {
+                alert(`Welcome back, ${profile.username}!`);
+                window.location.href = 'dashboard.html'; 
+            }, 800);
+
+        } catch (err) {
+            btn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i> Login';
+            btn.disabled = false;
+            errorDiv.textContent = err.message;
+            document.getElementById('password').value = '';
+        }
+    }
+
+    // Keep your focus effects
+    document.querySelectorAll('.input-field').forEach(input => {
+        input.addEventListener('focus', function() {
+            const icon = this.parentElement.querySelector('i');
+            if(icon) icon.style.color = '#f59e0b';
+        });
+        input.addEventListener('blur', function() {
+            const icon = this.parentElement.querySelector('i');
+            if(icon) icon.style.color = '#9ca3af';
+        });
+    });
+</script>
+</body>
+</html>
+
+
+
+
