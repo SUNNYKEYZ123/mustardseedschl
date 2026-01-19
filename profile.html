@@ -26,7 +26,7 @@
 
     <div class="max-w-6xl mx-auto py-10 px-4">
         <div class="flex items-center space-x-4 mb-10">
-            <img src="" id="user-avatar" class="w-16 h-16 rounded-full border-2 border-purple-500">
+            <img src="" id="user-avatar" class="w-16 h-16 rounded-full border-2 border-purple-500 bg-gray-200">
             <div>
                 <h1 id="user-welcome" class="text-2xl font-bold text-gray-800 uppercase">Loading...</h1>
                 <p id="user-role-display" class="text-gray-500 text-sm">Student Account</p>
@@ -55,12 +55,13 @@
     </div>
 
    <script>
+    // 1. Setup Supabase
     const SB_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
     const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
     const _supabase = window.supabase.createClient(SB_URL, SB_KEY);
 
     async function loadDashboardData() {
-        // 1. Authenticate (Same logic as your profile.html)
+        // 2. Auth Check
         const { data: { user }, error: authError } = await _supabase.auth.getUser();
 
         if (authError || !user) {
@@ -68,7 +69,7 @@
             return;
         }
 
-        // 2. Fetch Student + Enrollments + Courses in ONE query
+        // 3. Fetch Data
         const { data: profile, error: dbError } = await _supabase
             .from('students')
             .select(`
@@ -87,12 +88,21 @@
         }
 
         if (profile) {
-            // 3. Populate Header
+            // Update Welcome Name
             document.getElementById('user-welcome').textContent = "Welcome, " + (profile.username || "Student");
-            document.getElementById('display-grade-level').textContent = profile.grade_level || "N/A";
-            document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${profile.username}&background=random&color=fff`;
+            
+            // Format and Display Student ID
+            const shortId = "MS-" + user.id.substring(0, 5).toUpperCase();
+            document.getElementById('user-role-display').innerHTML = `
+                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-bold mr-2 uppercase">Student</span>
+                <span class="text-gray-400 font-mono text-xs">ID: ${shortId}</span>
+            `;
 
-            // 4. Populate Stats and Courses
+            // Fill in Grade Level and Avatar
+            document.getElementById('display-grade-level').textContent = profile.grade_level || "Not Assigned";
+            document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${profile.username}&background=random&color=fff`;
+            
+            // Populate Courses
             const enrollments = profile.enrollments || [];
             document.getElementById('count-courses').textContent = enrollments.length;
 
@@ -103,10 +113,10 @@
                 container.innerHTML = enrollments.map(enrol => `
                     <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
                         <span class="text-[10px] font-bold bg-blue-100 text-blue-600 px-2 py-1 rounded tracking-widest uppercase">
-                            ${enrol.courses.course_code}
+                            ${enrol.courses ? enrol.courses.course_code : 'N/A'}
                         </span>
-                        <h3 class="text-lg font-bold mt-2 text-gray-800">${enrol.courses.course_name}</h3>
-                        <p class="text-sm text-gray-500 mb-4">${enrol.courses.teacher_name}</p>
+                        <h3 class="text-lg font-bold mt-2 text-gray-800">${enrol.courses ? enrol.courses.course_name : 'Unknown Course'}</h3>
+                        <p class="text-sm text-gray-500 mb-4">${enrol.courses ? enrol.courses.teacher_name : 'No Teacher'}</p>
                         <div class="flex justify-between items-center pt-4 border-t">
                             <span class="text-xs text-gray-400 font-bold uppercase">Grade</span>
                             <span class="font-bold text-green-600">${enrol.current_grade}</span>
@@ -122,6 +132,7 @@
         window.location.href = 'login.html';
     }
 
+    // Run on load
     window.onload = loadDashboardData;
 </script>
 </body>
