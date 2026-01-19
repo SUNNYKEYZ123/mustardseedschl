@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Mustard Seed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800">
+
+    <nav class="bg-white border-b px-6 py-4 flex justify-between items-center shadow-sm">
+        <div class="flex items-center space-x-3">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10">
+            <span class="font-bold text-xl tracking-tight">Mustard Seed</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <a href="profile.html" class="text-gray-600 hover:text-purple-600 font-medium">My Profile</a>
+            <button onclick="handleLogout()" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm font-bold">LOGOUT</button>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto py-10 px-6">
+        <h1 id="welcome-msg" class="text-3xl font-bold mb-2">Welcome!</h1>
+        <p class="text-gray-500 mb-8" id="grade-display">Loading your student status...</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                <p class="text-xs font-bold text-gray-400 uppercase">Enrolled Courses</p>
+                <p class="text-3xl font-bold mt-1" id="course-count">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                <p class="text-xs font-bold text-gray-400 uppercase">Average Attendance</p>
+                <p class="text-3xl font-bold mt-1 text-green-500">100%</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                <p class="text-xs font-bold text-gray-400 uppercase">Pending Tasks</p>
+                <p class="text-3xl font-bold mt-1 text-orange-500">0</p>
+            </div>
+        </div>
+
+        <h2 class="text-xl font-bold mb-6">My Classes</h2>
+        <div id="course-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+    </main>
+
+    <script>
+        const SB_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
+        const SB_KEY = 'YOUR_KEY_HERE';
+        const _supabase = window.supabase.createClient(SB_URL, SB_KEY);
+
+        async function initDashboard() {
+            // 1. Check Auth
+            const { data: { user } } = await _supabase.auth.getUser();
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // 2. Fetch Student + Enrollments + Courses in one go
+            const { data: student, error } = await _supabase
+                .from('students')
+                .select(`
+                    username, grade_level,
+                    enrollments (
+                        current_grade,
+                        courses (course_name, course_code, teacher_name)
+                    )
+                `)
+                .eq('id', user.id)
+                .single();
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            // 3. Update UI
+            document.getElementById('welcome-msg').textContent = "Welcome back, " + student.username + "!";
+            document.getElementById('grade-display').textContent = student.grade_level || "No Grade Assigned Yet";
+            document.getElementById('course-count').textContent = student.enrollments.length;
+
+            const list = document.getElementById('course-list');
+            if (student.enrollments.length === 0) {
+                list.innerHTML = `<div class="col-span-full py-10 text-center bg-gray-100 rounded-xl">You are not enrolled in any courses yet.</div>`;
+            } else {
+                list.innerHTML = student.enrollments.map(item => `
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                        <span class="text-[10px] font-black bg-purple-100 text-purple-700 px-2 py-1 rounded-md uppercase">${item.courses.course_code}</span>
+                        <h3 class="text-lg font-bold mt-3">${item.courses.course_name}</h3>
+                        <p class="text-sm text-gray-500">${item.courses.teacher_name}</p>
+                        <div class="mt-4 pt-4 border-t flex justify-between items-center">
+                            <span class="text-xs font-bold text-gray-400">Current Grade</span>
+                            <span class="font-bold text-green-600">${item.current_grade}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            window.location.href = 'login.html';
+        }
+
+        window.onload = initDashboard;
+    </script>
+</body>
+</html>
