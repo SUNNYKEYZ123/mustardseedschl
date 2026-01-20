@@ -3,142 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Mustard Seed</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Student Dashboard | School Portal</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-    <nav class="bg-white shadow-sm px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-8">
-            <span class="font-bold text-lg">Mustard Seed Dashboard</span>
+    <nav class="bg-blue-900 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">Mustard School Portal</h1>
+            <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-sm transition">Logout</button>
         </div>
-        <button onclick="handleLogout()" class="text-sm font-bold text-red-500 hover:text-red-700">
-            <i class="fas fa-sign-out-alt mr-1"></i> LOGOUT
-        </button>
     </nav>
 
-    <div class="max-w-6xl mx-auto py-10 px-4">
-        <div class="flex items-center space-x-4 mb-10">
-            <img src="" id="user-avatar" class="w-16 h-16 rounded-full border-2 border-purple-500 bg-gray-200">
-            <div>
-                <h1 id="user-welcome" class="text-2xl font-bold text-gray-800 uppercase">Loading...</h1>
-                <p id="user-role-display" class="text-gray-500 text-sm">Student Account</p>
+    <div class="container mx-auto mt-10 px-4">
+        <div class="max-w-4xl mx-auto">
+            
+            <div class="bg-white p-8 rounded-xl shadow-sm border-l-8 border-blue-600 mb-6">
+                <h2 class="text-gray-500 uppercase tracking-widest text-xs font-semibold">Student Profile</h2>
+                <h1 id="display-fullname" class="text-3xl font-black text-gray-800 mt-1">Loading Name...</h1>
+                <div class="mt-4 inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-bold">
+                    Status: <span id="display-status">Checking...</span>
+                </div>
             </div>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-purple-500">
-                <p class="text-xs font-bold text-gray-400 uppercase">Courses Enrolled</p>
-                <p id="count-courses" class="text-3xl font-bold">0</p>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-green-500">
-                <p class="text-xs font-bold text-gray-400 uppercase">Current Grade</p>
-                <p class="text-3xl font-bold text-green-600">A</p>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-t-4 border-orange-500">
-                <p class="text-xs font-bold text-gray-400 uppercase">Grade Level</p>
-                <p id="display-grade-level" class="text-3xl font-bold">-</p>
-            </div>
-        </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <div class="bg-gradient-to-br from-blue-700 to-blue-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
+                    <div class="relative z-10">
+                        <h3 class="text-blue-200 text-xs uppercase font-bold">Official Student ID</h3>
+                        <p id="display-msid" class="text-4xl font-mono mt-2 tracking-tighter">MS-XXXXX</p>
+                        <p class="mt-8 text-xs text-blue-300 italic">* Use this ID for CBT Exams and School Login</p>
+                    </div>
+                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
+                </div>
 
-        <h2 class="text-xl font-bold mb-6 text-gray-700">My Current Classes</h2>
-        <div id="course-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <p class="text-gray-400 italic">Looking for your classes...</p>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+                    <h3 class="text-gray-400 text-xs uppercase font-bold mb-4">Academic Details</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-600">Class:</span>
+                            <span id="display-grade" class="font-semibold text-gray-800">---</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-600">Parent Phone:</span>
+                            <span id="display-parent" class="font-semibold text-gray-800">---</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-8 flex gap-4">
+                <button onclick="window.print()" class="bg-white border border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-50 transition">Print Profile</button>
+                <a href="cbt-login.html" id="cbt-link" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-bold">Enter CBT Portal</a>
+            </div>
+
         </div>
     </div>
 
-   <script>
-    // 1. Setup Supabase
-    const SB_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
-    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
-    const _supabase = window.supabase.createClient(SB_URL, SB_KEY);
+    <script>
+        // 1. Supabase Configuration (Replace with your actual keys)
+        const _supabase = supabase.createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_KEY');
 
-    async function loadDashboardData() {
-        // 2. Auth Check
-        const { data: { user }, error: authError } = await _supabase.auth.getUser();
-
-        if (authError || !user) {
-            window.location.href = 'login.html';
-            return;
-        }
-
-        // 3. Fetch Data
-        const { data: profile, error: dbError } = await _supabase
-            .from('students')
-            .select(`
-                username, grade_level, 
-                enrollments (
-                    current_grade,
-                    courses (course_name, course_code, teacher_name)
-                )
-            `)
-            .eq('id', user.id)
-            .single();
-
-        if (dbError) {
-            console.error("Error:", dbError.message);
-            return;
-        }
-
-        if (profile) {
-            // Update Welcome Name
-            document.getElementById('user-welcome').textContent = "Welcome, " + (profile.full_name || "Student");
-            
-            // Format and Display Student ID
-            const shortId = "MS-" + user.id.substring(0, 5).toUpperCase();
-            document.getElementById('user-role-display').innerHTML = `
-                <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded text-xs font-bold mr-2 uppercase">Student</span>
-                <span class="text-gray-400 font-mono text-xs">ID: ${shortId}</span>
-            `;
-
-            // Fill in Grade Level and Avatar
-            document.getElementById('display-grade-level').textContent = profile.grade_level || "Pending Admission";
-            document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${profile.full_name}&background=random&color=fff`;
-            
-            // Populate Courses
-            const enrollments = profile.enrollments || [];
-            document.getElementById('count-courses').textContent = enrollments.length;
-
-            const container = document.getElementById('course-container');
-            if (enrollments.length === 0) {
-                container.innerHTML = `<p class="col-span-full text-center py-10 text-gray-400 bg-white rounded-xl shadow-sm">No courses assigned yet. Contact Admin.</p>`;
-            } else {
-                container.innerHTML = enrollments.map(enrol => `
-                    <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition border border-gray-100">
-                        <span class="text-[10px] font-bold bg-blue-100 text-blue-600 px-2 py-1 rounded tracking-widest uppercase">
-                            ${enrol.courses ? enrol.courses.course_code : 'N/A'}
-                        </span>
-                        <h3 class="text-lg font-bold mt-2 text-gray-800">${enrol.courses ? enrol.courses.course_name : 'Unknown Course'}</h3>
-                        <p class="text-sm text-gray-500 mb-4">${enrol.courses ? enrol.courses.teacher_name : 'No Teacher'}</p>
-                        <div class="flex justify-between items-center pt-4 border-t">
-                            <span class="text-xs text-gray-400 font-bold uppercase">Grade</span>
-                            <span class="font-bold text-green-600">${enrol.current_grade}</span>
-                        </div>
-                    </div>
-                `).join('');
+        async function loadProfile() {
+            // Check session
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
             }
-        }
-    }
 
-    async function handleLogout() {
-        await _supabase.auth.signOut();
-        window.location.href = 'login.html';
-    }
+            const user = session.user;
 
-    // Run on load
-    window.onload = loadDashboardData;
-</script>
-</body>
-</html>
+            // 2. Generate the MS-ID (Slicing the first 5 chars of UUID)
+            const generatedID = "MS-" + user.id.substring(0, 5).toUpperCase();
 
+            // 3. Fetch data from 'students' table
+            const { data: student, error } = await _supabase
+                .from('students')
+                .select('*')
+                .eq('id', user.id)
+                .single();
 
+            if (error) {
+                console.log("Error or no data found:", error.message);
+                document.getElementById('display-fullname').textContent = "Incomplete Profile";
+                document.getElementById('display-status').textContent = "Form Not Submitted";
+                return;
+            }
 
-
+            if (student) {
+                // Update UI with Database values
+                document.getElementById('display-fullname').textContent = student.full_name;
+                document.getElementById('display-msid').textContent = generatedID;
+                document.getElementById('display-status
