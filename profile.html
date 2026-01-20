@@ -90,7 +90,7 @@
 
         if (profile) {
             // Update Welcome Name
-            document.getElementById('user-welcome').textContent = "Welcome, " + (profile.username || "Student");
+            document.getElementById('user-welcome').textContent = "Welcome, " + (profile.full_name || "Student");
             
             // Format and Display Student ID
             const shortId = "MS-" + user.id.substring(0, 5).toUpperCase();
@@ -138,5 +138,6 @@
 </script>
 </body>
 </html>
+
 
 
