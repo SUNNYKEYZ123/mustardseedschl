@@ -64,7 +64,7 @@
 
     <script>
         // 1. Supabase Configuration (Replace with your actual keys)
-        const _supabase = supabase.createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_KEY');
+        const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
 
         async function loadProfile() {
             // Check session
@@ -98,3 +98,4 @@
                 document.getElementById('display-fullname').textContent = student.full_name;
                 document.getElementById('display-msid').textContent = generatedID;
                 document.getElementById('display-status
+
