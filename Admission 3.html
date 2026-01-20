@@ -7,12 +7,35 @@
     <link rel="icon" type="image/x-icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+        
+        /* Progress Bar Styling */
+        .progress-step.active { border-color: #3b82f6; background-color: #eff6ff; color: #1d4ed8; }
+        .progress-step.completed { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+
+        /* Loading Spinner Styling */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden { display: none; }
+    </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
-        <!-- Header -->
         <div class="text-center mb-8">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" alt="School Logo" class="mx-auto h-24 mb-4">
             <h1 class="text-3xl font-bold text-blue-800">Mustard Seed School</h1>
@@ -20,358 +43,179 @@
             <p class="text-gray-600 mt-2">Academic Year 2024-2025</p>
         </div>
 
-        <!-- Progress Steps -->
         <div class="flex justify-between mb-8">
-            <div class="progress-step active w-10 h-10 rounded-full flex items-center justify-center border-2 border-blue-500 font-semibold" data-step="1">1</div>
-            <div class="progress-step w-10 h-10 rounded-full flex items-center justify-center border-2 border-gray-300 font-semibold" data-step="2">2</div>
-            <div class="progress-step w-10 h-10 rounded-full flex items-center justify-center border-2 border-gray-300 font-semibold" data-step="3">3</div>
-            <div class="progress-step w-10 h-10 rounded-full flex items-center justify-center border-2 border-gray-300 font-semibold" data-step="4">4</div>
+            <div class="progress-step active w-10 h-10 rounded-full flex items-center justify-center border-2 font-semibold bg-white" data-step="1">1</div>
+            <div class="progress-step w-10 h-10 rounded-full flex items-center justify-center border-2 border-gray-300 font-semibold bg-white" data-step="2">2</div>
+            <div class="progress-step w-10 h-10 rounded-full flex items-center justify-center border-2 border-gray-300 font-semibold bg-white" data-step="3">3</div>
+            <div class="progress-step w-10 h-10 rounded-full flex items-center justify-center border-2 border-gray-300 font-semibold bg-white" data-step="4">4</div>
         </div>
 
-        <!-- Form Sections -->
         <form id="admissionForm" class="bg-white rounded-lg shadow-md p-6" novalidate>
-            <!-- Section 1: Student Information -->
+            
             <div class="form-section active" id="section1">
-                <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2">
-                    <i data-feather="user" class="inline mr-2"></i>Student Information
-                </h3>
-                
+                <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2"><i data-feather="user" class="inline mr-2"></i>Student Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="firstName" class="block text-sm font-medium text-gray-700 mb-1">First Name*</label>
-                        <input type="text" id="firstName" name="firstName" required 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-sm font-medium text-gray-700">First Name*</label>
+                        <input type="text" id="firstName" required class="w-full px-3 py-2 border rounded-md">
                     </div>
                     <div>
-                        <label for="lastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name*</label>
-                        <input type="text" id="lastName" name="lastName" required 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-sm font-medium text-gray-700">Last Name*</label>
+                        <input type="text" id="lastName" required class="w-full px-3 py-2 border rounded-md">
                     </div>
                 </div>
-                
                 <div class="mt-4">
-                    <label for="dob" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth*</label>
-                    <input type="date" id="dob" name="dob" required 
-                           class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-sm font-medium text-gray-700">Date of Birth*</label>
+                    <input type="date" id="dob" required class="w-full px-3 py-2 border rounded-md">
                 </div>
-                
                 <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Gender*</label>
+                    <label class="block text-sm font-medium text-gray-700">Gender*</label>
                     <div class="flex space-x-4">
-                        <label class="inline-flex items-center">
-                            <input type="radio" name="gender" value="male" required class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Male</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="radio" name="gender" value="female" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Female</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="radio" name="gender" value="other" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Other</span>
-                        </label>
+                        <label><input type="radio" name="gender" value="male" checked> Male</label>
+                        <label><input type="radio" name="gender" value="female"> Female</label>
                     </div>
                 </div>
-                
                 <div class="mt-4">
-                    <label for="nationality" class="block text-sm font-medium text-gray-700 mb-1">Nationality*</label>
-                    <input type="text" id="nationality" name="nationality" required 
-                           class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label class="block text-sm font-medium text-gray-700">Nationality*</label>
+                    <input type="text" id="nationality" required class="w-full px-3 py-2 border rounded-md">
                 </div>
-                
-                <div class="mt-4">
-                    <label for="religion" class="block text-sm font-medium text-gray-700 mb-1">Religion</label>
-                    <input type="text" id="religion" name="religion" 
-                           class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                
                 <div class="mt-6 flex justify-end">
-                    <button type="button" class="next-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        Next <i data-feather="arrow-right" class="inline ml-2"></i>
-                    </button>
+                    <button type="button" onclick="nextStep(1)" class="px-6 py-2 bg-blue-600 text-white rounded-md">Next</button>
                 </div>
             </div>
-            
-            <!-- Section 2: Contact Information -->
-            <div class="form-section" id="section2">
-                <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2">
-                    <i data-feather="home" class="inline mr-2"></i>Contact Information
-                </h3>
-                
-                <div class="mt-4">
-                    <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Residential Address*</label>
-                    <textarea id="address" name="address" rows="3" required 
-                              class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                        <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City*</label>
-                        <input type="text" id="city" name="city" required 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label for="state" class="block text-sm font-medium text-gray-700 mb-1">State/Province*</label>
-                        <input type="text" id="state" name="state" required 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                        <label for="postalCode" class="block text-sm font-medium text-gray-700 mb-1">Postal Code*</label>
-                        <input type="text" id="postalCode" name="postalCode" required 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label for="country" class="block text-sm font-medium text-gray-700 mb-1">Country*</label>
-                        <input type="text" id="country" name="country" required 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number*</label>
-                        <input type="tel" id="phone" name="phone" required 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input type="email" id="email" name="email" 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-                
-                <div class="mt-6 flex justify-between">
-                    <button type="button" class="prev-btn px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                        <i data-feather="arrow-left" class="inline mr-2"></i> Previous
-                    </button>
-                    <button type="button" class="next-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        Next <i data-feather="arrow-right" class="inline ml-2"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Section 3: Academic Information -->
-            <div class="form-section" id="section3">
-                <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2">
-                    <i data-feather="book" class="inline mr-2"></i>Academic Information
-                </h3>
-                
-                <div class="mt-4">
-                    <label for="previousSchool" class="block text-sm font-medium text-gray-700 mb-1">Previous School Attended*</label>
-                    <input type="text" id="previousSchool" name="previousSchool" required 
-                           class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                
-                <div class="mt-4">
-                    <label for="gradeCompleted" class="block text-sm font-medium text-gray-700 mb-1">Grade Completed*</label>
-                    <select id="gradeCompleted" name="gradeCompleted" required 
-                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select Class</option>
-                        <option value="JSS 1">JSS 1</option>
-                        <option value="JSS 2">JSS 2</option>
-                        <option value="JSS 3">JSS 3</option>
-                        <option value="SSS 1">SSS 1</option>
-                        <option value="SSS 2">SSS 2</option>
-                        <option value="SSS 3">SSS 3</option>
-                    </select>
-                </div>
-                
-                <div class="mt-4">
-                    <label for="applyingFor" class="block text-sm font-medium text-gray-700 mb-1">Applying for Grade*</label>
-                    <select id="applyingFor" name="applyingFor" required 
-                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select CLASS</option>
-                        <option value="JSS 1">JSS 1</option>
-                        <option value="JSS 2">JSS 2</option>
-                        <option value="JSS 3">JSS 3</option>
-                        <option value="SSS 1">SSS 1</option>
-                        <option value="SSS 2">SSS 2</option>
-                        <option value="SSS 3">SSS 3</option>
-                    </select>
-                </div>
-                
-                <div class="mt-4">
-                    <label for="subjects" class="block text-sm font-medium text-gray-700 mb-1">
-                        Preferred Subjects (Select up to 9)
-                    </label>
 
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Mathematics" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Mathematics</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="English" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">English</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Literature in English" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Literature in English</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Physics" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Physics</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Chemistry" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Chemistry</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Basic Science" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Basic Science</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Computer Science" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Computer Science</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Christian Religion Study" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Christian Religion Study</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Agricultural Science" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Agricultural Science</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Yorùbá" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Yorùbá</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Moral Value" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Moral Value</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Civic Education" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Civic Education</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Government" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Government</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Economics" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Economics</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Animal Husbandary" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Animal Husbandary</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="History" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">History</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Pre-vocational Studies" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Pre-vocational Studies</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Business Studies" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Business Studies</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="C.C.A" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">C.C.A</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="checkbox" name="subjects" value="Biology" class="h-4 w-4 text-blue-600">
-                            <span class="ml-2 text-gray-700">Biology</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="mt-6 flex justify-between">
-                    <button type="button" class="prev-btn px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                        <i data-feather="arrow-left" class="inline mr-2"></i> Previous
-                    </button>
-                    <button type="button" class="next-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        Next <i data-feather="arrow-right" class="inline ml-2"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Section 4: Parent/Guardian Information -->
-            <div class="form-section" id="section4">
-                <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2">
-                    <i data-feather="users" class="inline mr-2"></i>Parent/Guardian Information
-                </h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="parentFirstName" class="block text-sm font-medium text-gray-700 mb-1">First Name*</label>
-                        <input type="text" id="parentFirstName" name="parentFirstName" required 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label for="parentLastName" class="block text-sm font-medium text-gray-700 mb-1">Last Name*</label>
-                        <input type="text" id="parentLastName" name="parentLastName" required 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-                </div>
-                
+            <div class="form-section" id="section2">
+                <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2"><i data-feather="home" class="inline mr-2"></i>Contact Details</h3>
                 <div class="mt-4">
-                    <label for="relationship" class="block text-sm font-medium text-gray-700 mb-1">Relationship to Student*</label>
-                    <select id="relationship" name="relationship" required 
-                            class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Select Relationship</option>
-                        <option value="Father">Father</option>
-                        <option value="Mother">Mother</option>
-                        <option value="Guardian">Guardian</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    <label class="block text-sm font-medium text-gray-700">Address*</label>
+                    <textarea id="address" rows="3" required class="w-full px-3 py-2 border rounded-md"></textarea>
                 </div>
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
-                        <label for="parentPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number*</label>
-                        <input type="tel" id="parentPhone" name="parentPhone" required 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-sm font-medium text-gray-700">Phone*</label>
+                        <input type="tel" id="phone" required class="w-full px-3 py-2 border rounded-md">
                     </div>
                     <div>
-                        <label for="parentEmail" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                        <input type="email" id="parentEmail" name="parentEmail" 
-                               class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="email" class="w-full px-3 py-2 border rounded-md">
                     </div>
                 </div>
-                
-                <div class="mt-4">
-                    <label for="parentOccupation" class="block text-sm font-medium text-gray-700 mb-1">Occupation*</label>
-                    <input type="text" id="parentOccupation" name="parentOccupation" required 
-                           class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                
                 <div class="mt-6 flex justify-between">
-                    <button type="button" class="prev-btn px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                        <i data-feather="arrow-left" class="inline mr-2"></i> Previous
-                    </button>
-                    <button type="submit" class="submit-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        Submit Application <i data-feather="send" class="inline ml-2"></i>
+                    <button type="button" onclick="prevStep(2)" class="px-4 py-2 bg-gray-300 rounded-md">Back</button>
+                    <button type="button" onclick="nextStep(2)" class="px-6 py-2 bg-blue-600 text-white rounded-md">Next</button>
+                </div>
+            </div>
+
+            <div class="form-section" id="section3">
+                <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2"><i data-feather="book" class="inline mr-2"></i>Academic Information</h3>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700">Previous School*</label>
+                    <input type="text" id="previousSchool" required class="w-full px-3 py-2 border rounded-md">
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700">Applying for Grade*</label>
+                    <select id="applyingFor" required class="w-full px-3 py-2 border rounded-md">
+                        <option value="JSS 1">JSS 1</option><option value="JSS 2">JSS 2</option><option value="JSS 3">JSS 3</option>
+                        <option value="SSS 1">SSS 1</option><option value="SSS 2">SSS 2</option><option value="SSS 3">SSS 3</option>
+                    </select>
+                </div>
+                <div class="mt-6 flex justify-between">
+                    <button type="button" onclick="prevStep(3)" class="px-4 py-2 bg-gray-300 rounded-md">Back</button>
+                    <button type="button" onclick="nextStep(3)" class="px-6 py-2 bg-blue-600 text-white rounded-md">Next</button>
+                </div>
+            </div>
+
+            <div class="form-section" id="section4">
+                <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2"><i data-feather="users" class="inline mr-2"></i>Parent Info</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="text" id="parentFirstName" placeholder="First Name" class="w-full px-3 py-2 border rounded-md">
+                    <input type="text" id="parentLastName" placeholder="Last Name" class="w-full px-3 py-2 border rounded-md">
+                </div>
+                <div class="mt-4">
+                    <input type="tel" id="parentPhone" placeholder="Phone Number" class="w-full px-3 py-2 border rounded-md">
+                </div>
+                <div class="mt-6 flex justify-between">
+                    <button type="button" onclick="prevStep(4)" class="px-4 py-2 bg-gray-300 rounded-md">Back</button>
+                    <button type="submit" id="submitBtn" class="px-6 py-2 bg-green-600 text-white rounded-md flex items-center">
+                        <span id="btnLoader" class="loader hidden"></span>
+                        <span id="btnText">Submit Application</span>
                     </button>
                 </div>
             </div>
         </form>
     </div>
 
-    <!-- Success Modal -->
-    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full text-center">
-            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i data-feather="check" class="text-blue-600 w-8 h-8"></i>
+    <div id="successModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-lg p-8 max-w-sm text-center shadow-2xl">
+            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-feather="check-circle" class="w-10 h-10"></i>
             </div>
-            <h3 class="text-xl font-bold text-gray-800 mb-2">Application Submitted!</h3>
-            <p class="text-gray-600 mb-6">Thank you for applying to Mustard Seed School. We will contact you soon.</p>
-            <button onclick="closeModal()" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                Close
-            </button>
+            <h3 class="text-2xl font-bold mb-2">Submitted!</h3>
+            <p class="text-gray-600 mb-6">Your data has been saved. Your dashboard will now reflect your grade.</p>
+            <button onclick="window.location.href='profile.html'" class="w-full bg-blue-600 text-white px-6 py-3 rounded-md font-bold">Open My Dashboard</button>
         </div>
     </div>
 
-    <script src="script.js"></script>
     <script>
+        // 1. Supabase setup
+        const SB_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
+        const _supabase = window.supabase.createClient(SB_URL, SB_KEY);
+
+        // 2. Navigation Functions
+        function nextStep(curr) {
+            document.getElementById(`section${curr}`).classList.remove('active');
+            document.getElementById(`section${curr+1}`).classList.add('active');
+            document.querySelector(`[data-step="${curr+1}"]`).classList.add('active');
+        }
+        function prevStep(curr) {
+            document.getElementById(`section${curr}`).classList.remove('active');
+            document.getElementById(`section${curr-1}`).classList.add('active');
+            document.querySelector(`[data-step="${curr}"]`).classList.remove('active');
+        }
+
+        // 3. Form Submit Logic
+        document.getElementById('admissionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const loader = document.getElementById('btnLoader');
+            const btnText = document.getElementById('btnText');
+
+            // Show Loading
+            btn.disabled = true;
+            loader.classList.remove('hidden');
+            btnText.textContent = "Saving...";
+
+            const { data: { user } } = await _supabase.auth.getUser();
+            if(!user) return alert("Session expired. Please log in again.");
+
+            const admissionData = {
+                id: user.id,
+                full_name: document.getElementById('firstName').value + " " + document.getElementById('lastName').value,
+                date_of_birth: document.getElementById('dob').value,
+                gender: document.querySelector('input[name="gender"]:checked').value,
+                nationality: document.getElementById('nationality').value,
+                address: document.getElementById('address').value,
+                phone: document.getElementById('phone').value,
+                grade_level: document.getElementById('applyingFor').value,
+                parent_name: document.getElementById('parentFirstName').value + " " + document.getElementById('parentLastName').value,
+                parent_phone: document.getElementById('parentPhone').value,
+                previous_school: document.getElementById('previousSchool').value
+            };
+
+            const { error } = await _supabase.from('students').upsert(admissionData);
+
+            // Hide Loading
+            loader.classList.add('hidden');
+            btn.disabled = false;
+            btnText.textContent = "Submit Application";
+
+            if (error) alert("Database Error: " + error.message);
+            else document.getElementById('successModal').classList.remove('hidden');
+        });
+
         feather.replace();
     </script>
 </body>
 </html>
-
