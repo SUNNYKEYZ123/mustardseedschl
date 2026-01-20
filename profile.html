@@ -93,7 +93,7 @@
         document.getElementById('display-phone').textContent = student.phone || "---";
         document.getElementById('display-parent-name').textContent = student.parent_name || "---";
         document.getElementById('display-parent-phone').textContent = student.parent_phone || "---";
-        document.getElementById('display-subject').textContent = student.subject || "Not Assigned";
+        document.getElementById('display-subject').textContent = student.subjects || "Not Assigned";
         document.getElementById('display-address').textContent = student.address || "No address provided";
                 // --- LOCKING LOGIC ---
                 // If the student is already enrolled, lock the form
@@ -120,4 +120,5 @@
     </script>
 </body>
 </html>
+
 
