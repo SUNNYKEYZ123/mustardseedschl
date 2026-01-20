@@ -36,13 +36,15 @@
                         <p id="display-msid" class="text-4xl font-mono mt-2 tracking-tighter">MS-XXXXX</p>
                         <p class="mt-8 text-xs text-blue-300 italic">* Use this ID for CBT Exams and School Login</p>
                     </div>
-                    <div class="mt-10 p-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
-    <h3 class="font-bold text-yellow-800 text-lg">Step 2: Admission Form</h3>
-    <p class="text-yellow-700 text-sm mb-4">You have your ID! Now use it to fill your official admission details.</p>
-    <a href="Admission 3.html" class="inline-block bg-yellow-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-700 transition">
-        Open Admission Form →
-    </a>
-</div>
+
+                    <div id="admission-link-box" class="mt-10 p-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
+                        <h3 class="font-bold text-yellow-800 text-lg">Step 2: Admission Form</h3>
+                        <p class="text-yellow-700 text-sm mb-4">You have your ID! Now use it to fill your official admission details.</p>
+                        <a href="Admission 3.html" class="inline-block bg-yellow-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-700 transition">
+                            Open Admission Form →
+                        </a>
+                    </div>
+
                     <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
                 </div>
 
@@ -70,13 +72,11 @@
     </div>
 
     <script>
-        // 1. Supabase Initialization
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
 
         async function loadProfile() {
             try {
-                // Check if user is logged in
-                const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
+                const { data: { session } } = await _supabase.auth.getSession();
                 
                 if (!session) {
                     window.location.href = 'login.html';
@@ -84,11 +84,8 @@
                 }
 
                 const user = session.user;
-
-                // 2. Generate the MS-ID
                 const generatedID = "MS-" + user.id.substring(0, 5).toUpperCase();
 
-                // 3. Fetch data from 'students' table
                 const { data: student, error } = await _supabase
                     .from('students')
                     .select('*')
@@ -96,39 +93,41 @@
                     .single();
 
                 if (error || !student) {
-                    console.log("No student data found:", error?.message);
-                    document.getElementById('display-fullname').textContent = "Incomplete Profile";
-                    document.getElementById('display-status').textContent = "Form Not Submitted";
+                    document.getElementById('display-fullname').textContent = "New Student";
+                    document.getElementById('display-status').textContent = "Awaiting Admission";
                     document.getElementById('display-msid').textContent = generatedID;
                     return;
                 }
 
                 // Update UI with Database values
-                document.getElementById('display-fullname').textContent = student.full_name || "Name Not Found";
+                document.getElementById('display-fullname').textContent = student.full_name || "Incomplete Profile";
                 document.getElementById('display-msid').textContent = generatedID;
                 document.getElementById('display-status').textContent = student.status || "Pending Approval";
                 document.getElementById('display-grade').textContent = student.grade_level || "Not Specified";
                 document.getElementById('display-parent').textContent = student.parent_phone || "Not Provided";
+
+                // --- LOCKING LOGIC ---
+                // If the student is already enrolled, lock the form
+                if (student.status === "Enrolled") {
+                    const admissionBox = document.getElementById('admission-link-box');
+                    admissionBox.innerHTML = `
+                        <h3 class="font-bold text-green-800 text-lg">✓ Admission Complete</h3>
+                        <p class="text-green-700 text-sm">Your application has been received and locked. Please contact the office for any updates.</p>
+                    `;
+                    admissionBox.className = "mt-10 p-6 bg-green-50 border-2 border-green-200 rounded-xl transition-all";
+                }
 
             } catch (err) {
                 console.error("Dashboard Error:", err);
             }
         }
 
-        // 4. Logout Function
         async function handleLogout() {
-            const { error } = await _supabase.auth.signOut();
-            if (error) alert(error.message);
+            await _supabase.auth.signOut();
             window.location.href = 'login.html';
         }
 
-        // Execute on load
         window.onload = loadProfile;
     </script>
 </body>
 </html>
-
-
-
-
-
