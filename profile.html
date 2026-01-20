@@ -101,7 +101,7 @@
 
             // Fill in Grade Level and Avatar
             document.getElementById('display-grade-level').textContent = profile.grade_level || "Pending Admission";
-            document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${profile.username}&background=random&color=fff`;
+            document.getElementById('user-avatar').src = `https://ui-avatars.com/api/?name=${profile.full_name}&background=random&color=fff`;
             
             // Populate Courses
             const enrollments = profile.enrollments || [];
@@ -138,6 +138,7 @@
 </script>
 </body>
 </html>
+
 
 
 
