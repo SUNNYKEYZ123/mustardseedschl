@@ -11,12 +11,8 @@
     <style>
         .form-section { display: none; }
         .form-section.active { display: block; }
-        
-        /* Progress Bar Styling */
         .progress-step.active { border-color: #3b82f6; background-color: #eff6ff; color: #1d4ed8; }
         .progress-step.completed { background-color: #3b82f6; color: white; border-color: #3b82f6; }
-
-        /* Loading Spinner Styling */
         .loader {
             border: 3px solid #f3f3f3;
             border-top: 3px solid #3b82f6;
@@ -27,15 +23,37 @@
             display: inline-block;
             margin-right: 8px;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hidden { display: none; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-4xl">
+
+    <div id="id-gate" class="fixed inset-0 bg-blue-900 flex items-center justify-center z-[100]">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 text-center">
+            <div class="mb-4 flex justify-center">
+                <div class="bg-blue-100 p-3 rounded-full"><i data-feather="lock" class="text-blue-600 w-8 h-8"></i></div>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800">Identity Verification</h2>
+            <p class="text-gray-600 mt-2 mb-6">Enter your <b>MS-ID</b> from your dashboard to unlock the admission form.</p>
+            
+            <input type="text" id="gate-id-input" placeholder="MS-XXXXX" 
+                   class="w-full p-4 border-2 border-gray-200 rounded-xl mb-4 text-center text-xl font-mono uppercase focus:border-blue-500 outline-none">
+            
+            <button onclick="checkGateID()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition">
+                Verify & Open Form
+            </button>
+            
+            <p id="gate-error" class="text-red-500 mt-4 hidden font-medium">Incorrect ID. Access Denied.</p>
+            
+            <div class="mt-6 pt-6 border-t border-gray-100">
+                <p class="text-xs text-gray-400 mb-2 italic">Not your account?</p>
+                <button onclick="handleLogout()" class="text-sm text-red-500 font-semibold hover:underline">Logout & Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="form-container" class="container mx-auto px-4 py-8 max-w-4xl opacity-0 transition-opacity duration-500">
         <div class="text-center mb-8">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" alt="School Logo" class="mx-auto h-24 mb-4">
             <h1 class="text-3xl font-bold text-blue-800">Mustard Seed School</h1>
@@ -51,7 +69,6 @@
         </div>
 
         <form id="admissionForm" class="bg-white rounded-lg shadow-md p-6" novalidate>
-            
             <div class="form-section active" id="section1">
                 <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2"><i data-feather="user" class="inline mr-2"></i>Student Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -157,10 +174,39 @@
     </div>
 
     <script>
-        // 1. Supabase setup
         const SB_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
         const _supabase = window.supabase.createClient(SB_URL, SB_KEY);
+
+        feather.replace();
+
+        // 1. SECURITY GATE LOGIC
+        async function checkGateID() {
+            const input = document.getElementById('gate-id-input').value.trim().toUpperCase();
+            const { data: { user } } = await _supabase.auth.getUser();
+
+            if (!user) {
+                alert("Please log in first!");
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Generate correct MS-ID
+            const correctID = "MS-" + user.id.substring(0, 5).toUpperCase();
+
+            if (input === correctID) {
+                document.getElementById('id-gate').classList.add('hidden');
+                document.getElementById('form-container').classList.remove('opacity-0');
+            } else {
+                document.getElementById('gate-error').classList.remove('hidden');
+                document.getElementById('gate-id-input').classList.add('border-red-500');
+            }
+        }
+
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            window.location.href = 'login.html';
+        }
 
         // 2. Navigation Functions
         function nextStep(curr) {
@@ -177,18 +223,16 @@
         // 3. Form Submit Logic
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const btn = document.getElementById('submitBtn');
             const loader = document.getElementById('btnLoader');
             const btnText = document.getElementById('btnText');
 
-            // Show Loading
             btn.disabled = true;
             loader.classList.remove('hidden');
             btnText.textContent = "Saving...";
 
             const { data: { user } } = await _supabase.auth.getUser();
-            if(!user) return alert("Session expired. Please log in again.");
+            if(!user) return alert("Session expired.");
 
             const admissionData = {
                 id: user.id,
@@ -198,24 +242,22 @@
                 nationality: document.getElementById('nationality').value,
                 address: document.getElementById('address').value,
                 phone: document.getElementById('phone').value,
-                grade_level: document.getElementById('applyingFor').value,
+                grade: document.getElementById('applyingFor').value, // Matches dashboard student.grade
                 parent_name: document.getElementById('parentFirstName').value + " " + document.getElementById('parentLastName').value,
                 parent_phone: document.getElementById('parentPhone').value,
-                previous_school: document.getElementById('previousSchool').value
+                previous_school: document.getElementById('previousSchool').value,
+                status: "Enrolled"
             };
 
             const { error } = await _supabase.from('students').upsert(admissionData);
 
-            // Hide Loading
             loader.classList.add('hidden');
             btn.disabled = false;
             btnText.textContent = "Submit Application";
 
-            if (error) alert("Database Error: " + error.message);
+            if (error) alert("Error: " + error.message);
             else document.getElementById('successModal').classList.remove('hidden');
         });
-
-        feather.replace();
     </script>
 </body>
 </html>
