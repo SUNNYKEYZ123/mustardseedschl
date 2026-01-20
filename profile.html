@@ -107,7 +107,7 @@
                 document.getElementById('display-fullname').textContent = student.full_name || "Name Not Found";
                 document.getElementById('display-msid').textContent = generatedID;
                 document.getElementById('display-status').textContent = student.status || "Pending Approval";
-                document.getElementById('display-grade').textContent = student.grade || "Not Specified";
+                document.getElementById('display-grade').textContent = student.grade_level || "Not Specified";
                 document.getElementById('display-parent').textContent = student.parent_phone || "Not Provided";
 
             } catch (err) {
@@ -127,6 +127,7 @@
     </script>
 </body>
 </html>
+
 
 
 
