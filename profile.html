@@ -52,7 +52,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="mt-8 flex gap-4">
@@ -64,40 +63,60 @@
     </div>
 
     <script>
-        // 1. Supabase Configuration (Replace with your actual keys)
+        // 1. Supabase Initialization
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
 
         async function loadProfile() {
-            // Check session
-            const { data: { session } } = await _supabase.auth.getSession();
-            if (!session) {
-                window.location.href = 'login.html';
-                return;
-            }
+            try {
+                // Check if user is logged in
+                const { data: { session }, error: sessionError } = await _supabase.auth.getSession();
+                
+                if (!session) {
+                    window.location.href = 'login.html';
+                    return;
+                }
 
-            const user = session.user;
+                const user = session.user;
 
-            // 2. Generate the MS-ID (Slicing the first 5 chars of UUID)
-            const generatedID = "MS-" + user.id.substring(0, 5).toUpperCase();
+                // 2. Generate the MS-ID
+                const generatedID = "MS-" + user.id.substring(0, 5).toUpperCase();
 
-            // 3. Fetch data from 'students' table
-            const { data: student, error } = await _supabase
-                .from('students')
-                .select('*')
-                .eq('id', user.id)
-                .single();
+                // 3. Fetch data from 'students' table
+                const { data: student, error } = await _supabase
+                    .from('students')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
 
-            if (error) {
-                console.log("Error or no data found:", error.message);
-                document.getElementById('display-fullname').textContent = "Incomplete Profile";
-                document.getElementById('display-status').textContent = "Form Not Submitted";
-                return;
-            }
+                if (error || !student) {
+                    console.log("No student data found:", error?.message);
+                    document.getElementById('display-fullname').textContent = "Incomplete Profile";
+                    document.getElementById('display-status').textContent = "Form Not Submitted";
+                    document.getElementById('display-msid').textContent = generatedID;
+                    return;
+                }
 
-            if (student) {
                 // Update UI with Database values
-                document.getElementById('display-fullname').textContent = student.full_name;
+                document.getElementById('display-fullname').textContent = student.full_name || "Name Not Found";
                 document.getElementById('display-msid').textContent = generatedID;
-                document.getElementById('display-status
+                document.getElementById('display-status').textContent = student.status || "Pending Approval";
+                document.getElementById('display-grade').textContent = student.grade || "Not Specified";
+                document.getElementById('display-parent').textContent = student.parent_phone || "Not Provided";
 
+            } catch (err) {
+                console.error("Dashboard Error:", err);
+            }
+        }
 
+        // 4. Logout Function
+        async function handleLogout() {
+            const { error } = await _supabase.auth.signOut();
+            if (error) alert(error.message);
+            window.location.href = 'login.html';
+        }
+
+        // Execute on load
+        window.onload = loadProfile;
+    </script>
+</body>
+</html>
