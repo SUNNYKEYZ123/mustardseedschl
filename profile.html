@@ -24,24 +24,28 @@
         <div class="max-w-4xl mx-auto">
             
             <div class="bg-white p-8 rounded-xl shadow-sm border-l-8 border-blue-600 mb-6">
-                <div class="flex flex-col md:flex-row items-center gap-6">
-                    <div class="w-24 h-24 bg-blue-50 rounded-full border-4 border-blue-100 flex items-center justify-center overflow-hidden shrink-0">
-                        <svg class="w-16 h-16 text-blue-300" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                        </svg>
-                    </div>
-
-                    <div class="text-center md:text-left">
-                        <h2 class="text-gray-500 uppercase tracking-widest text-xs font-semibold">Student Profile</h2>
-                        <h1 id="display-fullname" class="text-3xl font-black text-gray-800 mt-1 italic">Loading Name...</h1>
-                        <p id="display-email" class="text-blue-600 font-medium text-sm">loading-email@gmail.com</p>
-                        <div class="mt-4 inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold">
-                            Status: <span id="display-status">Checking...</span>
-                        </div>
-                    </div>
-                </div>
+    <div class="flex flex-col md:flex-row items-center gap-6">
+        
+        <div class="relative group cursor-pointer" onclick="document.getElementById('photoInput').click()">
+            <div class="w-24 h-24 bg-blue-50 rounded-full border-4 border-blue-100 flex items-center justify-center overflow-hidden shrink-0">
+                <img id="profile-img" src="" class="hidden w-full h-full object-cover">
+                <svg id="placeholder-icon" class="w-16 h-16 text-blue-300" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                </svg>
             </div>
+            <div class="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <span class="text-white text-[10px] font-bold">CHANGE</span>
+            </div>
+            <input type="file" id="photoInput" class="hidden" accept="image/*" onchange="uploadPhoto(event)">
+        </div>
 
+        <div class="text-center md:text-left">
+            <h2 class="text-gray-500 uppercase tracking-widest text-xs font-semibold">Student Profile</h2>
+            <h1 id="display-fullname" class="text-3xl font-black text-gray-800 mt-1 italic">Loading Name...</h1>
+            <p id="display-email" class="text-blue-600 font-medium text-sm">loading-email@gmail.com</p>
+        </div>
+    </div>
+</div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 <div class="bg-gradient-to-br from-blue-700 to-blue-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
@@ -176,3 +180,4 @@
     </script>
 </body>
 </html>
+
