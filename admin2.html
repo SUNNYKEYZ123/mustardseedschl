@@ -98,10 +98,10 @@
 
         async function loadAllStudents() {
             const { data: students, error } = await _supabase
-                .from('students')
-                .select('*')
-                .order('created_at', { ascending: false });
-
+    .from('students')
+    .select('*')
+    .eq('is_admin', false) // This hides Admins from the student table
+    .order('created_at', { ascending: false });
             if (error) return;
             allStudents = students;
             renderTable(allStudents);
@@ -194,4 +194,5 @@
         window.onload = initAdmin;
     </script>
 </body>
+
 </html>
