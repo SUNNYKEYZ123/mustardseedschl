@@ -9,7 +9,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen font-sans">
-
+<style>
+    /* Hide everything until the script says it's okay */
+  body { visibility: hidden; }
+    </style>
     <nav class="bg-slate-900 text-white p-4 shadow-xl sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center gap-3">
@@ -70,6 +73,27 @@
     </div>
 
     <script>
+        // Add this to the TOP of your admin2.html script
+async function checkAdminAccess() {
+    const { data: { user } } = await mySupabase.auth.getUser();
+    
+    if (!user) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const { data: profile } = await mySupabase
+        .from('students')
+        .select('is_admin')
+        .eq('id', user.id)
+        .single();
+
+    if (!profile || profile.is_admin !== true) {
+        alert("Restricted Area: Admins Only!");
+        window.location.href = 'profile.html';
+    }
+}
+checkAdminAccess();
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
 
         let allStudents = [];
@@ -119,6 +143,7 @@
                 return;
             } else {
                 document.getElementById('empty-state').classList.add('hidden');
+                document.body.style.visibility = 'visible';
             }
 
             list.forEach(st => {
@@ -196,3 +221,4 @@
 </body>
 
 </html>
+
