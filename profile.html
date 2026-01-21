@@ -177,15 +177,27 @@
             }
         }
 
-        async function handleLogout() {
-            await _supabase.auth.signOut();
-            window.location.href = 'login.html';
-        }
+async function handleLogout() {
+    try {
+        // 1. Tell Supabase to end the session
+        await _supabase.auth.signOut();
+        
+        // 2. Clear any leftover data in the browser memory
+        localStorage.clear();
+        sessionStorage.clear();
 
-        window.onload = loadProfile;
+        // 3. Force the redirect to the login page
+        window.location.replace('login.html'); 
+    } catch (err) {
+        console.error("Logout failed:", err);
+        // Even if there is an error, send them to login anyway
+        window.location.href = 'login.html';
+    }
+}    
     </script>
 </body>
 </html>
+
 
 
 
