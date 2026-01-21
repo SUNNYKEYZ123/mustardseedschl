@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Admin | Mustard Seed School</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+
+    <nav class="bg-slate-900 text-white p-4 shadow-xl sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10" alt="Logo">
+                <div>
+                    <h1 class="text-lg font-bold leading-none">Admin Console</h1>
+                    <span class="text-[10px] text-slate-400 uppercase tracking-widest">Mustard Seed Management</span>
+                </div>
+            </div>
+            <div class="flex gap-4 items-center">
+                <a href="profile.html" class="text-xs hover:text-blue-400 transition">Back to Portal</a>
+                <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-xs font-bold transition">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto mt-8 px-4 pb-20">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+            <div>
+                <h1 class="text-3xl font-black text-slate-800">Students Directory</h1>
+                <p class="text-slate-500 text-sm">Review applications and manage student records</p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <div class="relative">
+                    <input type="text" id="searchInput" onkeyup="filterStudents()" placeholder="Search Name, ID, or Phone..." 
+                           class="w-full sm:w-64 pl-10 pr-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none shadow-sm">
+                    <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                
+                <div class="bg-white px-6 py-2 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+                    <span class="text-slate-400 text-xs font-bold uppercase">Total Students</span>
+                    <span id="student-count" class="text-2xl font-black text-blue-600">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                            <th class="p-5 text-[10px] uppercase text-slate-400 font-black">Student Info</th>
+                            <th class="p-5 text-[10px] uppercase text-slate-400 font-black">Identity</th>
+                            <th class="p-5 text-[10px] uppercase text-slate-400 font-black">Class/Subject</th>
+                            <th class="p-5 text-[10px] uppercase text-slate-400 font-black text-center">Admission Status</th>
+                            <th class="p-5 text-[10px] uppercase text-slate-400 font-black text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-table-body" class="divide-y divide-slate-100">
+                        </tbody>
+                </table>
+            </div>
+            <div id="empty-state" class="hidden p-20 text-center">
+                <p class="text-slate-400">No students found matching your search.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
+
+        let allStudents = [];
+
+        async function initAdmin() {
+            try {
+                const { data: { session } } = await _supabase.auth.getSession();
+                if (!session) { window.location.href = 'login.html'; return; }
+
+                // SECURITY CHECK: Is this user an Admin?
+                const { data: userRecord } = await _supabase
+                    .from('students')
+                    .select('is_admin')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (!userRecord || !userRecord.is_admin) {
+                    alert("⚠️ Access Denied! You do not have Admin privileges.");
+                    window.location.href = 'profile.html';
+                    return;
+                }
+
+                loadAllStudents();
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadAllStudents() {
+            const { data: students, error } = await _supabase
+                .from('students')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) return;
+            allStudents = students;
+            renderTable(allStudents);
+        }
+
+        function renderTable(list) {
+            const tableBody = document.getElementById('admin-table-body');
+            const countDisplay = document.getElementById('student-count');
+            
+            countDisplay.textContent = list.length;
+            tableBody.innerHTML = "";
+
+            if (list.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
+                return;
+            } else {
+                document.getElementById('empty-state').classList.add('hidden');
+            }
+
+            list.forEach(st => {
+                const msId = "MS-" + st.id.substring(0, 5).toUpperCase();
+                const statusClass = st.status === 'Enrolled' ? 'bg-green-100 text-green-700 border-green-200' : 'bg-yellow-100 text-yellow-700 border-yellow-200';
+
+                tableBody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition group">
+                        <td class="p-5">
+                            <div class="flex items-center gap-3">
+                                <img src="${st.avatar_url || 'https://via.placeholder.com/100'}" class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover">
+                                <div>
+                                    <p class="font-bold text-slate-800 leading-none">${st.full_name || 'Incomplete Profile'}</p>
+                                    <p class="text-[10px] text-slate-500 mt-1 uppercase">${st.gender || 'N/A'} • ${st.phone || 'No Phone'}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-5">
+                            <span class="font-mono text-sm bg-slate-100 px-2 py-1 rounded text-slate-600 border border-slate-200">${msId}</span>
+                        </td>
+                        <td class="p-5">
+                            <p class="text-sm font-bold text-slate-700">${st.grade_level || '---'}</p>
+                            <p class="text-[10px] text-slate-400 uppercase">${st.subject || 'Not Assigned'}</p>
+                        </td>
+                        <td class="p-5 text-center">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black border uppercase ${statusClass}">
+                                ${st.status || 'Pending'}
+                            </span>
+                        </td>
+                        <td class="p-5 text-right">
+                            <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition">
+                                <button onclick="approveStudent('${st.id}')" class="bg-green-600 text-white p-2 rounded-lg hover:bg-green-700 shadow-sm" title="Approve Student">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                </button>
+                                <button onclick="alert('Phone: ${st.phone}\\nParent: ${st.parent_name}\\nAddress: ${st.address}')" class="bg-slate-800 text-white p-2 rounded-lg hover:bg-black shadow-sm" title="View Details">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function filterStudents() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allStudents.filter(st => 
+                (st.full_name && st.full_name.toLowerCase().includes(query)) ||
+                st.id.toLowerCase().includes(query) ||
+                (st.phone && st.phone.includes(query))
+            );
+            renderTable(filtered);
+        }
+
+        async function approveStudent(id) {
+            if (!confirm("Approve this student? This will lock their registration form.")) return;
+            const { error } = await _supabase
+                .from('students')
+                .update({ status: 'Enrolled' })
+                .eq('id', id);
+
+            if (!error) {
+                alert("Student Enrolled successfully!");
+                loadAllStudents();
+            }
+        }
+
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            window.location.replace('login.html');
+        }
+
+        window.onload = initAdmin;
+    </script>
+</body>
+</html>
