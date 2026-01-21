@@ -206,33 +206,33 @@
                 }
 
                 // 3. Logic for Admin vs Student
-                // If user is marked as is_admin in DB, they can bypass student restrictions
-                if (profile.is_admin === true) {
-                    btn.innerHTML = 'Success! Redirecting Admin...';
-                    btn.style.background = '#10b981';
-                    
-                    setTimeout(() => {
-                        window.location.href = 'admin2.html';
-                    }, 800);
-                    return;
-                }
+if (profile.is_admin === true && selectedRole === 'admin') {
+    // ONLY go to Admin page if they are an admin AND selected Admin role
+    btn.innerHTML = 'Success! Opening Admin Panel...';
+    btn.style.background = '#10b981';
+    
+    setTimeout(() => {
+        window.location.href = 'admin2.html';
+    }, 800);
+    return;
+}
 
-                // 4. Regular Role Validation (for Students/Teachers)
-                if (profile.role !== selectedRole) {
-                    throw new Error(`Access denied. You are registered as ${profile.role}.`);
-                }
+// 4. Regular Role Validation (for Students/Teachers/Admins acting as students)
+if (profile.role !== selectedRole && profile.is_admin !== true) {
+    // If they aren't the right role AND they aren't an admin, block them
+    throw new Error(`Access denied. You are registered as ${profile.role}.`);
+}
 
-                // SUCCESS for Students
-                btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Success!';
-                btn.style.background = '#10b981';
+// SUCCESS: Send to profile page
+btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Success!';
+btn.style.background = '#10b981';
 
-                localStorage.setItem('user_name', profile.username);
-                localStorage.setItem('user_role', profile.role);
+localStorage.setItem('user_name', profile.username);
+localStorage.setItem('user_role', profile.role);
 
-                setTimeout(() => {
-                    window.location.href = 'profile.html'; 
-                }, 800);
-
+setTimeout(() => {
+    window.location.href = 'profile.html'; 
+}, 800);
             } catch (err) {
                 btn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i> Login';
                 btn.disabled = false;
@@ -242,3 +242,4 @@
     </script>
 </body>
 </html>
+
