@@ -12,38 +12,22 @@
 
     <nav class="bg-blue-900 text-white p-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">Mustard School Portal</h1>
             <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-sm transition">Logout</button>
         </div>
     </nav>
 
-    <div class="bg-white p-8 rounded-xl shadow-sm border-l-8 border-blue-600 mb-6 relative">
-    
-    <div class="flex items-center gap-3 mb-6 border-b pb-4">
-        <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" alt="School Logo" class="h-12 w-12 object-contain">
-        <div>
-            <h1 class="text-xl font-bold text-blue-900 leading-none">Mustard Seed School</h1>
-            <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Student Management Portal</p>
-        </div>
-    </div>
-
-    <div class="flex flex-col md:flex-row items-center gap-6">
-        <div class="w-24 h-24 bg-gray-200 rounded-full border-4 border-blue-50 flex items-center justify-center overflow-hidden shrink-0">
-            <svg class="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-            </svg>
-        </div>
-
-        <div class="text-center md:text-left flex-grow">
-            <h2 class="text-gray-500 uppercase tracking-widest text-xs font-semibold">Student Profile</h2>
-            <h1 id="display-fullname" class="text-3xl font-black text-gray-800 mt-1">Loading Name...</h1>
-            <p id="display-email" class="text-blue-600 font-medium text-sm">loading-email@gmail.com</p>
+    <div class="container mx-auto mt-10 px-4">
+        <div class="max-w-4xl mx-auto">
             
-            <div class="mt-4 inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-bold">
-                Status: <span id="display-status">Checking...</span>
+            <div class="bg-white p-8 rounded-xl shadow-sm border-l-8 border-blue-600 mb-6">
+                <h2 class="text-gray-500 uppercase tracking-widest text-xs font-semibold">Student Profile</h2>
+                <h1 id="display-fullname" class="text-3xl font-black text-gray-800 mt-1">Loading Name...</h1>
+                <div class="mt-4 inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-bold">
+                    Status: <span id="display-status">Checking...</span>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
                 <div class="bg-gradient-to-br from-blue-700 to-blue-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
@@ -65,58 +49,58 @@
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-    <h3 class="text-gray-400 text-xs uppercase font-bold mb-4">Full Student Profile</h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
-        
-        <div class="flex justify-between border-b pb-1">
-            <span class="text-gray-500 text-sm">Gender:</span>
-            <span id="display-gender" class="font-semibold text-gray-800 text-sm">---</span>
-        </div>
-
-        <div class="flex justify-between border-b pb-1">
-            <span class="text-gray-500 text-sm">DOB:</span>
-            <span id="display-dob" class="font-semibold text-gray-800 text-sm">---</span>
-        </div>
-
-        <div class="flex justify-between border-b pb-1">
-            <span class="text-gray-500 text-sm">Nationality:</span>
-            <span id="display-nationality" class="font-semibold text-gray-800 text-sm">---</span>
-        </div>
-
-        <div class="flex justify-between border-b pb-1">
-            <span class="text-gray-500 text-sm">Class:</span>
-            <span id="display-grade" class="font-semibold text-gray-800 text-sm">---</span>
-        </div>
-
-        <div class="flex justify-between border-b pb-1">
-            <span class="text-gray-500 text-sm">Phone:</span>
-            <span id="display-phone" class="font-semibold text-gray-800 text-sm">---</span>
-        </div>
-
-        <div class="flex justify-between border-b pb-1">
-            <span class="text-gray-500 text-sm">Parent Name:</span>
-            <span id="display-parent-name" class="font-semibold text-gray-800 text-sm">---</span>
-        </div>
-
-        <div class="flex justify-between border-b pb-1">
-            <span class="text-gray-500 text-sm">Parent Phone:</span>
-            <span id="display-parent-phone" class="font-semibold text-gray-800 text-sm">---</span>
-        </div>
-
-        <div class="flex justify-between border-b pb-1">
-            <span class="text-gray-500 text-sm">Subject:</span>
-            <span id="display-subject" class="font-semibold text-gray-800 text-sm">---</span>
-        </div>
-
-    </div>
-    <div class="mt-4 pt-2 border-t">
-        <span class="text-gray-500 text-sm">Address:</span>
-        <p id="display-address" class="text-gray-800 text-sm italic">---</p>
-    </div>
-</div>
+                    <h3 class="text-gray-400 text-xs uppercase font-bold mb-4">Full Student Profile</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+                        
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500 text-sm">Gender:</span>
+                            <span id="display-gender" class="font-semibold text-gray-800 text-sm">---</span>
+                        </div>
+                
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500 text-sm">DOB:</span>
+                            <span id="display-dob" class="font-semibold text-gray-800 text-sm">---</span>
+                        </div>
+                
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500 text-sm">Nationality:</span>
+                            <span id="display-nationality" class="font-semibold text-gray-800 text-sm">---</span>
+                        </div>
+                
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500 text-sm">Class:</span>
+                            <span id="display-grade" class="font-semibold text-gray-800 text-sm">---</span>
+                        </div>
+                
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500 text-sm">Phone:</span>
+                            <span id="display-phone" class="font-semibold text-gray-800 text-sm">---</span>
+                        </div>
+                
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500 text-sm">Parent Name:</span>
+                            <span id="display-parent-name" class="font-semibold text-gray-800 text-sm">---</span>
+                        </div>
+                
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500 text-sm">Parent Phone:</span>
+                            <span id="display-parent-phone" class="font-semibold text-gray-800 text-sm">---</span>
+                        </div>
+                
+                        <div class="flex justify-between border-b pb-1">
+                            <span class="text-gray-500 text-sm">Subject:</span>
+                            <span id="display-subject" class="font-semibold text-gray-800 text-sm">---</span>
+                        </div>
+                
+                    </div>
+                    <div class="mt-4 pt-2 border-t">
+                        <span class="text-gray-500 text-sm">Address:</span>
+                        <p id="display-address" class="text-gray-800 text-sm italic">---</p>
+                    </div>
+                </div>
             <div class="mt-8 flex gap-4">
                 <button onclick="window.print()" class="bg-white border border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-50 transition">Print Profile</button>
-                <a href="No Exam.html" id="cbt-link" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-bold">Enter CBT Portal</a>
+                <a href="cbt-login.html" id="cbt-link" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-bold">Enter CBT Portal</a>
             </div>
 
         </div>
@@ -126,40 +110,37 @@
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
 
         async function loadProfile() {
-    try {
-        const { data: { session } } = await _supabase.auth.getSession();
-        if (!session) { window.location.href = 'login.html'; return; }
+            try {
+                const { data: { session } } = await _supabase.auth.getSession();
+                
+                if (!session) {
+                    window.location.href = 'd.html';
+                    return;
+                }
 
-        const user = session.user;
-        const generatedID = "MS-" + user.id.substring(0, 5).toUpperCase();
+                const user = session.user;
+                const generatedID = "MS-" + user.id.substring(0, 5).toUpperCase();
 
-        const { data: student, error } = await _supabase
-            .from('students')
-            .select('*')
-            .eq('id', user.id)
-            .single();
+                const { data: student, error } = await _supabase
+                    .from('students')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single();
 
-        if (error || !student) {
-            document.getElementById('display-fullname').textContent = "New Student";
-            document.getElementById('display-msid').textContent = generatedID;
-            return;
-        }
+                if (error || !student) {
+                    document.getElementById('display-fullname').textContent = "New Student";
+                    document.getElementById('display-status').textContent = "Awaiting Admission";
+                    document.getElementById('display-msid').textContent = generatedID;
+                    return;
+                }
 
-        // --- MAPPING DATA TO THE UI ---
-        document.getElementById('display-fullname').textContent = student.full_name || "---";
-        document.getElementById('display-msid').textContent = generatedID;
-        document.getElementById('display-status').textContent = student.status || "Pending";
-        
-        // New Information Fields
-        document.getElementById('display-gender').textContent = student.gender || "---";
-        document.getElementById('display-dob').textContent = student.date_of_birth || "---";
-        document.getElementById('display-nationality').textContent = student.nationality || "---";
-        document.getElementById('display-grade').textContent = student.grade_level || "---";
-        document.getElementById('display-phone').textContent = student.phone || "---";
-        document.getElementById('display-parent-name').textContent = student.parent_name || "---";
-        document.getElementById('display-parent-phone').textContent = student.parent_phone || "---";
-        document.getElementById('display-subject').textContent = student.subjects || "Not Assigned";
-        document.getElementById('display-address').textContent = student.address || "No address provided";
+                // Update UI with Database values
+                document.getElementById('display-fullname').textContent = student.full_name || "Incomplete Profile";
+                document.getElementById('display-msid').textContent = generatedID;
+                document.getElementById('display-status').textContent = student.status || "Pending Approval";
+                document.getElementById('display-grade').textContent = student.grade_level || "Not Specified";
+                document.getElementById('display-parent').textContent = student.parent_phone || "Not Provided";
+
                 // --- LOCKING LOGIC ---
                 // If the student is already enrolled, lock the form
                 if (student.status === "Enrolled") {
@@ -176,30 +157,12 @@
             }
         }
 
-async function handleLogout() {
-    try {
-        // 1. Tell Supabase to end the session
-        await _supabase.auth.signOut();
-        
-        // 2. Clear any leftover data in the browser memory
-        localStorage.clear();
-        sessionStorage.clear();
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            window.location.href = 'd.html';
+        }
 
-        // 3. Force the redirect to the login page
-        window.location.replace('login.html'); 
-    } catch (err) {
-        console.error("Logout failed:", err);
-        // Even if there is an error, send them to login anyway
-        window.location.href = 'login.html';
-    }
-}    
+        window.onload = loadProfile;
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
