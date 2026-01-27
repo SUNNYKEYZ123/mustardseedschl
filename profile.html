@@ -1,211 +1,373 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
+    <link rel="icon" type="image/x-icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard | School Portal</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Mustard Seed CBT</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-50">
+    <div id="root"></div>
 
-    <nav class="bg-blue-900 text-white p-4 shadow-md">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-8 w-8" alt="Logo">
-                <h1 class="text-xl font-bold">Mustard School Portal</h1>
-            </div>
-            <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-sm transition font-bold">Logout</button>
-        </div>
-    </nav>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    <div class="container mx-auto mt-10 px-4 pb-20">
-        <div class="max-w-4xl mx-auto">
+        const firebaseConfig = {
+            apiKey: "AIzaSyDOO3uHmzOuAxJcdLxu-OImzlH12A6FpeY",
+            authDomain: "my-project-a6208.firebaseapp.com",
+            projectId: "my-project-a6208",
+            storageBucket: "my-project-a6208.firebasestorage.app",
+            messagingSenderId: "784486701962",
+            appId: "1:784486701962:web:0d3cd002bbfd647e944673"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.fb = {
+            db: getFirestore(app),
+            auth: getAuth(app),
+            collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where, signInAnonymously, onAuthStateChanged, setDoc, writeBatch
+        };
+    </script>
+
+    <script type="text/babel">
+        const { createClient } = window.supabase;
+        const SB_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
+        const _supabase = createClient(SB_URL, SB_KEY);
+
+        const AppContext = React.createContext(null);
+        const ADMIN_PASSWORD = 'SUNNYKEYZ2025@';
+        const optionLetters = ['A', 'B', 'C', 'D'];
+
+        // --- ADMIN PAGE COMPONENT ---
+        const AdminPage = () => {
+            const { setPage } = React.useContext(AppContext);
+            const [auth, setAuth] = React.useState(false);
+            const [pass, setPass] = React.useState('');
+            const [activeTab, setActiveTab] = React.useState('dashboard'); 
             
-            <div class="bg-white p-8 rounded-xl shadow-sm border-l-8 border-blue-600 mb-6">
-                <div class="flex flex-col md:flex-row items-center gap-6">
-                    <div class="relative group cursor-pointer" onclick="document.getElementById('photoInput').click()">
-                        <div class="w-24 h-24 bg-blue-50 rounded-full border-4 border-blue-100 flex items-center justify-center overflow-hidden shrink-0">
-                            <img id="profile-img" src="" class="hidden w-full h-full object-cover">
-                            <svg id="placeholder-icon" class="w-16 h-16 text-blue-300" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <div class="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span class="text-white text-[10px] font-bold uppercase">Update</span>
-                        </div>
-                        <input type="file" id="photoInput" class="hidden" accept="image/*" onchange="uploadPhoto(event)">
-                    </div>
+            const [scores, setScores] = React.useState([]);
+            const [questions, setQuestions] = React.useState([]);
+            const [examLive, setExamLive] = React.useState(false);
+            const [newQ, setNewQ] = React.useState({ text: '', options: ['', '', '', ''], correct: 0 });
 
-                    <div class="text-center md:text-left">
-                        <h2 class="text-gray-500 uppercase tracking-widest text-xs font-semibold">Student Profile</h2>
-                        <h1 id="display-fullname" class="text-3xl font-black text-gray-800 mt-1">Loading...</h1>
-                        <p id="display-email" class="text-blue-600 font-medium text-sm">---</p>
-                        <div class="mt-4 inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold uppercase">
-                            Status: <span id="display-status">Checking...</span>
+            React.useEffect(() => {
+                if (!auth) return;
+                const unsub1 = fb.onSnapshot(fb.collection(fb.db, "artifacts/my-project-a6208/scores"), (s) => {
+                    const data = s.docs.map(d => ({id: d.id, ...d.data()}));
+                    setScores(data.sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0)));
+                });
+                const unsub2 = fb.onSnapshot(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"), (s) => {
+                    setQuestions(s.docs.map(d => ({id: d.id, ...d.data()})));
+                });
+                const unsub3 = fb.onSnapshot(fb.doc(fb.db, "artifacts/my-project-a6208/settings/examControl"), (doc) => {
+                    if (doc.exists()) setExamLive(doc.data().isLive);
+                });
+                return () => { unsub1(); unsub2(); unsub3(); };
+            }, [auth]);
+
+            const toggleExam = async () => {
+                await fb.setDoc(fb.doc(fb.db, "artifacts/my-project-a6208/settings/examControl"), { isLive: !examLive });
+            };
+
+            const addQuestion = async () => {
+                if(!newQ.text) return alert("Enter Question!");
+                await fb.addDoc(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"), {
+                    questionText: newQ.text,
+                    options: newQ.options,
+                    correctOptionIndex: parseInt(newQ.correct)
+                });
+                setNewQ({ text: '', options: ['', '', '', ''], correct: 0 });
+                alert("Question Saved!");
+            };
+
+            const deleteResult = async (id) => {
+                if(confirm("Delete this student result?")) {
+                    await fb.deleteDoc(fb.doc(fb.db, "artifacts/my-project-a6208/scores", id));
+                }
+            };
+
+            const deleteAllResults = async () => {
+                if(confirm("WARNING: This will permanently delete ALL student scores. Are you sure?")) {
+                    const batch = fb.writeBatch(fb.db);
+                    scores.forEach(s => {
+                        const ref = fb.doc(fb.db, "artifacts/my-project-a6208/scores", s.id);
+                        batch.delete(ref);
+                    });
+                    await batch.commit();
+                    alert("All results cleared.");
+                }
+            };
+
+            if (!auth) return (
+                <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                    <div className="bg-white p-8 rounded-2xl shadow-xl border w-80">
+                        <h2 className="text-xl font-black mb-4 tracking-tighter">ADMIN LOGIN</h2>
+                        <input type="password" placeholder="••••••••" className="w-full p-3 border rounded-lg mb-4 outline-none focus:border-blue-500" onChange={e => setPass(e.target.value)} />
+                        <button onClick={() => pass === ADMIN_PASSWORD ? setAuth(true) : alert("Wrong Password")} className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">Access Panel</button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="flex min-h-screen bg-gray-50">
+                    <aside className="w-64 bg-slate-900 text-white flex flex-col p-6 fixed h-full">
+                        <h1 className="text-xl font-black mb-10 text-blue-400">MUSTARD ADMIN</h1>
+                        <nav className="space-y-2 flex-1">
+                            <button onClick={()=>setActiveTab('dashboard')} className={`w-full text-left p-3 rounded-lg font-bold transition ${activeTab==='dashboard'?'bg-blue-600':'hover:bg-slate-800 text-gray-400'}`}>📊 Dashboard</button>
+                            <button onClick={()=>setActiveTab('questions')} className={`w-full text-left p-3 rounded-lg font-bold transition ${activeTab==='questions'?'bg-blue-600':'hover:bg-slate-800 text-gray-400'}`}>📝 Question Bank</button>
+                            <button onClick={()=>setActiveTab('results')} className={`w-full text-left p-3 rounded-lg font-bold transition ${activeTab==='results'?'bg-blue-600':'hover:bg-slate-800 text-gray-400'}`}>🏆 Exam Results</button>
+                        </nav>
+                        <button onClick={()=>setPage('home')} className="mt-10 text-gray-400 text-sm hover:text-white">← Logout to Home</button>
+                    </aside>
+
+                    <main className="flex-1 ml-64 p-10">
+                        {activeTab === 'dashboard' && (
+                            <div className="space-y-6">
+                                <h2 className="text-3xl font-black tracking-tighter">System Overview</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div className="bg-white p-6 rounded-2xl shadow-sm border">
+                                        <p className="text-gray-400 font-bold text-xs uppercase">Exam Status</p>
+                                        <h3 className={`text-2xl font-black ${examLive?'text-green-500':'text-red-500'}`}>{examLive?'LIVE':'OFFLINE'}</h3>
+                                        <button onClick={toggleExam} className="mt-4 w-full py-2 bg-slate-900 text-white rounded-lg text-sm font-bold">{examLive?'Stop Exam':'Start Exam'}</button>
+                                    </div>
+                                    <div className="bg-white p-6 rounded-2xl shadow-sm border">
+                                        <p className="text-gray-400 font-bold text-xs uppercase">Total Questions</p>
+                                        <h3 className="text-2xl font-black">{questions.length}</h3>
+                                    </div>
+                                    <div className="bg-white p-6 rounded-2xl shadow-sm border">
+                                        <p className="text-gray-400 font-bold text-xs uppercase">Student Submissions</p>
+                                        <h3 className="text-2xl font-black text-blue-600">{scores.length}</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'questions' && (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                                <section className="bg-white p-6 rounded-2xl shadow border h-fit sticky top-10">
+                                    <h2 className="text-xl font-black mb-4">Add New Question</h2>
+                                    <textarea className="w-full p-4 border rounded-xl mb-4 bg-gray-50 focus:bg-white transition" placeholder="Enter Question Question..." value={newQ.text} onChange={e=>setNewQ({...newQ, text:e.target.value})} />
+                                    <div className="grid grid-cols-2 gap-2 mb-4">
+                                        {newQ.options.map((o,i)=>(
+                                            <input key={i} className="p-2 border rounded" placeholder={`Option ${optionLetters[i]}`} value={o} onChange={e=>{let c=[...newQ.options];c[i]=e.target.value;setNewQ({...newQ,options:c})}} />
+                                        ))}
+                                    </div>
+                                    <select className="w-full p-2 border rounded mb-4 font-bold" value={newQ.correct} onChange={e=>setNewQ({...newQ,correct:e.target.value})}>
+                                        {optionLetters.map((l,i)=><option key={i} value={i}>Correct Option: {l}</option>)}
+                                    </select>
+                                    <button onClick={addQuestion} className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-blue-700">Add to Bank</button>
+                                </section>
+
+                                <section className="space-y-4">
+                                    <h2 className="text-xl font-black">Question Bank ({questions.length})</h2>
+                                    {questions.map((q,i)=>(
+                                        <div key={q.id} className="bg-white p-4 rounded-xl border flex justify-between items-center shadow-sm">
+                                            <div>
+                                                <p className="font-bold text-sm">{i+1}. {q.questionText}</p>
+                                                <span className="text-green-600 text-[10px] font-black uppercase">Ans: {optionLetters[q.correctOptionIndex]}</span>
+                                            </div>
+                                            <button onClick={async()=>await fb.deleteDoc(fb.doc(fb.db,"artifacts/my-project-a6208/public/data/questions",q.id))} className="text-red-400 hover:text-red-600 font-bold text-xs">Delete</button>
+                                        </div>
+                                    ))}
+                                </section>
+                            </div>
+                        )}
+
+                        {activeTab === 'results' && (
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-2xl font-black tracking-tighter">Student Results</h2>
+                                    <button onClick={deleteAllResults} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-xs font-bold transition">Delete All Results</button>
+                                </div>
+                                <div className="bg-white rounded-2xl shadow border overflow-hidden">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead className="bg-slate-50 border-b">
+                                            <tr>
+                                                <th className="p-4 text-xs font-black uppercase text-gray-400">Student</th>
+                                                <th className="p-4 text-xs font-black uppercase text-gray-400">Raw Score</th>
+                                                <th className="p-4 text-xs font-black uppercase text-gray-400">Grade</th>
+                                                <th className="p-4 text-xs font-black uppercase text-gray-400">Submission Time</th>
+                                                <th className="p-4 text-xs font-black uppercase text-gray-400">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {scores.map(s => (
+                                                <tr key={s.id} className="border-b hover:bg-blue-50/50 transition">
+                                                    <td className="p-4 font-bold">{s.studentName}<br/><span className="text-[10px] text-gray-400 font-mono">{s.studentId}</span></td>
+                                                    <td className="p-4 font-black text-slate-700">{s.correctAnswers} / {s.totalQuestions}</td>
+                                                    <td className="p-4"><span className={`px-2 py-1 rounded text-xs font-black ${s.score >= 50 ? 'bg-green-100 text-green-700':'bg-red-100 text-red-700'}`}>{s.score}%</span></td>
+                                                    <td className="p-4 text-xs font-medium text-gray-500">
+                                                        {s.date?.toDate ? s.date.toDate().toLocaleString() : new Date().toLocaleString()}
+                                                    </td>
+                                                    <td className="p-4">
+                                                        <button onClick={() => deleteResult(s.id)} className="text-red-500 hover:text-red-700 font-bold text-xs uppercase">Delete</button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+                </div>
+            );
+        };
+
+        // --- STUDENT PAGE COMPONENT ---
+        const StudentExamPage = () => {
+            const { setPage } = React.useContext(AppContext);
+            const [isLive, setIsLive] = React.useState(null);
+            const [msId, setMsId] = React.useState('');
+            const [student, setStudent] = React.useState(null);
+            const [questions, setQuestions] = React.useState([]);
+            const [index, setIndex] = React.useState(0);
+            const [answers, setAnswers] = React.useState({});
+            const [loading, setLoading] = React.useState(false);
+            const [finished, setFinished] = React.useState(false);
+            const [finalScore, setFinalScore] = React.useState(0);
+
+            React.useEffect(() => {
+                const statusRef = fb.doc(fb.db, "artifacts/my-project-a6208/settings/examControl");
+                return fb.onSnapshot(statusRef, (doc) => {
+                    setIsLive(doc.exists() ? doc.data().isLive : false);
+                });
+            }, []);
+
+            async function finishExam(isAuto = false) {
+                if (!isAuto && !confirm("Submit your answers?")) return;
+                let correctCount = 0;
+                questions.forEach((q, i) => { if (answers[i] === q.correctOptionIndex) correctCount++; });
+                const pct = Math.round((correctCount / questions.length) * 100);
+                setFinalScore(pct);
+                try {
+                    await fb.addDoc(fb.collection(fb.db, "artifacts/my-project-a6208/scores"), {
+                        studentName: student.name, studentId: student.id, score: pct, 
+                        correctAnswers: correctCount, totalQuestions: questions.length, date: new Date()
+                    });
+                    setFinished(true);
+                } catch (e) { alert("Error: " + e.message); }
+            }
+
+            React.useEffect(() => {
+                const handleVisibilityChange = () => {
+                    if (document.hidden && student && !finished) {
+                        alert("SECURITY VIOLATION: Tab switching detected. Immediate submission triggered.");
+                        finishExam(true); 
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibilityChange);
+                return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+            }, [student, finished, questions, answers]);
+
+            const verifyId = async () => {
+                setLoading(true);
+                const inputId = msId.toUpperCase().trim();
+                try {
+                    const { data } = await _supabase.from('students').select('*').eq('status', 'Enrolled');
+                    const found = data?.find(s => ("MS-" + s.id.substring(0, 5).toUpperCase()) === inputId);
+                    if (found) {
+                        const scoreSnap = await fb.getDocs(fb.query(fb.collection(fb.db, "artifacts/my-project-a6208/scores"), fb.where("studentId", "==", inputId)));
+                        if (!scoreSnap.empty) { alert("Already Submitted."); setLoading(false); return; }
+                        setStudent({ name: found.full_name, id: inputId });
+                        const snap = await fb.getDocs(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"));
+                        setQuestions(snap.docs.map(d => ({id: d.id, ...d.data()})));
+                    } else alert("ID Not Found. Ensure student is 'Enrolled'");
+                } catch (e) { alert(e.message); }
+                setLoading(false);
+            };
+
+            if (isLive === false) return (
+                <div className="flex flex-col items-center justify-center min-h-screen text-center p-6 bg-slate-900 text-white">
+                    <h1 className="text-4xl font-black mb-4">EXAM CLOSED/Have Not Started</h1>
+                    <button onClick={() => setPage('home')} className="bg-white text-black px-8 py-3 rounded-xl font-bold">Go Back</button>
+                </div>
+            );
+
+            if (finished) return (
+                <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center">
+                    <div className="bg-white p-10 rounded-3xl shadow-2xl border w-full max-w-md">
+                        <h1 className="text-3xl font-black mb-6">Exam Completed!</h1>
+                        <div className="bg-blue-50 p-6 rounded-2xl mb-6">
+                            <h2 className="text-4xl font-black text-blue-600">{finalScore}%</h2>
+                        </div>
+                        <p className="font-bold">{student.name}</p>
+                        <button onClick={() => setPage('home')} className="mt-8 w-full bg-black text-white py-4 rounded-xl font-bold">Exit System</button>
+                    </div>
+                </div>
+            );
+
+            if (!student) return (
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm border">
+                        <h2 className="text-2xl font-bold mb-6 tracking-tighter">Student Login</h2>
+                        <input className="w-full p-4 border rounded-xl mb-4 uppercase outline-none focus:border-blue-600" placeholder="MS-XXXXX" onChange={e => setMsId(e.target.value)} />
+                        <button onClick={verifyId} className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition">{loading ? "Verifying..." : "Start Exam"}</button>
+                    </div>
+                </div>
+            );
+
+            if (questions.length === 0) return <div className="p-20 text-center font-bold">Loading questions...</div>;
+
+            return (
+                <div className="max-w-2xl mx-auto p-6 pt-12">
+                    <div className="flex justify-between items-end mb-8 border-b pb-4">
+                        <div><p className="text-[10px] text-gray-400 font-black uppercase">Candidate</p><h2 className="text-xl font-black uppercase">{student.name}</h2></div>
+                        <div className="bg-blue-600 text-white px-4 py-1 rounded-full font-black">{index + 1} / {questions.length}</div>
+                    </div>
+                    <div className="bg-white p-8 rounded-2xl shadow-sm border">
+                        <p className="text-xl font-bold mb-8">{questions[index].questionText}</p>
+                        <div className="space-y-3">
+                            {questions[index].options.map((opt, i) => (
+                                <button key={i} onClick={() => setAnswers({...answers, [index]: i})} className={`w-full p-5 text-left rounded-xl border-2 transition ${answers[index] === i ? 'bg-blue-600 text-white border-blue-600' : 'bg-white border-gray-100 hover:border-blue-200'}`}>
+                                    {optionLetters[i]}. {opt}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="mt-10 flex justify-between">
+                            <button onClick={() => setIndex(i => i - 1)} disabled={index === 0} className="text-gray-400 font-bold disabled:opacity-0">Back</button>
+                            {index === questions.length - 1 ? <button onClick={() => finishExam()} className="bg-green-600 text-white px-10 py-3 rounded-xl font-bold shadow-lg">Finish</button> : <button onClick={() => setIndex(i => i + 1)} className="bg-blue-600 text-white px-10 py-3 rounded-xl font-bold shadow-lg">Next</button>}
                         </div>
                     </div>
                 </div>
-            </div>
+            );
+        };
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                <div class="bg-gradient-to-br from-blue-700 to-blue-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
-                    <div class="relative z-10">
-                        <h3 class="text-blue-200 text-xs uppercase font-bold">Official Student ID</h3>
-                        <p id="display-msid" class="text-4xl font-mono mt-2 tracking-tighter">MS-XXXXX</p>
-                        <p class="mt-8 text-xs text-blue-300 italic">* Use this ID for CBT Exams and School Login</p>
-                    </div>
+        const App = () => {
+            const [page, setPage] = React.useState('home');
+            const [ready, setReady] = React.useState(false);
 
-                    <div id="admission-link-box" class="mt-10 p-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl relative z-10 text-gray-800">
-                        <h3 class="font-bold text-yellow-800 text-lg">Step 2: Admission Form</h3>
-                        <p class="text-yellow-700 text-sm mb-4">Complete your official school registration.</p>
-                        <a href="Admission 3.html" class="inline-block bg-yellow-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-700 transition">
-                            Open Form →
-                        </a>
-                    </div>
-                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
-                </div>
+            React.useEffect(() => {
+                const i = setInterval(() => { if(window.fb) { setReady(true); clearInterval(i); }}, 100);
+            }, []);
 
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <h3 class="text-gray-400 text-xs uppercase font-bold mb-4">Full Academic Details</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Gender:</span>
-                            <span id="display-gender" class="font-semibold text-gray-800 text-sm">---</span>
+            if (!ready) return <div className="p-20 text-center font-black">CONNECTING DATABASE...</div>;
+
+            return (
+                <AppContext.Provider value={{ setPage }}>
+                    {page === 'home' && (
+                        <div className="flex flex-col items-center justify-center min-h-screen text-center">
+                            <h1 className="text-5xl font-black mb-10 tracking-tighter">MUSTARD SEED CBT</h1>
+                            <div className="space-x-4">
+                                <button onClick={() => setPage('exam')} className="bg-blue-600 text-white px-12 py-4 rounded-full font-bold shadow-lg hover:bg-blue-700 transition">TAKE EXAM</button>
+                                <button onClick={() => setPage('admin')} className="bg-white text-gray-500 px-12 py-4 rounded-full font-bold border hover:bg-gray-50 transition">ADMIN</button>
+                            </div>
                         </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">DOB:</span>
-                            <span id="display-dob" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Nationality:</span>
-                            <span id="display-nationality" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Class:</span>
-                            <span id="display-grade" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Parent Name:</span>
-                            <span id="display-parent-name" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Parent Phone:</span>
-                            <span id="display-parent-phone" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Subject:</span>
-                            <span id="display-subject" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="pt-2">
-                            <span class="text-gray-400 text-[10px] uppercase font-bold">Address:</span>
-                            <p id="display-address" class="text-gray-800 text-xs mt-1">---</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-
-            <div class="mt-8 flex gap-4">
-                <button onclick="window.print()" class="bg-white border border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-50 transition">Print Profile</button>
-                <a href="https://sunnykeyz123.github.io/mustardseedcbt/CBT.html" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-bold">Enter CBT Portal</a>
-                
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
-
-        async function loadProfile() {
-            try {
-                const { data: { session } } = await _supabase.auth.getSession();
-                if (!session) { window.location.href = 'login.html'; return; }
-
-                const user = session.user;
-                const genID = "MS-" + user.id.substring(0, 5).toUpperCase();
-
-                // Fill Auth Data
-                document.getElementById('display-email').textContent = user.email;
-                document.getElementById('display-msid').textContent = genID;
-
-                // Fetch Student Data
-                const { data: st, error } = await _supabase
-                    .from('students')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
-
-                if (error || !st) {
-                    document.getElementById('display-fullname').textContent = "Registration Required";
-                    document.getElementById('display-status').textContent = "Awaiting Form";
-                    return;
-                }
-
-                // --- UPDATE THE UI ---
-                document.getElementById('display-fullname').textContent = st.full_name || "Anonymous";
-                document.getElementById('display-status').textContent = st.status || "Pending";
-                document.getElementById('display-gender').textContent = st.gender || "---";
-                document.getElementById('display-dob').textContent = st.date_of_birth || "---";
-                document.getElementById('display-nationality').textContent = st.nationality || "---";
-                document.getElementById('display-grade').textContent = st.grade_level || "---";
-                document.getElementById('display-parent-name').textContent = st.parent_name || "---";
-                document.getElementById('display-parent-phone').textContent = st.parent_phone || "---";
-                document.getElementById('display-subject').textContent = st.subject || "---";
-                document.getElementById('display-address').textContent = st.address || "---";
-
-                // Show Avatar if it exists
-                if (st.avatar_url) {
-                    document.getElementById('profile-img').src = st.avatar_url;
-                    document.getElementById('profile-img').classList.remove('hidden');
-                    document.getElementById('placeholder-icon').classList.add('hidden');
-                }
-
-                // Lock Admission box if Enrolled
-                if (st.status === "Enrolled") {
-                    const box = document.getElementById('admission-link-box');
-                    box.innerHTML = `<h3 class="font-bold text-green-800">✓ Admission Completed</h3><p class="text-xs text-green-700 mt-1">Your Record Has Been Submitted!.</p>`;
-                    box.className = "mt-10 p-6 bg-green-50 border-2 border-green-200 rounded-xl";
-                }
-
-            } catch (err) { console.error(err); }
-        }
-
-        async function uploadPhoto(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const { data: { session } } = await _supabase.auth.getSession();
-            const filePath = `avatars/${session.user.id}_${Date.now()}`;
-
-            try {
-                const { error: upErr } = await _supabase.storage.from('avatars').upload(filePath, file);
-                if (upErr) throw upErr;
-
-                const { data: { publicUrl } } = _supabase.storage.from('avatars').getPublicUrl(filePath);
-
-                await _supabase.from('students').update({ avatar_url: publicUrl }).eq('id', session.user.id);
-                
-                location.reload(); // Refresh to show new photo
-            } catch (err) { alert("Upload error: " + err.message); }
-        }
-
-        async function handleLogout() {
-            await _supabase.auth.signOut();
-            localStorage.clear();
-            window.location.replace('login.html');
-        }
-
-        window.onload = loadProfile;
+                    )}
+                    {page === 'exam' && <StudentExamPage />}
+                    {page === 'admin' && <AdminPage />}
+                </AppContext.Provider>
+            );
+        };
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
