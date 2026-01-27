@@ -1,1105 +1,349 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/x-icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CBT Exam Application</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Mustard Seed CBT | Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React and ReactDOM CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel CDN for JSX transformation in browser (NOT for production) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Firebase CDNs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Expose Firebase modules to the global scope for the Babel script
-        window.firebase = { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where };
-    </script>
-
-    <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        /* Simple fade-in animation */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
-        }
-        .animate-fade-in-down {
-            animation: fadeInDown 0.8s ease-out forwards;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root">
-        <!-- Your React app will render here -->
-    </div>
+<body class="bg-[#f8fafc] text-slate-900">
+    <div id="root"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where, setDoc, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDOO3uHmzOuAxJcdLxu-OImzlH12A6FpeY",
+            authDomain: "my-project-a6208.firebaseapp.com",
+            projectId: "my-project-a6208",
+            storageBucket: "my-project-a6208.firebasestorage.app",
+            messagingSenderId: "784486701962",
+            appId: "1:784486701962:web:0d3cd002bbfd647e944673"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.fb = {
+            db: getFirestore(app),
+            auth: getAuth(app),
+            collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where, signInAnonymously, onAuthStateChanged, setDoc, writeBatch, serverTimestamp
+        };
+    </script>
 
     <script type="text/babel">
-        // Access Firebase modules from the global scope
-        const { initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where } = window.firebase;
+        const { createClient } = window.supabase;
+        const SB_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
+        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsmubxwfgytIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
+        const _supabase = createClient(SB_URL, SB_KEY);
 
-        // Create a context for Firebase services and user data
         const AppContext = React.createContext(null);
-
-        // Helper to map option index to letter (A, B, C, D)
+        const ADMIN_PASSWORD = 'SUNNYKEYZ2025@';
         const optionLetters = ['A', 'B', 'C', 'D'];
 
-        // Admin Password (hardcoded for this example as per request)
-        const ADMIN_PASSWORD = 'SUNNYKEYZ2025@';
-
-        // Modal Component for alerts and confirmations
-        const Modal = ({ message, onConfirm, onCancel, showCancel = false }) => {
-          if (!message) return null;
-
-          return (
-            <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full border border-gray-200">
-                <p className="text-gray-800 text-lg font-semibold mb-6 text-center">{message}</p>
-                <div className="flex justify-center space-x-4">
-                  {showCancel && (
-                    <button
-                      onClick={onCancel}
-                      className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition duration-200 ease-in-out"
-                    >
-                      Cancel
-                    </button>
-                  )}
-                  <button
-                    onClick={onConfirm}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out"
-                  >
-                    OK
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        };
-
-        // Home Page Component
-        const HomePage = () => {
-          const { setCurrentPage, userId } = React.useContext(AppContext);
-
-          return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-              <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-lg w-full transform transition-all duration-300 hover:scale-105 border border-blue-200">
-                <h1 className="text-4xl font-extrabold text-Blue-800 mb-6 animate-fade-in-down">
-                  Welcome to Computer Based Test Exam App
-                </h1>
-                <p className="text-lg text-blue-600 mb-8 leading-relaxed animate-fade-in">
-                  Mustard Seed School CBT Design By SunnyKeyz
-                </p>
-                <div className="space-y-4">
-                  <button
-                    onClick={() => setCurrentPage('admin')}
-                    className="w-full px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
-                  >
-                    Login as Admin
-                  </button>
-                  <button
-                    onClick={() => setCurrentPage('exam')}
-                    className="w-full px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
-                  >
-                    Take an Exam
-                  </button>
-                </div>
-                <p className="text-sm text-gray-500 mt-8">
-                  Your User ID: <span className="font-mono text-gray-700 break-all">{userId}</span>
-                </p>
-              </div>
-            </div>
-          );
-        };
-
-        // Admin Page Component
+        // --- ADMIN PAGE ---
         const AdminPage = () => {
-        const { db, appId, showModal, setCurrentPage, userId } = React.useContext(AppContext);
-          const [adminPasswordInput, setAdminPasswordInput] = React.useState('');
-          const [isAdminAuthenticated, setIsAdminAuthenticated] = React.useState(false);
+            const { setPage } = React.useContext(AppContext);
+            const [auth, setAuth] = React.useState(false);
+            const [pass, setPass] = React.useState('');
+            const [scores, setScores] = React.useState([]);
+            const [questions, setQuestions] = React.useState([]);
+            const [newQ, setNewQ] = React.useState({ text: '', options: ['', '', '', ''], correct: 0 });
+            const [examLive, setExamLive] = React.useState(false);
 
-          const [questionText, setQuestionText] = React.useState('');
-          const [options, setOptions] = React.useState(['', '', '', '']);
-          const [correctOptionIndex, setCorrectOptionIndex] = React.useState(0);
-          const [questions, setQuestions] = React.useState([]);
-          const [loading, setLoading] = React.useState(true);
-          const [bulkQuestionInput, setBulkQuestionInput] = React.useState('');
-          const [aiQuestionTopic, setAiQuestionTopic] = React.useState('');
-          const [isGeneratingAiQuestions, setIsGeneratingAiQuestions] = React.useState(false);
-          const [studentScores, setStudentScores] = React.useState([]);
-          const [loadingScores, setLoadingScores] = React.useState(true);
-
-
-          // Authenticate admin
-          const handleAdminLogin = () => {
-            if (adminPasswordInput === ADMIN_PASSWORD) {
-              setIsAdminAuthenticated(true);
-              setAdminPasswordInput('');
-            } else {
-              showModal("Incorrect password. Please try again.", () => {});
-            }
-          };
-
-          // Fetch questions from Firestore in real-time
-          React.useEffect(() => {
-            if (!db || !appId || !isAdminAuthenticated) return;
-
-            const questionsCollectionRef = collection(db, `artifacts/${appId}/public/data/questions`);
-            const unsubscribe = onSnapshot(questionsCollectionRef, (snapshot) => {
-              const fetchedQuestions = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-              }));
-              setQuestions(fetchedQuestions);
-              setLoading(false);
-            }, (error) => {
-              console.error("Error fetching questions:", error);
-              showModal("An error occurred while fetching questions. Please try again.", () => {});
-              setLoading(false);
-            });
-
-            return () => unsubscribe();
-          }, [db, appId, isAdminAuthenticated, showModal]);
-
-         // Assume 'userId' is available from your AppContext.
-// Fetch all student scores
-React.useEffect(() => {
-    // 1. Initial check for core dependencies.
-    if (!db || !appId) return; 
-
-    const fetchAllStudentScores = async () => {
-        
-        // 🛑 FIX: The essential Guard Clause 🛑
-        // Stops the fetch from running until the Admin's UID is successfully loaded.
-        if (!userId || userId === 'loading...') { 
-            console.log("Admin UID not ready. Skipping score fetch.");
-            setStudentScores([]); 
-            setLoadingScores(false);
-            return;
-        }
-
-        setLoadingScores(true);
-        const allScores = [];
-        
-        try {
-            // ✅ FIX: Directly query the correct collection (Admin's UID)
-            // This is ONE quick database read, not a slow, error-prone loop.
-            const examsCollectionRef = collection(db, `artifacts/${appId}/scores`);
-            
-            const examsSnapshot = await getDocs(examsCollectionRef);
-
-            examsSnapshot.docs.forEach(examDoc => {
-                allScores.push({
-                    id: examDoc.id,
-                    firebaseUid: userId,
-                    ...examDoc.data()
+            React.useEffect(() => {
+                if (!auth) return;
+                const qScores = fb.query(fb.collection(fb.db, "artifacts/my-project-a6208/scores"));
+                const qQuest = fb.query(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"));
+                const statusRef = fb.doc(fb.db, "artifacts/my-project-a6208/settings/examControl");
+                
+                const unsub1 = fb.onSnapshot(qScores, (s) => {
+                    const data = s.docs.map(d => ({id: d.id, ...d.data()}));
+                    data.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                    setScores(data);
                 });
-            });
-
-            allScores.sort((a, b) => (b.examDate?.seconds || 0) - (a.examDate?.seconds || 0));
-            setStudentScores(allScores);
-
-        } catch (error) {
-            console.error("Error fetching all student scores:", error);
-            showModal("An error occurred while fetching student scores. Please ensure your Firebase rules allow admin read access.", () => {});
-        } finally {
-            setLoadingScores(false);
-        }
-    };
-
-    fetchAllStudentScores();
-
-    // ✅ FIX: The hook now depends on the specific 'userId' variable
-}, [db, appId, userId, showModal]);
-
-          // Handle adding a new question
-          const handleAddQuestion = async () => {
-            if (!questionText.trim() || options.some(opt => !opt.trim())) {
-              showModal("Please fill in all question and option fields.", () => {});
-              return;
-            }
-
-            try {
-              const questionsCollectionRef = collection(db, `artifacts/${appId}/public/data/questions`);
-              await addDoc(questionsCollectionRef, {
-                questionText: questionText.trim(),
-                options: options.map(opt => opt.trim()),
-                correctOptionIndex: parseInt(correctOptionIndex),
-                createdAt: new Date()
-              });
-              setQuestionText('');
-              setOptions(['', '', '', '']);
-              setCorrectOptionIndex(0);
-              showModal("Question added successfully!", () => {});
-            } catch (e) {
-              console.error("Error adding document: ", e);
-              showModal("An error occurred while adding the question. Please try again.", () => {});
-            }
-          };
-
-          // Handle deleting a question
-          const handleDeleteQuestion = async (id) => {
-            showModal("Are you sure you want to delete this question?", async () => {
-              try {
-                const questionDocRef = doc(db, `artifacts/${appId}/public/data/questions`, id);
-                await deleteDoc(questionDocRef);
-                showModal("Question deleted successfully!", () => {});
-              } catch (e) {
-                console.error("Error deleting document: ", e);
-                showModal("An error occurred while deleting the question. Please try again.", () => {});
-              }
-            }, true);
-          };
-
-          // Handle option change for single question add
-          const handleOptionChange = (index, value) => {
-            const newOptions = [...options];
-            newOptions[index] = value;
-            setOptions(newOptions);
-          };
-
-          // Parse bulk questions from pasted text
-          const parseBulkQuestions = (text) => {
-            const questionBlocks = text.split(/\n\s*\n/).filter(block => block.trim() !== '');
-            const parsedQuestions = [];
-            let errors = [];
-
-            questionBlocks.forEach((block, blockIndex) => {
-              const lines = block.split('\n').map(line => line.trim()).filter(line => line !== '');
-              if (lines.length < 6) {
-                errors.push(`Block ${blockIndex + 1}: Insufficient lines. Expected at least 6, got ${lines.length}.`);
-                return;
-              }
-
-              const questionText = lines[0];
-              const currentOptions = [];
-              let correctIndex = -1;
-
-              for (let i = 1; i <= 4; i++) {
-                const optionLine = lines[i];
-                const match = optionLine.match(/^([A-D])\.\s*(.*)/);
-                if (match) {
-                  currentOptions.push(match[2]);
-                } else {
-                  errors.push(`Block ${blockIndex + 1}: Option ${optionLetters[i-1]} format incorrect: "${optionLine}"`);
-                  return;
-                }
-              }
-
-              const correctLine = lines[5];
-              const correctMatch = correctLine.match(/^Correct:\s*([A-D])/i);
-              if (correctMatch) {
-                correctIndex = optionLetters.indexOf(correctMatch[1].toUpperCase());
-                if (correctIndex === -1) {
-                  errors.push(`Block ${blockIndex + 1}: Invalid correct option letter: "${correctMatch[1]}". Must be A, B, C, or D.`);
-                  return;
-                }
-              } else {
-                errors.push(`Block ${blockIndex + 1}: Correct answer line format incorrect: "${correctLine}"`);
-                return;
-              }
-
-              if (currentOptions.length === 4 && correctIndex !== -1) {
-                parsedQuestions.push({
-                  questionText,
-                  options: currentOptions,
-                  correctOptionIndex: correctIndex,
-                  createdAt: new Date()
+                const unsub2 = fb.onSnapshot(qQuest, (s) => setQuestions(s.docs.map(d => ({id: d.id, ...d.data()}))));
+                const unsub3 = fb.onSnapshot(statusRef, (doc) => {
+                    if (doc.exists()) setExamLive(doc.data().isLive);
                 });
-              } else {
-                errors.push(`Block ${blockIndex + 1}: Failed to parse all parts correctly.`);
-              }
-            });
 
-            return { parsedQuestions, errors };
-          };
+                return () => { unsub1(); unsub2(); unsub3(); };
+            }, [auth]);
 
-          // Handle bulk adding questions
-          const handleBulkAddQuestions = async () => {
-            if (!bulkQuestionInput.trim()) {
-              showModal("Please paste questions into the text area.", () => {});
-              return;
-            }
+            const deleteAllScores = async () => {
+                if(!confirm("⚠️ DANGER: This will delete ALL student results forever. Continue?")) return;
+                const batch = fb.writeBatch(fb.db);
+                scores.forEach(s => batch.delete(fb.doc(fb.db, "artifacts/my-project-a6208/scores", s.id)));
+                await batch.commit();
+                alert("Results wiped successfully.");
+            };
 
-            const { parsedQuestions, errors } = parseBulkQuestions(bulkQuestionInput);
+            const toggleExam = async () => {
+                const statusRef = fb.doc(fb.db, "artifacts/my-project-a6208/settings/examControl");
+                await fb.setDoc(statusRef, { isLive: !examLive }, { merge: true });
+            };
 
-            if (errors.length > 0) {
-              showModal(`Errors found in bulk input:\n${errors.join('\n')}`, () => {});
-              return;
-            }
-            if (parsedQuestions.length === 0) {
-              showModal("No valid questions found in the pasted text. Please check the format.", () => {});
-              return;
-            }
-
-            showModal(`Are you sure you want to add ${parsedQuestions.length} questions?`, async () => {
-              try {
-                const questionsCollectionRef = collection(db, `artifacts/${appId}/public/data/questions`);
-                const addPromises = parsedQuestions.map(q => addDoc(questionsCollectionRef, q));
-                await Promise.all(addPromises);
-                setBulkQuestionInput('');
-                showModal(`${parsedQuestions.length} questions added successfully!`, () => {});
-              } catch (e) {
-                console.error("Error adding bulk documents: ", e);
-                showModal("An error occurred while adding bulk questions. Please try again.", () => {});
-              }
-            }, true);
-          };
-
-          // Handle AI question generation
-          const handleGenerateAiQuestions = async () => {
-            if (!aiQuestionTopic.trim()) {
-              showModal("Please enter a topic for AI question generation.", () => {});
-              return;
-            }
-
-            setIsGeneratingAiQuestions(true);
-            setBulkQuestionInput('');
-
-            try {
-              const prompt = `Generate 3 multiple-choice questions about "${aiQuestionTopic}". Each question must have exactly 4 options (A, B, C, D) and specify the correct option letter. Provide the output as a JSON array of objects, where each object has 'questionText' (string), 'options' (array of 4 strings), and 'correctOptionLetter' (string: 'A', 'B', 'C', or 'D').`;
-
-              let chatHistory = [];
-              chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-              const payload = {
-                contents: chatHistory,
-                generationConfig: {
-                  responseMimeType: "application/json",
-                  responseSchema: {
-                    type: "ARRAY",
-                    items: {
-                      type: "OBJECT",
-                      properties: {
-                        "questionText": { "type": "STRING" },
-                        "options": {
-                          "type": "ARRAY",
-                          "items": { "type": "STRING" },
-                          "minItems": 4,
-                          "maxItems": 4
-                        },
-                        "correctOptionLetter": { "type": "STRING", "enum": ["A", "B", "C", "D"] }
-                      },
-                      "required": ["questionText", "options", "correctOptionLetter"]
-                    }
-                  }
-                }
-              };
-
-              const apiKey = "";
-              const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-              const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-              });
-
-              const result = await response.json();
-
-              if (result.candidates && result.candidates.length > 0 &&
-                  result.candidates[0].content && result.candidates[0].content.parts &&
-                  result.candidates[0].content.parts.length > 0) {
-                const jsonString = result.candidates[0].content.parts[0].text;
-                const generatedQuestions = JSON.parse(jsonString);
-
-                let formattedText = '';
-                generatedQuestions.forEach(q => {
-                  formattedText += `${q.questionText}\n`;
-                  q.options.forEach((opt, idx) => {
-                    formattedText += `${optionLetters[idx]}. ${opt}\n`;
-                  });
-                  formattedText += `Correct: ${q.correctOptionLetter}\n\n`;
+            const addQuestion = async () => {
+                if(!newQ.text) return alert("Enter question text");
+                await fb.addDoc(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"), {
+                    questionText: newQ.text, options: newQ.options, correctOptionIndex: parseInt(newQ.correct)
                 });
-                setBulkQuestionInput(formattedText);
-                showModal("AI questions generated! Review them in the 'Bulk Upload Questions' section and click 'Upload Questions' to add them.", () => {});
+                setNewQ({ text: '', options: ['', '', '', ''], correct: 0 });
+            };
 
-              } else {
-                showModal("Failed to generate questions from AI. Please try a different topic or try again.", () => {});
-              }
+            const deleteQuestion = async (id) => {
+                if(confirm("Delete?")) await fb.deleteDoc(fb.doc(fb.db, "artifacts/my-project-a6208/public/data/questions", id));
+            };
 
-            } catch (error) {
-              console.error("Error generating AI questions:", error);
-              showModal("An error occurred during AI question generation. Please check your network or try again.", () => {});
-            } finally {
-              setIsGeneratingAiQuestions(false);
-            }
-          };
+            const deleteScore = async (id) => {
+                if (confirm("Delete this score?")) await fb.deleteDoc(fb.doc(fb.db, "artifacts/my-project-a6208/scores", id));
+            };
 
-
-          if (!isAdminAuthenticated) {
-            return (
-              <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4">
-                <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-purple-200">
-                  <h2 className="text-3xl font-extrabold text-gray-800 mb-6">Admin Login</h2>
-                  <p className="text-gray-600 mb-6">Enter the admin password to proceed.</p>
-                  <input
-                    type="password"
-                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-purple-400 focus:border-transparent transition duration-200 ease-in-out"
-                    value={adminPasswordInput}
-                    onChange={(e) => setAdminPasswordInput(e.target.value)}
-                    placeholder="Enter admin password"
-                  />
-                  <button
-                    onClick={handleAdminLogin}
-                    className="w-full px-6 py-3 bg-purple-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
-                  >
-                    Login
-                  </button>
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 p-4 sm:p-6 lg:p-8">
-              <div className="max-w-4xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-2xl border border-purple-200">
-                <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-3xl font-extrabold text-gray-800 text-center flex-grow">
-                    Admin Panel - Add/Manage Questions & Scores
-                  </h2>
-                  <button
-                    onClick={() => setCurrentPage('home')}
-                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition duration-200 ease-in-out text-sm"
-                  >
-                    Back to Home
-                  </button>
-                </div>
-
-                {/* Add Single Question Form */}
-                <div className="mb-12 p-6 bg-gray-50 rounded-xl shadow-inner border border-gray-200">
-                  <h3 className="text-2xl font-bold text-gray-700 mb-6">Add New Question</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label htmlFor="questionText" className="block text-gray-700 text-sm font-semibold mb-2">
-                        Question Text:
-                      </label>
-                      <textarea
-                        id="questionText"
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent transition duration-200 ease-in-out resize-y min-h-[80px]"
-                        value={questionText}
-                        onChange={(e) => setQuestionText(e.target.value)}
-                        placeholder="Enter your question here..."
-                      ></textarea>
+            if (!auth) return (
+                <div className="flex flex-col items-center justify-center min-h-screen bg-[#0f172a] p-6 text-center">
+                    <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md">
+                        <h2 className="text-3xl font-black mb-2">Admin Login</h2>
+                        <input type="password" placeholder="Admin Key" className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl mb-4 outline-none" onChange={e => setPass(e.target.value)} />
+                        <button onClick={() => pass === ADMIN_PASSWORD ? setAuth(true) : alert("Wrong Key")} className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black">LOGIN</button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {options.map((option, index) => (
-                        <div key={index}>
-                          <label htmlFor={`option-${index}`} className="block text-gray-700 text-sm font-semibold mb-2">
-                            Option {optionLetters[index]}:
-                          </label>
-                          <input
-                            type="text"
-                            id={`option-${index}`}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent transition duration-200 ease-in-out"
-                            value={option}
-                            onChange={(e) => handleOptionChange(index, e.target.value)}
-                            placeholder={`Enter option ${optionLetters[index]}`}
-                          />
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen pb-20">
+                    <div className="bg-white border-b sticky top-0 z-10 px-6 py-4 flex justify-between items-center shadow-sm">
+                        <h1 className="font-black text-xl tracking-tighter uppercase">Admin Panel</h1>
+                        <button onClick={() => setPage('home')} className="bg-slate-100 px-6 py-2 rounded-full font-bold text-sm">Logout</button>
+                    </div>
+
+                    <div className="p-6 max-w-6xl mx-auto space-y-6">
+                        <div className={`p-8 rounded-[2rem] border-2 flex flex-col md:flex-row justify-between items-center ${examLive ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100'}`}>
+                            <div>
+                                <h2 className="text-3xl font-black">Exam Control</h2>
+                                <p className="font-bold">Status: {examLive ? "ACTIVE" : "SHUTDOWN"}</p>
+                            </div>
+                            <button onClick={toggleExam} className={`px-12 py-5 rounded-2xl font-black text-white ${examLive ? 'bg-rose-600 shadow-rose-200' : 'bg-emerald-600 shadow-emerald-200'} shadow-xl`}>
+                                {examLive ? "SHUTDOWN EXAM" : "LAUNCH EXAM"}
+                            </button>
                         </div>
-                      ))}
+
+                        <div className="bg-white rounded-[2rem] shadow-sm border overflow-hidden">
+                            <div className="p-8 border-b flex justify-between items-center">
+                                <h3 className="text-xl font-black">Student Performance</h3>
+                                <button onClick={deleteAllScores} className="bg-rose-500 text-white px-5 py-2 rounded-xl text-xs font-black">DELETE ALL RESULTS</button>
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead className="bg-slate-50 text-[10px] font-black text-slate-400 uppercase">
+                                        <tr>
+                                            <th className="px-8 py-4 text-left">Candidate</th>
+                                            <th className="px-8 py-4 text-center">Score</th>
+                                            <th className="px-8 py-4 text-center">Accuracy</th>
+                                            <th className="px-8 py-4 text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-50">
+                                        {scores.map(s => (
+                                            <tr key={s.id}>
+                                                <td className="px-8 py-6 font-black uppercase text-sm">{s.studentName}<br/><span className="text-[10px] text-slate-400">{s.studentId}</span></td>
+                                                <td className="px-8 py-6 text-center text-lg font-black text-blue-600">{s.score}%</td>
+                                                <td className="px-8 py-6 text-center text-xs font-bold text-slate-500">{s.correctAnswers}/{s.totalQuestions}</td>
+                                                <td className="px-8 py-6 text-right"><button onClick={() => deleteScore(s.id)} className="text-rose-400 text-[10px] font-black uppercase">Remove</button></td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="bg-white p-8 rounded-[2rem] border">
+                                <h3 className="text-xl font-black mb-4">Add Question</h3>
+                                <textarea className="w-full p-4 bg-slate-50 rounded-2xl mb-4 h-32 outline-none" value={newQ.text} onChange={e => setNewQ({...newQ, text: e.target.value})} placeholder="Question text..."></textarea>
+                                <div className="grid grid-cols-2 gap-2 mb-4">
+                                    {newQ.options.map((opt, i) => (
+                                        <input key={i} className="p-3 bg-slate-50 rounded-xl text-sm border" placeholder={`Option ${optionLetters[i]}`} value={opt} onChange={e => {
+                                            const copy = [...newQ.options]; copy[i] = e.target.value; setNewQ({...newQ, options: copy});
+                                        }} />
+                                    ))}
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <select className="bg-slate-100 p-3 rounded-xl font-bold" value={newQ.correct} onChange={e => setNewQ({...newQ, correct: e.target.value})}>
+                                        {optionLetters.map((l, i) => <option key={i} value={i}>Correct: {l}</option>)}
+                                    </select>
+                                    <button onClick={addQuestion} className="bg-slate-900 text-white px-8 py-3 rounded-xl font-black">Save</button>
+                                </div>
+                            </div>
+                            <div className="bg-white p-8 rounded-[2rem] border h-96 overflow-y-auto">
+                                <h3 className="text-xl font-black mb-4 uppercase">Question Bank ({questions.length})</h3>
+                                {questions.map((q, i) => (
+                                    <div key={q.id} className="p-3 bg-slate-50 rounded-xl mb-2 flex justify-between items-center">
+                                        <span className="text-xs font-bold truncate pr-4">{i+1}. {q.questionText}</span>
+                                        <button onClick={() => deleteQuestion(q.id)} className="text-rose-500 font-black">✕</button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                      <label htmlFor="correctOption" className="block text-gray-700 text-sm font-semibold mb-2">
-                        Correct Option:
-                      </label>
-                      <select
-                        id="correctOption"
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent transition duration-200 ease-in-out bg-white"
-                        value={correctOptionIndex}
-                        onChange={(e) => setCorrectOptionIndex(e.target.value)}
-                      >
-                        {options.map((_, index) => (
-                          <option key={index} value={index}>
-                            Option {optionLetters[index]}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <button
-                      onClick={handleAddQuestion}
-                      className="w-full px-6 py-3 bg-purple-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
-                    >
-                      Add Question
-                    </button>
-                  </div>
                 </div>
-
-                {/* AI Question Generation Section ✨ */}
-                <div className="mb-12 p-6 bg-blue-50 rounded-xl shadow-inner border border-blue-200">
-                  <h3 className="text-2xl font-bold text-gray-700 mb-6">Generate Questions with AI ✨</h3>
-                  <p className="text-gray-600 mb-4 text-sm">
-                    Enter a topic, and AI will generate multiple-choice questions for you.
-                  </p>
-                  <input
-                    type="text"
-                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-blue-400 focus:border-transparent transition duration-200 ease-in-out"
-                    value={aiQuestionTopic}
-                    onChange={(e) => setAiQuestionTopic(e.target.value)}
-                    placeholder="e.g., 'History of Nigeria', 'Basic Algebra'"
-                  />
-                  <button
-                    onClick={handleGenerateAiQuestions}
-                    disabled={isGeneratingAiQuestions}
-                    className={`w-full px-6 py-3 text-white text-lg font-semibold rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105
-                      ${isGeneratingAiQuestions ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
-                  >
-                    {isGeneratingAiQuestions ? 'Generating...' : 'Generate Questions'}
-                  </button>
-                  {isGeneratingAiQuestions && (
-                    <p className="text-center text-blue-600 mt-4">AI is working, please wait...</p>
-                  )}
-                </div>
-
-
-                {/* Bulk Upload Section */}
-                <div className="mb-12 p-6 bg-gray-50 rounded-xl shadow-inner border border-gray-200">
-                  <h3 className="text-2xl font-bold text-gray-700 mb-6">Bulk Upload Questions</h3>
-                  <div className="text-gray-600 mb-4 text-sm">
-                    Paste multiple questions here. Use the format:
-                    <pre className="bg-gray-100 p-3 rounded-md mt-2 text-xs overflow-auto">
-                      Question text?<br/>
-                      A. Option A<br/>
-                      B. Option B<br/>
-                      C. Option C<br/>
-                      D. Option D<br/>
-                      Correct: B<br/>
-                      <br/>
-                      Question text 2?<br/>
-                      A. Option A for Q2<br/>
-                      ...
-                    </pre>
-                  </div>
-                  <textarea
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-400 focus:border-transparent transition duration-200 ease-in-out resize-y min-h-[150px]"
-                    value={bulkQuestionInput}
-                    onChange={(e) => setBulkQuestionInput(e.target.value)}
-                    placeholder="Paste your questions here in the specified format..."
-                  ></textarea>
-                  <button
-                    onClick={handleBulkAddQuestions}
-                    className="w-full mt-4 px-6 py-3 bg-indigo-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
-                  >
-                    Upload Questions
-                  </button>
-                </div>
-
-
-                {/* Existing Questions List */}
-                <div className="p-6 bg-white rounded-xl shadow-inner border border-gray-200">
-                  <h3 className="text-2xl font-bold text-gray-700 mb-6">Existing Questions</h3>
-                  {loading ? (
-                    <p className="text-center text-gray-500">Loading questions...</p>
-                  ) : questions.length === 0 ? (
-                    <p className="text-center text-gray-500">No questions added yet.</p>
-                  ) : (
-                    <ul className="space-y-6">
-                      {questions.map((q) => (
-                        <li key={q.id} className="p-4 bg-purple-50 rounded-lg shadow-sm border border-purple-100">
-                          <p className="font-semibold text-gray-800 mb-2">{q.questionText}</p>
-                          <ul className="list-disc list-inside text-gray-700 mb-3">
-                            {q.options.map((opt, idx) => (
-                              <li key={idx} className={idx === q.correctOptionIndex ? 'font-bold text-green-700' : ''}>
-                                {optionLetters[idx]}. {opt} {idx === q.correctOptionIndex && '(Correct)'}
-                              </li>
-                            ))}
-                          </ul>
-                          <button
-                            onClick={() => handleDeleteQuestion(q.id)}
-                            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition duration-200 ease-in-out text-sm"
-                          >
-                            Delete
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                {/* Student Scores Dashboard Section */}
-                <div className="mt-12 p-6 bg-green-50 rounded-xl shadow-inner border border-green-200">
-                  <h3 className="text-2xl font-bold text-gray-700 mb-6">Student Exam Scores</h3>
-                  {loadingScores ? (
-                    <p className="text-center text-gray-500">Loading student scores...</p>
-                  ) : studentScores.length === 0 ? (
-                    <p className="text-center text-gray-500">No student exam scores found yet.</p>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full bg-white rounded-lg shadow-md">
-                        <thead>
-                          <tr className="bg-green-100 text-gray-700 uppercase text-sm leading-normal">
-                            <th className="py-3 px-6 text-left">Student Name</th>
-                            <th className="py-3 px-6 text-left">Student ID</th>
-                            <th className="py-3 px-6 text-left">Score</th>
-                            <th className="py-3 px-6 text-left">Total Questions</th>
-                            <th className="py-3 px-6 text-left">Date</th>
-                          </tr>
-                        </thead>
-                        <tbody className="text-gray-600 text-sm font-light">
-                          {studentScores.map((score, index) => (
-                            <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
-                              <td className="py-3 px-6 text-left whitespace-nowrap">{score.studentName}</td>
-                              <td className="py-3 px-6 text-left">{score.studentId}</td>
-                              <td className="py-3 px-6 text-left font-medium">{score.score}</td>
-                              <td className="py-3 px-6 text-left">{score.totalQuestions}</td>
-                              <td className="py-3 px-6 text-left">
-                                {score.examDate ? new Date(score.examDate.seconds * 1000).toLocaleString() : 'N/A'}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
+            );
         };
 
-        // Student Exam Page Component
+        // --- STUDENT PAGE ---
         const StudentExamPage = () => {
-          const { db, appId, showModal, setCurrentPage, userId } = React.useContext(AppContext);
-          const [studentIdInput, setStudentIdInput] = React.useState('');
-          const [studentNameInput, setStudentNameInput] = React.useState('');
-          const [currentStudentId, setCurrentStudentId] = React.useState('');
-          const [currentStudentName, setCurrentStudentName] = React.useState('');
+            const { setPage } = React.useContext(AppContext);
+            const [isLive, setIsLive] = React.useState(null);
+            const [msId, setMsId] = React.useState('');
+            const [student, setStudent] = React.useState(null);
+            const [questions, setQuestions] = React.useState([]);
+            const [index, setIndex] = React.useState(0);
+            const [answers, setAnswers] = React.useState({});
+            const [loading, setLoading] = React.useState(false);
+            const [finished, setFinished] = React.useState(false);
+            const [finalScore, setFinalScore] = React.useState(0);
 
-          const [questions, setQuestions] = React.useState([]);
-          const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
-          const [selectedAnswers, setSelectedAnswers] = React.useState({});
-          const [examSubmitted, setExamSubmitted] = React.useState(false);
-          const [score, setScore] = React.useState(0);
-          const [loadingQuestions, setLoadingQuestions] = React.useState(true);
-          const [examAlreadyTaken, setExamAlreadyTaken] = React.useState(false);
-
-
-          // Fetch questions from Firestore in real-time
-          React.useEffect(() => {
-            if (!db || !appId) return;
-
-            const questionsCollectionRef = collection(db, `artifacts/${appId}/public/data/questions`);
-            const unsubscribe = onSnapshot(questionsCollectionRef, (snapshot) => {
-              const fetchedQuestions = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-              }));
-              const shuffledQuestions = fetchedQuestions.sort(() => Math.random() - 0.5);
-              setQuestions(shuffledQuestions);
-              setLoadingQuestions(false);
-            }, (error) => {
-              console.error("Error fetching questions for exam:", error);
-              showModal("An error occurred while fetching exam questions.", () => {});
-              setLoadingQuestions(false);
-            });
-
-            return () => unsubscribe();
-          }, [db, appId, showModal]);
-
-          // Handle student ID and Name submission
-          const handleStudentLogin = async () => {
-            if (!studentIdInput.trim() || !studentNameInput.trim()) {
-              showModal("Please enter both your Student ID and Name to start the exam.", () => {});
-              return;
-            }
-            if (!userId || userId === 'loading...') {
-              showModal("Firebase authentication not ready. Please wait a moment and try again.", () => {});
-              return;
-            }
-
-            try {
-              const scoresCollectionRef = collection(db, `artifacts/${appId}/scores`);
-              const q = query(scoresCollectionRef, where('studentId', '==', studentIdInput.trim()));
-              const querySnapshot = await getDocs(q);
-
-              if (!querySnapshot.empty) {
-                setExamAlreadyTaken(true);
-                showModal("You have already completed an exam with this ID. You cannot retake the exam.", () => {});
-                return;
-              }
-            } catch (e) {
-              console.error("Error checking for previous exams:", e);
-              showModal("An error occurred while checking for previous exams. Please try again.", () => {});
-              return;
-            }
-
-            setCurrentStudentId(studentIdInput.trim());
-            setCurrentStudentName(studentNameInput.trim());
-            setExamSubmitted(false);
-            setSelectedAnswers({});
-            setScore(0);
-            setCurrentQuestionIndex(0);
-            setExamAlreadyTaken(false);
-          };
-
-          // Handle selecting an answer option
-          const handleOptionSelect = (questionId, optionIndex) => {
-            setSelectedAnswers(prev => ({
-              ...prev,
-              [questionId]: optionIndex
-            }));
-          };
-
-          // Navigate to the next question
-          const handleNextQuestion = () => {
-            if (currentQuestionIndex < questions.length - 1) {
-              setCurrentQuestionIndex(prev => prev + 1);
-            }
-          };
-
-          // Navigate to the previous question
-          const handlePreviousQuestion = () => {
-            if (currentQuestionIndex > 0) {
-              setCurrentQuestionIndex(prev => prev - 1);
-            }
-          };
-          // Submit the exam
-          const handleSubmitExam = async () => {
-            showModal("Are you sure you want to submit this exam? You cannot retake it once submitted.", async () => {
-              let correctCount = 0;
-              questions.forEach(q => {
-                if (selectedAnswers[q.id] === q.correctOptionIndex) {
-                  correctCount++;
-                }
-              });
-              setScore(correctCount);
-              try {
-                if (!currentStudentId || !currentStudentName || !userId) {
-                  showModal("Error: Student ID, Name, or User ID missing. Please re-enter your details.", () => {});
-                  return;
-                }
-
-               const scoresCollectionRef = collection(db, `artifacts/${appId}/scores`);
-                await addDoc(scoresCollectionRef, {
-                  studentId: currentStudentId,
-                  studentName: currentStudentName,
-                  examDate: new Date(),
-                  score: correctCount,
-                  totalQuestions: questions.length,
-                  answers: questions.map(q => ({
-                    questionId: q.id,
-                    questionText: q.questionText,
-                    options: q.options,
-                    selectedOptionIndex: selectedAnswers[q.id] !== undefined ? selectedAnswers[q.id] : -1,
-                    correctOptionIndex: q.correctOptionIndex,
-                    isCorrect: selectedAnswers[q.id] === q.correctOptionIndex
-                  }))
+            React.useEffect(() => {
+                const statusRef = fb.doc(fb.db, "artifacts/my-project-a6208/settings/examControl");
+                return fb.onSnapshot(statusRef, (doc) => {
+                    setIsLive(doc.exists() ? doc.data().isLive : false);
                 });
-                setExamSubmitted(true);
-                showModal(`Exam submitted! You scored ${correctCount} out of ${questions.length}.`, () => {});
-              } catch (e) {
-                console.error("Error submitting exam: ", e);
-                showModal("An error occurred while submitting your exam. Please try again.", () => {});
-              }
-            }, true);
-          };
+            }, []);
 
-          const currentQuestion = questions[currentQuestionIndex];
-
-          if (!currentStudentId) {
-            return (
-              <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-teal-100 p-4">
-                <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-green-200">
-                  <h2 className="text-3xl font-extrabold text-gray-800 mb-6">Enter Your Details</h2>
-                  <p className="text-gray-600 mb-6">Please enter your Student ID and Name to begin the exam.</p>
-                  <input
-                    type="text"
-                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-green-400 focus:border-transparent transition duration-200 ease-in-out"
-                    value={studentIdInput}
-                    onChange={(e) => setStudentIdInput(e.target.value)}
-                    placeholder="e.g., Oyewola Martins"
-                  />
-                  <input
-                    type="text"
-                    className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-green-400 focus:border-transparent transition duration-200 ease-in-out"
-                    value={studentNameInput}
-                    onChange={(e) => setStudentNameInput(e.target.value)}
-                    placeholder="e.g., YourStudentID e.g 001"
-                  />
-                  <button
-                    onClick={handleStudentLogin}
-                    className="w-full px-6 py-3 bg-green-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
-                  >
-                    Start Exam
-                  </button>
-                  {examAlreadyTaken && (
-                     <p className="text-red-500 mt-4 text-sm">You have already completed an exam with this ID. You cannot retake it.</p>
-                  )}
-                </div>
-              </div>
-            );
-          }
-
-          if (loadingQuestions) {
-            return (
-              <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-teal-100">
-                <p className="text-xl text-gray-700">Loading exam questions...</p>
-              </div>
-            );
-          }
-
-          if (questions.length === 0) {
-            return (
-              <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-teal-100">
-                <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-md w-full border border-green-200">
-                  <h2 className="text-3xl font-extrabold text-gray-800 mb-4">No Questions Found</h2>
-                  <p className="text-gray-600">Please contact the administrator to add questions.</p>
-                  <button
-                    onClick={() => setCurrentPage('home')}
-                    className="mt-6 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition duration-200 ease-in-out text-lg"
-                  >
-                    Back to Home
-                  </button>
-                </div>
-              </div>
-            );
-          }
-
-          if (examSubmitted) {
-            return (
-              <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-green-50 to-teal-100 p-4">
-                <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-lg w-full border border-green-200">
-                  <h2 className="text-4xl font-extrabold text-gray-800 mb-6">Exam Completed!</h2>
-                  <p className="text-2xl text-gray-700 mb-4">
-                    You scored <span className="font-bold text-green-600">{score}</span> out of <span className="font-bold text-gray-800">{questions.length}</span>.
-                  </p>
-                  <p className="text-lg text-gray-600 mb-8">
-                    Student Name: <span className="font-mono text-gray-700 break-all">{currentStudentName}</span><br/>
-                    Student ID: <span className="font-mono text-gray-700 break-all">{currentStudentId}</span>
-                  </p>
-                  <button
-                    onClick={() => {
-                      setStudentIdInput('');
-                      setStudentNameInput('');
-                      setCurrentStudentId('');
-                      setCurrentStudentName('');
-                      setExamSubmitted(false);
-                      setSelectedAnswers({});
-                      setScore(0);
-                      setCurrentQuestionIndex(0);
-                      setCurrentPage('home');
-                    }}
-                    className="px-8 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
-                  >
-                    Go Back to Home
-                  </button>
-                </div>
-              </div>
-            );
-          }
-
-          return (
-            <div className="min-h-screen bg-gradient-to-br from-teal-50 to-lime-100 p-4 sm:p-6 lg:p-8">
-              <div className="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-xl shadow-2xl border border-teal-200">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-3xl font-extrabold text-gray-800 text-center flex-grow">
-                    CBT Exam - Student: <span className="text-teal-600 break-all">{currentStudentName} ({currentStudentId})</span>
-                  </h2>
-                  <button
-                    onClick={() => setCurrentPage('home')}
-                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition duration-200 ease-in-out text-sm"
-                  >
-                    Back to Home
-                  </button>
-                </div>
-
-                {/* Question Counter */}
-                <p className="text-right text-gray-600 text-lg mb-4 font-semibold">
-                  Question {currentQuestionIndex + 1} of {questions.length}
-                </p>
-
-                {/* Current Question */}
-                <div className="mb-8 p-6 bg-teal-50 rounded-xl shadow-inner border border-teal-100">
-                  <p className="text-xl font-semibold text-gray-800 mb-4 leading-relaxed">
-                    {currentQuestion.questionText}
-                  </p>
-                  <div className="space-y-3">
-                    {currentQuestion.options.map((option, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleOptionSelect(currentQuestion.id, index)}
-                        className={`w-full text-left p-4 border rounded-lg transition duration-200 ease-in-out
-                          ${selectedAnswers[currentQuestion.id] === index
-                            ? 'bg-teal-600 text-white border-teal-700 shadow-md transform scale-105'
-                            : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-100 hover:border-teal-400'
-                          }
-                          focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75`}
-                      >
-                        {optionLetters[index]}. {option}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Navigation Buttons */}
-                <div className="flex justify-between items-center mt-8">
-                  <button
-                    onClick={handlePreviousQuestion}
-                    disabled={currentQuestionIndex === 0}
-                    className={`px-6 py-3 rounded-lg shadow-md text-lg font-semibold transition duration-300 ease-in-out
-                      ${currentQuestionIndex === 0
-                        ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                        : 'bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transform hover:scale-105'
-                      }`}
-                  >
-                    Previous Question
-                  </button>
-
-                  {currentQuestionIndex === questions.length - 1 ? (
-                    <button
-                      onClick={handleSubmitExam}
-                      className="px-8 py-3 bg-green-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
-                    >
-                      Submit Exam
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleNextQuestion}
-                      className="px-6 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-300 ease-in-out transform hover:scale-105"
-                    >
-                      Next Question
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        };
-
-
-        // Main App Component
-        const App = () => {
-          const [db, setDb] = React.useState(null);
-          const [auth, setAuth] = React.useState(null);
-          const [appId, setAppId] = React.useState('default-app-id');
-          const [userId, setUserId] = React.useState('loading...');
-
-          const [currentPage, setCurrentPage] = React.useState('home');
-
-          const [modalMessage, setModalMessage] = React.useState('');
-          const [modalOnConfirm, setModalOnConfirm] = React.useState(() => () => {});
-          const [modalOnCancel, setModalOnCancel] = React.useState(() => () => {});
-          const [modalShowCancel, setModalShowCancel] = React.useState(false);
-
-          const showModal = (message, onConfirm, showCancel = false, onCancel = () => {}) => {
-            setModalMessage(message);
-            setModalOnConfirm(() => {
-              return () => {
-                onConfirm();
-                setModalMessage('');
-              };
-            });
-            setModalShowCancel(showCancel);
-            setModalOnCancel(() => {
-              return () => {
-                onCancel();
-                setModalMessage('');
-              };
-            });
-          };
-
-          React.useEffect(() => {
-            try {
-              // REPLACE THIS firebaseConfig OBJECT WITH YOUR ACTUAL FIREBASE PROJECT'S CONFIG
-              const firebaseConfig = {
-                apiKey: "AIzaSyBCqk-qzKgwoyD2vz-7LLQAYuA8GiwJUAo",
-                authDomain: "ss3-cbt-system.firebaseapp.com",
-                projectId: "ss3-cbt-system",
-                storageBucket:"ss3-cbt-system.firebasestorage.app",
-                messagingSend9erId: "389022277843",
-                appId: "1:3899022277843:web:9618ea4790c67fc110b426",
-                // measurementId: "G-7NQJGZ1T12" // Include if present
-              };
-
-              const app = initializeApp(firebaseConfig);
-              const firestore = getFirestore(app);
-              const firebaseAuth = getAuth(app);
-
-              setDb(firestore);
-              setAuth(firebaseAuth);
-
-              // Use projectId from your firebaseConfig as the appId for consistent paths in Firestore
-              setAppId(firebaseConfig.projectId);
-
-              const signIn = async () => {
+            const verifyId = async () => {
+                setLoading(true);
+                const inputId = msId.toUpperCase().trim();
                 try {
-                  // For local/hosted environment, we don't have __initial_auth_token.
-                  // We sign in anonymously.
-                  const userCredential = await signInAnonymously(firebaseAuth);
-                  setUserId(userCredential.user.uid);
-                } catch (error) {
-                  console.error("Firebase authentication error:", error);
-                  showModal("An error occurred while signing in to Firebase. Please try again.", () => {});
-                }
-              };
-              signIn();
+                    const { data } = await _supabase.from('students').select('*').eq('status', 'Enrolled');
+                    const found = data?.find(s => ("MS-" + s.id.substring(0, 5).toUpperCase()) === inputId);
+                    if (found) {
+                        const scoreSnap = await fb.getDocs(fb.query(fb.collection(fb.db, "artifacts/my-project-a6208/scores"), fb.where("studentId", "==", inputId)));
+                        if (!scoreSnap.empty) { alert("Already Submitted."); setLoading(false); return; }
+                        setStudent({ name: found.full_name, id: inputId });
+                        const snap = await fb.getDocs(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"));
+                        setQuestions(snap.docs.map(d => ({id: d.id, ...d.data()})));
+                    } else alert("ID Not Found");
+                } catch (e) { alert(e.message); }
+                setLoading(false);
+            };
 
-              const unsubscribeAuth = onAuthStateChanged(firebaseAuth, (user) => {
-                if (user) {
-                  setUserId(user.uid);
-                } else {
-                  setUserId('anonymous');
-                }
-              });
+            const finishExam = async () => {
+                if(!confirm("Submit Exam?")) return;
+                let correctCount = 0;
+                questions.forEach((q, i) => { if (answers[i] === q.correctOptionIndex) correctCount++; });
+                const pct = Math.round((correctCount / questions.length) * 100);
+                setFinalScore(pct);
+                await fb.addDoc(fb.collection(fb.db, "artifacts/my-project-a6208/scores"), {
+                    studentName: student.name, studentId: student.id, score: pct, 
+                    correctAnswers: correctCount, totalQuestions: questions.length, timestamp: fb.serverTimestamp()
+                });
+                setFinished(true);
+            };
 
-              return () => unsubscribeAuth();
-            } catch (error) {
-              console.error("Error initializing Firebase:", error);
-              showModal("An error occurred while initializing Firebase. Please try again.", () => {});
-            }
-          }, []);
+            if (isLive === null) return <div className="p-20 text-center font-black animate-pulse">CONNECTING...</div>;
+            
+            // IF EXAM IS SHUTDOWN
+            if (isLive === false) return (
+                <div className="flex items-center justify-center min-h-screen bg-[#0f172a] p-6 text-center">
+                    <div className="bg-white p-12 rounded-[3rem] shadow-2xl max-w-md">
+                        <div className="text-6xl mb-6">🔒</div>
+                        <h1 className="text-2xl font-black mb-4">EXAM NOT STARTED OR COMPLETED</h1>
+                        <p className="text-slate-500 font-bold mb-8">The session is currently offline. Your results are secure. Stay at rest and wait for instructions.</p>
+                        <button onClick={() => setPage('home')} className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black">Go Back</button>
+                    </div>
+                </div>
+            );
 
+            if (finished) return (
+                <div className="flex items-center justify-center min-h-screen bg-emerald-50 text-center p-6">
+                    <div className="bg-white p-12 rounded-[3rem] shadow-2xl max-w-md border-4 border-emerald-100">
+                        <h1 className="text-3xl font-black mb-4">WELL DONE!</h1>
+                        <div className="bg-emerald-500 text-white p-8 rounded-3xl mb-4"><h2 className="text-6xl font-black">{finalScore}%</h2></div>
+                        <p className="font-black uppercase">{student.name}</p>
+                        <button onClick={() => setPage('home')} className="mt-8 w-full bg-slate-900 text-white py-4 rounded-2xl font-black">EXIT</button>
+                    </div>
+                </div>
+            );
 
-          const contextValue = {
-            db,
-            auth,
-            appId,
-            userId,
-            setCurrentPage,
-            showModal
-          };
+            if (!student) return (
+                <div className="flex items-center justify-center min-h-screen bg-blue-50 p-6">
+                    <div className="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-sm">
+                        <h2 className="text-3xl font-black mb-8 text-center">Student Login</h2>
+                        <input className="w-full p-5 bg-slate-50 border-2 rounded-2xl mb-4 uppercase font-bold outline-none focus:border-blue-600" placeholder="MS-XXXXX" onChange={e => setMsId(e.target.value)} />
+                        <button onClick={verifyId} className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black shadow-lg">{loading ? "Verifying..." : "START EXAM"}</button>
+                    </div>
+                </div>
+            );
 
-          return (
-            <AppContext.Provider value={contextValue}>
-              <div className="min-h-screen">
-                {modalMessage && (
-                  <Modal
-                    message={modalMessage}
-                    onConfirm={modalOnConfirm}
-                    onCancel={modalOnCancel}
-                    showCancel={modalShowCancel}
-                  />
-                )}
-                {currentPage === 'home' && <HomePage />}
-                {currentPage === 'admin' && <AdminPage />}
-                {currentPage === 'exam' && <StudentExamPage />}
-              </div>
-            </AppContext.Provider>
-          );
+            return (
+                <div className="max-w-2xl mx-auto p-6 pt-16">
+                    <div className="fixed top-0 left-0 w-full h-2 bg-slate-100">
+                        <div className="h-full bg-blue-600 transition-all" style={{ width: `${((index + 1) / questions.length) * 100}%` }}></div>
+                    </div>
+                    <div className="flex justify-between items-end mb-8 border-b pb-6">
+                        <div><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Candidate</p><h2 className="text-2xl font-black uppercase">{student.name}</h2></div>
+                        <div className="bg-slate-900 text-white px-5 py-2 rounded-2xl font-black text-sm">{index + 1} OF {questions.length}</div>
+                    </div>
+                    {questions[index] && (
+                        <div className="bg-white p-10 rounded-[3rem] shadow-xl border">
+                            <p className="text-2xl font-black mb-10 text-slate-800 leading-snug">{questions[index].questionText}</p>
+                            <div className="space-y-4">
+                                {questions[index].options.map((opt, i) => (
+                                    <button key={i} onClick={() => setAnswers({...answers, [index]: i})} className={`w-full p-6 text-left rounded-2xl border-2 font-bold transition-all ${answers[index] === i ? 'bg-blue-600 text-white border-blue-600 shadow-xl' : 'bg-slate-50 border-slate-50'}`}>
+                                        <span className="mr-4 opacity-50">{optionLetters[i]}.</span> {opt}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="mt-12 flex justify-between gap-4">
+                                <button onClick={() => setIndex(i => i - 1)} disabled={index === 0} className="px-6 font-black text-slate-400 disabled:opacity-0">Back</button>
+                                {index === questions.length - 1 ? 
+                                    <button onClick={finishExam} className="bg-emerald-500 text-white px-12 py-4 rounded-2xl font-black uppercase">Finish</button> :
+                                    <button onClick={() => setIndex(i => i + 1)} className="bg-slate-900 text-white px-12 py-4 rounded-2xl font-black uppercase">Next</button>
+                                }
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
         };
 
+        const App = () => {
+            const [page, setPage] = React.useState('home');
+            const [ready, setReady] = React.useState(false);
+
+            React.useEffect(() => {
+                const i = setInterval(() => { if(window.fb) { setReady(true); clearInterval(i); }}, 100);
+            }, []);
+
+            if (!ready) return <div className="flex items-center justify-center min-h-screen font-black text-slate-300 uppercase tracking-[0.5em]">System Starting...</div>;
+
+            return (
+                <AppContext.Provider value={{ setPage }}>
+                    {page === 'home' && (
+                        <div className="flex flex-col items-center justify-center min-h-screen text-center p-6">
+                            <div className="w-24 h-24 bg-blue-600 rounded-[2rem] flex items-center justify-center text-white text-5xl font-black mb-10 shadow-2xl">M</div>
+                            <h1 className="text-6xl font-black mb-4 tracking-tighter">MUSTARD SEED</h1>
+                            <p className="text-slate-400 font-bold uppercase mb-12 text-xs tracking-[0.3em]">Computer Based Testing</p>
+                            <div className="flex flex-col md:flex-row gap-4 w-full max-w-md">
+                                <button onClick={() => setPage('exam')} className="flex-1 bg-blue-600 text-white px-12 py-5 rounded-2xl font-black shadow-xl hover:scale-105 transition">ENTER PORTAL</button>
+                                <button onClick={() => setPage('admin')} className="bg-white text-slate-400 px-12 py-5 rounded-2xl font-black border-2 hover:bg-slate-50 transition">ADMIN</button>
+                            </div>
+                        </div>
+                    )}
+                    {page === 'exam' && <StudentExamPage />}
+                    {page === 'admin' && <AdminPage />}
+                </AppContext.Provider>
+            );
+        };
         ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     </script>
 </body>
 </html>
-
-
-
-
