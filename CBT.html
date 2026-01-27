@@ -219,22 +219,54 @@
             }, []);
 
             const verifyId = async () => {
-                setLoading(true);
-                const inputId = msId.toUpperCase().trim();
-                try {
-                    const { data } = await _supabase.from('students').select('*').eq('status', 'Enrolled');
-                    const found = data?.find(s => ("MS-" + s.id.substring(0, 5).toUpperCase()) === inputId);
-                    if (found) {
-                        const scoreSnap = await fb.getDocs(fb.query(fb.collection(fb.db, "artifacts/my-project-a6208/scores"), fb.where("studentId", "==", inputId)));
-                        if (!scoreSnap.empty) { alert("Already Submitted."); setLoading(false); return; }
-                        setStudent({ name: found.full_name, id: inputId });
-                        const snap = await fb.getDocs(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"));
-                        setQuestions(snap.docs.map(d => ({id: d.id, ...d.data()})));
-                    } else alert("ID Not Found");
-                } catch (e) { alert(e.message); }
-                setLoading(false);
-            };
+    setLoading(true);
+    // 1. Clean the input: Remove spaces and make uppercase
+    const inputId = msId.toUpperCase().replace(/\s/g, '').trim(); 
+    
+    try {
+        // 2. Fetch only enrolled students
+        const { data, error } = await _supabase
+            .from('students')
+            .select('id, full_name, status')
+            .eq('status', 'Enrolled');
 
+        if (error) throw error;
+
+        // 3. Match the ID (Format: MS-XXXXX)
+        const found = data?.find(s => {
+            const dbId = "MS-" + s.id.substring(0, 5).toUpperCase();
+            return dbId === inputId;
+        });
+
+        if (found) {
+            // 4. Check if they already submitted in Firebase
+            const scoreSnap = await fb.getDocs(
+                fb.query(
+                    fb.collection(fb.db, "artifacts/my-project-a6208/scores"), 
+                    fb.where("studentId", "==", inputId)
+                )
+            );
+            
+            if (!scoreSnap.empty) {
+                alert("❌ ACCESS DENIED: You have already submitted this exam.");
+                setLoading(false);
+                return;
+            }
+
+            setStudent({ name: found.full_name, id: inputId });
+            
+            // 5. Load questions
+            const snap = await fb.getDocs(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"));
+            setQuestions(snap.docs.map(d => ({id: d.id, ...d.data()})));
+        } else {
+            alert("❌ ID NOT RECOGNIZED: Please check your ID and try again.");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Connection Error: Check your internet or Supabase RLS settings.");
+    }
+    setLoading(false);
+};
             const finishExam = async () => {
                 if(!confirm("Submit Exam?")) return;
                 let correctCount = 0;
@@ -347,3 +379,4 @@
     </script>
 </body>
 </html>
+
