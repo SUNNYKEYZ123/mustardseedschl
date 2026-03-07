@@ -1,987 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google-site-verification" content="NqJQiBFvtIFf8A_kN4D04x5AsZoYQew-0pSqVgVWeS8" />
-  <!-- SEO Meta Tags -->
-  <meta name="description" content="Mustard Seed International School|Quality Education for Future Leaders provides top-quality education and character development in a caring environment. Enroll now to give your child the best start.">
-  <title>Mustard Seed International School Ibokun </title>
-  <meta property="og:title" content="Mustard Seed International School Ibokun" />
-  <meta property="og:description" content="Providing quality education and character-building in a supportive environment." />
-  <meta property="og:image" content="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" />
-  <meta property="og:url" content="https://sunnykeyz123.github.io/mustardseedschl/" />
-  <!-- 🔷 Browser Tab Icon (Favicon) -->
-<link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
-<!-- 🔷 Open Graph for Social Media Sharing -->
-<meta property="og:title" content="Mustard Seed School" />
-<meta property="og:description" content="Welcome to Mustard Seed School's official website." />
-<meta property="og:url" content="https://sunnykeyz123.github.io/mustardseedschl/" />
-<meta property="og:type" content="website" />
-<meta property="og:image" content="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" />
-
-<!-- 🔷 Structured Data for Google Search Logo -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Mustard Seed School",
-  "url": "https://sunnykeyz123.github.io/mustardseedschl/",
-  "logo": "https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png"
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mustard Seed International School | Excellence</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+
     <style>
-        /* Custom CSS for image slider and animations */
-        .slider-container {
-            position: relative;
-            width: 100%;
-            height: 70vh;
-            min-height: 400px;
-            max-height: 600px;
-            overflow: hidden;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
         
-        .slider {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-            height: 100%;
-        }
-        
-        .slide {
-            min-width: 100%;
-            height: 100%;
+        .hero-gradient {
+            background: linear-gradient(rgba(0, 33, 71, 0.8), rgba(0, 33, 71, 0.6)), url('images/student.png');
             background-size: cover;
             background-position: center;
         }
+
+        .gold-border { border-bottom: 4px solid #D4AF37; }
         
-        .slider-nav {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
-        
-        .slider-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .slider-dot.active {
-            background-color: white;
-        }
-        
-        .slider-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
+
+        .btn-royal {
+            background: #002147;
             color: white;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-            border-radius: 50%;
-            z-index: 10;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            transition: all 0.3s ease;
         }
-        
-        .slider-btn:hover {
-            background-color: rgba(0, 0, 0, 0.8);
+
+        .btn-royal:hover {
+            background: #D4AF37;
+            color: #002147;
+            transform: translateY(-2px);
         }
-        
-        .prev {
-            left: 10px;
-        }
-        
-        .next {
-            right: 10px;
-        }
-        
-        /* Animation for cards */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animate-fade-in {
+
+        /* Smooth Mobile Menu */
+        #mobileMenu {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateY(-100%);
             opacity: 0;
-            animation: fadeIn 0.6s ease-out forwards;
         }
-        
-        /* Logo animation */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        #mobileMenu.open {
+            transform: translateY(0);
+            opacity: 1;
         }
-        
-        .logo-animate {
-            animation: pulse 2s infinite;
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #3b82f6;
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #2563eb;
-        }
-        
-        /* Mobile menu */
-        .mobile-menu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-        
-        .mobile-menu.open {
-            max-height: 500px;
-        }
-        
-        /* Touch target sizes */
-        .touch-target {
-            min-height: 48px;
-            min-width: 48px;
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .slider-container {
-                height: 60vh;
-                min-height: 300px;
-            }
-            
-            .slider-btn {
-                padding: 8px 12px;
-                font-size: 0.8rem;
-            }
-            
-            .quick-links a {
-                padding: 8px 0;
-            }
-        }
-      @media (max-width: 600px) {
-  body {
-    padding: 10px;
-    font-size: 16px;
-  }
-
-  header h1 {
-    font-size: 24px;
-    text-align: center;
-  }
-
-  img {
-    width: 100%;
-    height: auto;
-  }
-
-  section {
-    margin: 10px 0;
-  }
-}
     </style>
- <meta name="google-adsense-account" content="ca-pub-6663519483699242">
 </head>
-<body class="font-sans bg-gray-50">
-    <!-- Header with Logo and Navigation -->
-    <header class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <div class="logo-animate">
-                    <img src="images/Logo.png" alt="School Logo" class="h-12 w-12 rounded-full border-2 border-blue-500">
-                </div>
+<body class="bg-slate-50">
+
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <img src="images/Logo.png" class="h-12 w-12 rounded-full shadow-md">
                 <div>
-                    <h1 class="text-xl md:text-2xl font-bold text-blue-800">MUSTARD SEED INT. GROUP OF SCHOOL</h1>
-                    <p class="text-xs text-gray-600">>>>CHRIST IS OUR CORNERSTONE>>></p>
+                    <h1 class="text-xl font-extrabold text-[#002147] tracking-tight">MUSTARD SEED</h1>
+                    <p class="text-[9px] font-bold text-[#D4AF37] uppercase tracking-[0.3em]">International Schools</p>
                 </div>
             </div>
-            
-            <nav class="hidden md:flex space-x-4 lg:space-x-8">
-                <a href="#" class="text-blue-800 font-medium hover:text-blue-600 transition">Home</a>
-                <a href="#" class="text-gray-700 hover:text-blue-600 transition">About</a>
-                <a href="https://sunnykeyz123.github.io/mustardseedcbt" class="text-gray-700 hover:text-blue-600 transition">CBT</a>
-                <a href="Admission 3.html" class="text-gray-700 hover:text-blue-600 transition">Admissions</a>
-                <a href="School Portal.html" class="text-gray-700 hover:text-blue-600 transition">Portal</a>
-                <a href="Result Checker.html" class="text-gray-700 hover:text-blue-600 transition">Result Checker</a>
-            </nav>
-            
-            <button id="mobileMenuButton" class="md:hidden text-gray-700 touch-target">
-                <i class="fas fa-bars text-2xl"></i>
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="mobile-menu bg-white md:hidden">
-            <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
-                <a href="#" class="py-2 text-blue-800 font-medium border-b border-gray-100">Home</a>
-                <a href="#" class="py-2 text-gray-700 border-b border-gray-100">About</a>
-                <a href="Library.html" class="py-2 text-gray-700 border-b border-gray-100">Academics</a>
-                <a href="Admission 3.html" class="py-2 text-gray-700 border-b border-gray-100">Admissions</a>
-                <a href="School Portal.html" class="py-2 text-gray-700 border-b border-gray-100">Portal</a>
-                <a href="Result Checker.html" class="py-2 text-gray-700">Check C.A Results</a>
-              <a href="https://sunnykeyz123.github.io/mustardseedcbt" class="py-2 text-gray-700">Take CBT</a>
+
+            <div class="hidden lg:flex items-center space-x-8 font-semibold text-sm text-[#002147]">
+                <a href="#" class="hover:text-[#D4AF37] transition">Home</a>
+                <a href="about.html" class="hover:text-[#D4AF37] transition">About</a>
+                <a href="Admission 3.html" class="hover:text-[#D4AF37] transition">Admissions</a>
+                <a href="https://sunnykeyz123.github.io/mustardseedcbt" class="bg-[#002147] text-white px-6 py-2.5 rounded-full hover:bg-[#D4AF37] hover:text-[#002147] transition shadow-md">Portal Login</a>
             </div>
+
+            <button id="menuBtn" class="lg:hidden text-[#002147]"><i class="fas fa-bars text-2xl"></i></button>
         </div>
-    </header>
+    </nav>
 
-    <!-- Hero Slider -->
-    <div class="slider-container relative">
-        <div class="slider">
-            <div class="slide" style="background-image: url('images/student.png');">
-                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                    <div class="text-center text-white px-4">
-                        <h2 class="text-3xl md:text-5xl font-bold mb-4">Excellence in Education</h2>
-                        <p class="text-lg md:text-xl mb-6 max-w-2xl mx-auto">Providing quality education since 1995 with a focus on holistic development</p>
-                        <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-full transition transform hover:scale-105 touch-target">
-                            Learn More <i class="fas fa-arrow-right ml-2"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="slide" style="background-image: url('images/building.png');">
-                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                    <div class="text-center text-white px-4">
-                        <h2 class="text-3xl md:text-5xl font-bold mb-4">State-of-the-Art Facilities</h2>
-                        <p class="text-lg md:text-xl mb-6 max-w-2xl mx-auto">Modern classrooms, science labs, and sports facilities for comprehensive learning</p>
-                        <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-full transition transform hover:scale-105 touch-target">
-                            Take a Tour <i class="fas fa-map-marked-alt ml-2"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="slide" style="background-image: url('images/building 2.png');">
-                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                    <div class="text-center text-white px-4">
-                        <h2 class="text-3xl md:text-5xl font-bold mb-4">Join Our Community</h2>
-                        <p class="text-lg md:text-xl mb-6 max-w-2xl mx-auto">Become part of our vibrant learning community that nurtures talent and creativity</p>
-                        <button onclick="window.location.href='Admission 3.html';" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 md:py-3 md:px-6 rounded-full transition transform hover:scale-105 touch-target">
-    Apply Now <i class="fas fa-user-graduate ml-2"></i>
-</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <button class="slider-btn prev touch-target">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="slider-btn next touch-target">
-            <i class="fas fa-chevron-right"></i>
-        </button>
-        
-        <div class="slider-nav">
-            <div class="slider-dot active touch-target"></div>
-            <div class="slider-dot touch-target"></div>
-            <div class="slider-dot touch-target"></div>
-        </div>
+    <div id="mobileMenu" class="fixed inset-0 bg-white z-40 lg:hidden flex flex-col items-center justify-center space-y-8 text-2xl font-bold text-[#002147]">
+        <button id="closeMenu" class="absolute top-6 right-6"><i class="fas fa-times"></i></button>
+        <a href="#">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="Admission 3.html">Admissions</a>
+        <a href="https://sunnykeyz123.github.io/mustardseedcbt" class="text-[#D4AF37]">CBT Portal</a>
     </div>
 
-    <!-- Quick Links -->
-    <div class="bg-blue-800 text-white py-4">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-wrap justify-center gap-3 md:gap-6">
-                <a href="school calendar.html" class="flex items-center hover:underline px-2 py-1 touch-target">
-                    <i class="fas fa-calendar-alt mr-2"></i> <span class="text-sm md:text-base">School Calendar</span>
-                </a>
-                <a href="Com" class="flex items-center hover:underline px-2 py-1 touch-target">
-                    <i class="fas fa-bus mr-2"></i> <span class="text-sm md:text-base">Transportation</span>
-                </a>
-                <a href="Computer Result.html" class="flex items-center hover:underline px-2 py-1 touch-target">
-                    <i class="fas fa-document mr-2"></i> <span class="text-sm md:text-base">Check Computer Ptactical Result</span>
-                </a>
-                <a href="Library.html" class="flex items-center hover:underline px-2 py-1 touch-target">
-                    <i class="fas fa-book-open mr-2"></i> <span class="text-sm md:text-base">Library</span>
-                </a>
-                <a href="Library.html" class="flex items-center hover:underline px-2 py-1 touch-target">
-                    <i class="fas fa-user-tie mr-2"></i> <span class="text-sm md:text-base">Faculty Directory</span>
-                </a>
-              </a>
-                <a href="index2.html" class="flex items-center hover:underline px-2 py-1 touch-target">
-                    <i class="fas fa-book-tie mr-2"></i> <span class="text-sm md:text-base">SunnyKeyz R. Calculator</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Welcome Section -->
-    <section class="py-12 md:py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row items-center">
-                <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8 animate-fade-in" style="animation-delay: 0.2s;">
-                    <h2 class="text-2xl md:text-3xl font-bold text-blue-800 mb-4">Welcome to Mustard Seed International Schools!!</h2>
-                    <p class="text-gray-700 mb-4">Established in 1995, Mustard Seed International Group of Schools has proudly stood at the forefront of educational excellence, dedicated to nurturing young minds for over 30years. Our institution is rooted in a rich tradition of combining rigorous academic standards with holistic character development, ensuring that students grow intellectually, morally, and socially.</p>
-                    <p class="text-gray-700 mb-6">At Mustard Seed, we believe education is more than just acquiring knowledge—it is about shaping well-rounded individuals who are prepared to thrive in a rapidly evolving global society. Our comprehensive curriculum is designed to ignite curiosity, foster creativity, and encourage critical thinking, while our vibrant extracurricular programs promote leadership, teamwork, and community engagement.
-<p class="text-gray-700 mb-6"> Our mission is to nurture curious, compassionate, and confident individuals who are equipped with the skills, values, and resilience needed to meet the challenges of an ever-changing world. We are committed to creating a safe, inclusive, and stimulating environment where every student is empowered to reach their full potential and become a positive influence in their communities.
-
-As we continue to grow and evolve, Mustard Seed International Group of Schools remains dedicated to excellence, innovation, and the holistic development of our students, preparing them not only for academic success but for lifelong achievement and meaningful contributions to society..</p>
-                    <div class="flex flex-wrap gap-3">
-                        <button class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 md:px-6 rounded transition touch-target">
-                            Our History <i class="fas fa-landmark ml-2"></i>
-                        </button>
-                        <button class="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 font-medium py-2 px-4 md:px-6 rounded transition touch-target">
-                            Meet Our Team <i class="fas fa-users ml-2"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="md:w-1/2 animate-fade-in" style="animation-delay: 0.4s;">
-                    <div class="relative rounded-xl overflow-hidden shadow-xl">
-                        <img src="images/b.jpg" alt="School Building" class="w-full h-auto">
-                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 md:p-6">
-                            <h3 class="text-white text-lg md:text-xl font-bold">Our Campus</h3>
-                            <p class="text-gray-200 text-sm md:text-base">10 acres of learning space with modern facilities</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-  <!-- Facilities Section -->
-<section id="facilities" class="py-16 bg-gray-50">
-  <div class="container mx-auto px-6 lg:px-16">
-    <h2 class="text-3xl font-bold text-center text-green-700 mb-12">Our Facilities</h2>
-
-    <!-- Facility 1 -->
-    <div class="grid md:grid-cols-2 gap-8 items-center mb-16">
-      <img src="images/lab.png" alt="building" class="rounded-2xl shadow-lg">
-      <div>
-        <h3 class="text-2xl font-semibold text-green-800 mb-4">Science Laboratory</h3>
-        <p class="text-gray-700 leading-relaxed">
-          Our well-equipped science laboratory gives students hands-on experience to explore biology, chemistry, and physics, fostering practical learning beyond the classroom.
-        </p>
-      </div>
-    </div>
-
-    <!-- Facility 2 -->
-    <div class="grid md:grid-cols-2 gap-8 items-center mb-16 md:flex-row-reverse">
-      <div>
-        <h3 class="text-2xl font-semibold text-green-800 mb-4">School Compound</h3>
-        <p class="text-gray-700 leading-relaxed">
-          A very suitable environment for student with condusive learning.
-        </p>
-      </div>
-      <img src="images/compound.png" alt="Compound" class="rounded-2xl shadow-lg">
-    </div>
-
-    <!-- Facility 3 -->
-    <div class="grid md:grid-cols-2 gap-8 items-center mb-16">
-      <img src="images/gate.png" alt="School Library" class="rounded-2xl shadow-lg">
-      <div>
-        <h3 class="text-2xl font-semibold text-green-800 mb-4">School Premises</h3>
-        <p class="text-gray-700 leading-relaxed">
-          “A serene and well-structured learning environment designed to nurture excellence and character in every child.”
-        </p>
-      </div>
-    </div>
-
-    <!-- Facility 4 -->
-    <div class="grid md:grid-cols-2 gap-8 items-center md:flex-row-reverse">
-      <div>
-        <h3 class="text-2xl font-semibold text-green-800 mb-4">Playground</h3>
-        <p class="text-gray-700 leading-relaxed">
-          A safe and spacious playground where children engage in physical activities, sports, and recreational play to support fitness and teamwork.
-        </p>
-      </div>
-      <img src="images/in.png" alt="School Playground" class="rounded-2xl shadow-lg">
-    </div>
-  </div>
-</section>
-
-
-    <!-- Academics Section -->
-    <section class="py-12 md:py-16 bg-gray-100">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-8 md:mb-12">
-                <h2 class="text-2xl md:text-3xl font-bold text-blue-800 mb-2">Our Academic Programs</h2>
-                <div class="w-24 h-1 bg-blue-600 mx-auto mb-4"></div>
-                <p class="text-gray-700 max-w-2xl mx-auto">We offer a comprehensive curriculum designed to challenge and inspire students at every level.</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 animate-fade-in" style="animation-delay: 0.2s;">
-                    <div class="h-40 md:h-48 bg-blue-100 flex items-center justify-center">
-                        <i class="fas fa-child text-blue-600 text-5xl md:text-6xl"></i>
-                    </div>
-                    <div class="p-4 md:p-6">
-                        <h3 class="text-lg md:text-xl font-bold text-blue-800 mb-2">Primary School</h3>
-                        <p class="text-gray-700 mb-4 text-sm md:text-base">Grades K-5: Building strong foundations in literacy, numeracy, and social skills.</p>
-                        <a href="#" class="text-blue-600 font-medium hover:underline flex items-center touch-target">
-                            Learn More <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 animate-fade-in" style="animation-delay: 0.4s;">
-                    <div class="h-40 md:h-48 bg-green-100 flex items-center justify-center">
-                        <i class="fas fa-user-graduate text-green-600 text-5xl md:text-6xl"></i>
-                    </div>
-                    <div class="p-4 md:p-6">
-                        <h3 class="text-lg md:text-xl font-bold text-blue-800 mb-2">Play Group/Kindergarten</h3>
-                        <p class="text-gray-700 mb-4 text-sm md:text-base">Grades 6-8: Encouraging exploration and critical thinking across disciplines.</p>
-                        <a href="#" class="text-blue-600 font-medium hover:underline flex items-center touch-target">
-                            Learn More <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition duration-300 animate-fade-in" style="animation-delay: 0.6s;">
-                    <div class="h-40 md:h-48 bg-purple-100 flex items-center justify-center">
-                        <i class="fas fa-atom text-purple-600 text-5xl md:text-6xl"></i>
-                    </div>
-                    <div class="p-4 md:p-6">
-                        <h3 class="text-lg md:text-xl font-bold text-blue-800 mb-2">Secondary High School</h3>
-                        <p class="text-gray-700 mb-4 text-sm md:text-base">Grades 9-12: Preparing students for college and career with advanced coursework.</p>
-                        <a href="#" class="text-blue-600 font-medium hover:underline flex items-center touch-target">
-                            Learn More <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
+    <section class="hero-gradient h-[80vh] flex items-center text-white relative">
+        <div class="container mx-auto px-6">
+            <div class="max-w-2xl">
+                <span class="bg-[#D4AF37] text-[#002147] px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-6 inline-block">Established 1995</span>
+                <h2 class="text-5xl md:text-7xl font-extrabold leading-tight mb-6">Building Future <br><span class="text-[#D4AF37]">Global Leaders.</span></h2>
+                <p class="text-lg opacity-90 mb-10 leading-relaxed font-medium">Nurturing young minds through academic excellence, moral discipline, and technological innovation in the heart of Ibokun.</p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button class="btn-royal px-10 py-4 rounded-xl font-bold shadow-2xl">ENROLL NOW</button>
+                    <button class="bg-white/10 backdrop-blur-md border border-white/20 px-10 py-4 rounded-xl font-bold hover:bg-white hover:text-[#002147] transition">LEARN MORE</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Testimonials -->
-    <section class="py-12 md:py-16 bg-blue-800 text-white">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-8 md:mb-12">
-                <h2 class="text-2xl md:text-3xl font-bold mb-2">What Our Community Says</h2>
-                <div class="w-24 h-1 bg-white mx-auto mb-4"></div>
-                <p class="max-w-2xl mx-auto">Hear from our students, parents, and alumni about their experiences at Mustard Seed School.</p>
+    <section class="py-24 container mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-[#002147]">Our World-Class Campus</h2>
+            <div class="w-20 h-1 bg-[#D4AF37] mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="group relative overflow-hidden rounded-3xl shadow-lg">
+                <img src="images/lab.png" class="w-full h-80 object-cover group-hover:scale-110 transition duration-700">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#002147] to-transparent flex items-end p-8">
+                    <h3 class="text-white font-bold text-xl uppercase tracking-tighter">Science Laboratory</h3>
+                </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-                <div class="bg-white bg-opacity-10 p-4 md:p-6 rounded-xl backdrop-blur-sm animate-fade-in" style="animation-delay: 0.2s;">
-                    <div class="flex items-center mb-3 md:mb-4">
-                        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Parent" class="w-10 h-10 md:w-12 md:h-12 rounded-full mr-3 md:mr-4">
-                        <div>
-                            <h4 class="font-bold text-sm md:text-base">Oyewala Martins</h4>
-                            <p class="text-blue-200 text-xs md:text-sm">SS 3 Student</p>
-                        </div>
-                    </div>
-                    <p class="text-sm md:text-base">"The teachers at Mustard Seed School genuinely care about each student's success. My daughter has flourished both academically and socially."</p>
-                    <div class="flex mt-3 md:mt-4 text-yellow-300">
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                    </div>
+            <div class="group relative overflow-hidden rounded-3xl shadow-lg">
+                <img src="images/compound.png" class="w-full h-80 object-cover group-hover:scale-110 transition duration-700">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#002147] to-transparent flex items-end p-8">
+                    <h3 class="text-white font-bold text-xl uppercase tracking-tighter">School Compound</h3>
                 </div>
-                
-                <div class="bg-white bg-opacity-10 p-4 md:p-6 rounded-xl backdrop-blur-sm animate-fade-in" style="animation-delay: 0.4s;">
-                    <div class="flex items-center mb-3 md:mb-4">
-                        <img src="images/sunny.jpg" alt="Student" class="w-10 h-10 md:w-12 md:h-12 rounded-full mr-3 md:mr-4">
-                        <div>
-                            <h4 class="font-bold text-sm md:text-base">Abe Sunday</h4>
-                            <p class="text-blue-200 text-xs md:text-sm">ICT D</p>
-                        </div>
-                    </div>
-                    <p class="text-sm md:text-base">""Empowering students through technology for a brighter future.""</p>
-                    <div class="flex mt-3 md:mt-4 text-yellow-300">
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                    </div>
-                </div>
-                
-                <div class="bg-white bg-opacity-10 p-4 md:p-6 rounded-xl backdrop-blur-sm animate-fade-in" style="animation-delay: 0.6s;">
-                    <div class="flex items-center mb-3 md:mb-4">
-                        <img src="images/Mr. Ade.jpg" alt="Teacher" class="w-10 h-10 md:w-12 md:h-12 rounded-full mr-3 md:mr-4">
-                        <div>
-                            <h4 class="font-bold text-sm md:text-base">Uncle Ade</h4>
-                            <p class="text-blue-200 text-xs md:text-sm">Department Head</p>
-                        </div>
-                    </div>
-                    <p class="text-sm md:text-base">"Teaching at Mustard Seed is rewarding because we're encouraged to innovate and create engaging learning experiences for our students."</p>
-                    <div class="flex mt-3 md:mt-4 text-yellow-300">
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star text-sm md:text-base"></i>
-                        <i class="fas fa-star-half-alt text-sm md:text-base"></i>
-                    </div>
+            </div>
+            <div class="group relative overflow-hidden rounded-3xl shadow-lg">
+                <img src="images/in.png" class="w-full h-80 object-cover group-hover:scale-110 transition duration-700">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#002147] to-transparent flex items-end p-8">
+                    <h3 class="text-white font-bold text-xl uppercase tracking-tighter">Modern Classrooms</h3>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Events Section -->
-    <section class="py-12 md:py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-8 md:mb-12">
-                <div>
-                    <h2 class="text-2xl md:text-3xl font-bold text-blue-800 mb-2">Upcoming Events</h2>
-                    <div class="w-24 h-1 bg-blue-600"></div>
-                </div>
-                <a href="#" class="mt-4 md:mt-0 text-blue-600 font-medium hover:underline flex items-center touch-target">
-                    View All Events <i class="fas fa-calendar-alt ml-2"></i>
-                </a>
+    <footer class="bg-[#002147] text-white pt-20 pb-10">
+        <div class="container mx-auto px-6 text-center">
+            <img src="images/Logo.png" class="h-20 w-20 mx-auto mb-8 rounded-full border-4 border-[#D4AF37]">
+            <h4 class="text-2xl font-bold mb-4">Mustard Seed International School</h4>
+            <p class="text-slate-400 max-w-lg mx-auto mb-10 font-medium italic">"Christ is our Cornerstone. Shaping character and competence since 1995."</p>
+            <div class="flex justify-center space-x-6 text-2xl mb-16">
+                <a href="#" class="hover:text-[#D4AF37] transition"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="hover:text-[#D4AF37] transition"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" class="hover:text-[#D4AF37] transition"><i class="fas fa-envelope"></i></a>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                <div class="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition animate-fade-in" style="animation-delay: 0.2s;">
-                    <div class="h-40 md:h-48 bg-red-100 flex items-center justify-center relative">
-                        <div class="absolute top-3 md:top-4 left-3 md:left-4 bg-white px-2 py-1 md:px-3 rounded-full shadow">
-                            <span class="font-bold text-red-600 text-sm md:text-base">Jun 15</span>
-                        </div>
-                        <i class="fas fa-graduation-cap text-red-600 text-5xl md:text-6xl"></i>
-                    </div>
-                    <div class="p-4 md:p-6">
-                        <h3 class="text-lg md:text-xl font-bold text-blue-800 mb-2">NECO Examination ENDS </h3>
-                        <p class="text-gray-700 mb-4 text-sm md:text-base">Join us as we celebrate the achievements of our graduating class of 2025.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs md:text-sm text-gray-500"><i class="fas fa-clock mr-1"></i> 10:00 AM - 12:00 PM</span>
-                            <button class="text-blue-600 font-medium hover:underline touch-target">Details</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition animate-fade-in" style="animation-delay: 0.4s;">
-                    <div class="h-40 md:h-48 bg-green-100 flex items-center justify-center relative">
-                        <div class="absolute top-3 md:top-4 left-3 md:left-4 bg-white px-2 py-1 md:px-3 rounded-full shadow">
-                            <span class="font-bold text-green-600 text-sm md:text-base">Jun 22</span>
-                        </div>
-                        <i class="fas fa-microscope text-green-600 text-5xl md:text-6xl"></i>
-                    </div>
-                    <div class="p-4 md:p-6">
-                        <h3 class="text-lg md:text-xl font-bold text-blue-800 mb-2">Science Fair</h3>
-                        <p class="text-gray-700 mb-4 text-sm md:text-base">Students showcase their innovative projects in our annual science exhibition.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs md:text-sm text-gray-500"><i class="fas fa-clock mr-1"></i> 9:00 AM - 3:00 PM</span>
-                            <button class="text-blue-600 font-medium hover:underline touch-target">Details</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition animate-fade-in" style="animation-delay: 0.6s;">
-                    <div class="h-40 md:h-48 bg-yellow-100 flex items-center justify-center relative">
-                        <div class="absolute top-3 md:top-4 left-3 md:left-4 bg-white px-2 py-1 md:px-3 rounded-full shadow">
-                            <span class="font-bold text-yellow-600 text-sm md:text-base">Jul 5</span>
-                        </div>
-                        <i class="fas fa-campground text-yellow-600 text-5xl md:text-6xl"></i>
-                    </div>
-                    <div class="p-4 md:p-6">
-                        <h3 class="text-lg md:text-xl font-bold text-blue-800 mb-2">Summer Camp Begins</h3>
-                        <p class="text-gray-700 mb-4 text-sm md:text-base">Our popular summer enrichment program starts with exciting activities.</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs md:text-sm text-gray-500"><i class="fas fa-clock mr-1"></i> 8:00 AM - 4:00 PM</span>
-                            <button class="text-blue-600 font-medium hover:underline touch-target">Details</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Newsletter -->
-    <section class="py-12 md:py-16 bg-gray-100">
-        <div class="container mx-auto px-4">
-            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden md:flex">
-                <div class="md:w-1/2 bg-blue-600 text-white p-6 md:p-8 flex flex-col justify-center">
-                    <h2 class="text-xl md:text-2xl font-bold mb-3 md:mb-4">Stay Connected</h2>
-                    <p class="text-sm md:text-base">Subscribe to our newsletter for the latest news, events, and updates from Mustard Seed School.</p>
-                    <div class="mt-4 md:mt-6 flex space-x-3 md:space-x-4">
-                        <a href="https://www.facebook.com/profile.php?id=61568718860508" class="text-white hover:text-blue-200 touch-target">
-                            <i class="fab fa-facebook-f text-lg md:text-xl"></i>
-                        </a>
-                        <a href="#" class="text-white hover:text-blue-200 touch-target">
-                            <i class="fab fa-twitter text-lg md:text-xl"></i>
-                        </a>
-                        <a href="#" class="text-white hover:text-blue-200 touch-target">
-                            <i class="fab fa-instagram text-lg md:text-xl"></i>
-                        </a>
-                        <a href="#" class="text-white hover:text-blue-200 touch-target">
-                            <i class="fab fa-youtube text-lg md:text-xl"></i>
-                        </a>
-                    </div>
-                </div>
-                <div class="md:w-1/2 p-6 md:p-8">
-                    <form>
-                        <div class="mb-3 md:mb-4">
-                            <label for="name" class="block text-gray-700 mb-1 md:mb-2 text-sm md:text-base">Name</label>
-                            <input type="text" id="name" class="w-full px-3 py-2 md:px-4 md:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base">
-                        </div>
-                        <div class="mb-4 md:mb-6">
-                            <label for="email" class="block text-gray-700 mb-1 md:mb-2 text-sm md:text-base">Email</label>
-                            <input type="email" id="email" class="w-full px-3 py-2 md:px-4 md:py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base">
-                        </div>
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 md:py-3 px-4 rounded-lg transition touch-target">
-                            Subscribe Now
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-blue-900 text-white pt-12 pb-6">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 mb-8">
-                <div>
-                    <div class="flex items-center mb-3 md:mb-4">
-                        <img src="images/Logo.png" alt="School Logo" class="h-8 w-8 md:h-10 md:w-10 rounded-full border-2 border-white mr-2 md:mr-3">
-                        <h3 class="text-lg md:text-xl font-bold">Mustard Seed Int. Schools</h3>
-                    </div>
-                    <p class="mb-3 md:mb-4 text-sm md:text-base">Shaping Tomorrow's Leaders Through Excellence in Education.</p>
-                    <div class="flex space-x-3 md:space-x-4">
-                        <a href="https://www.facebook.com/profile.php?id=61568718860508" class="text-white hover:text-blue-300 touch-target">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="text-white hover:text-blue-300 touch-target">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="text-white hover:text-blue-300 touch-target">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="text-white hover:text-blue-300 touch-target">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div>
-                    <h4 class="text-base md:text-lg font-bold mb-3 md:mb-4">Quick Links</h4>
-                    <ul class="space-y-1 md:space-y-2">
-                        <li><a href="#" class="hover:underline text-sm md:text-base touch-target">Home</a></li>
-                        <li><a href="#" class="hover:underline text-sm md:text-base touch-target">About Us</a></li>
-                        <li><a href="#" class="hover:underline text-sm md:text-base touch-target">Academics</a></li>
-                        <li><a href="Admission 3.html" class="hover:underline text-sm md:text-base touch-target">Admissions</a></li>
-                        <li><a href="#" class="hover:underline text-sm md:text-base touch-target">School Calendar</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-base md:text-lg font-bold mb-3 md:mb-4">Contact Us</h4>
-                    <address class="not-italic text-sm md:text-base">
-                        <p class="mb-1 md:mb-2"><i class="fas fa-map-marker-alt mr-2"></i> Alafia Estate, Behind Gadmis Hotel, Ibokun Osun State.</p>
-                        <p class="mb-1 md:mb-2"><i class="fas fa-phone-alt mr-2"></i> (+234) 0803366423</p>
-                        <p class="mb-1 md:mb-2"><i class="fas fa-envelope mr-2"></i> info@mustardseed.edu.ng</p>
-                        <p><i class="fas fa-clock mr-2"></i> Mon-Fri: 07:45 AM - 4:00 PM</p>
-                    </address>
-                </div>
-                
-                <div>
-                    <h4 class="text-base md:text-lg font-bold mb-3 md:mb-4">School Hours</h4>
-                    <ul class="space-y-1 md:space-y-2 text-sm md:text-base">
-                        <li class="flex justify-between">
-                            <span>Monday - Friday</span>
-                            <span>7:45 AM - 4:00 PM</span>
-                        </li>
-                        <li class="flex justify-between">
-                            <span>Office Hours</span>
-                            <span>7:30 AM - 4:30 PM</span>
-                        </li>
-                        <li class="flex justify-between">
-                            <span>Early Dismissal</span>
-                            <span>1:00 PM</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-blue-800 pt-4 md:pt-6 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-sm md:text-base mb-2 md:mb-0">&copy; 2025 Mustard Seed Int. Schools. All rights reserved.</p>
-                <div class="flex space-x-3 md:space-x-4">
-                    <a href="#" class="hover:underline text-sm md:text-base touch-target">Privacy Policy</a>
-                    <a href="#" class="hover:underline text-sm md:text-base touch-target">Terms of Service</a>
-                </div>
-            </div>
+            <p class="text-xs font-bold text-slate-500 tracking-[0.4em] uppercase">© 2026 SUNNYKEYZ DESIGNS</p>
         </div>
     </footer>
 
-    <!-- Back to Top Button -->
-    <button id="backToTop" class="fixed bottom-6 right-6 bg-blue-600 text-white p-2 md:p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-blue-700 touch-target">
-        <i class="fas fa-arrow-up"></i>
-    </button>
+    <div id="jobPopup" class="fixed inset-0 bg-[#002147]/95 z-[100] flex items-center justify-center p-6">
+        <div class="bg-white rounded-[2rem] max-w-xl w-full p-10 relative shadow-2xl overflow-hidden border-t-[10px] border-[#D4AF37]">
+            <div class="text-center">
+                <i class="fas fa-bullhorn text-4xl text-[#D4AF37] mb-6"></i>
+                <h2 class="text-3xl font-black text-[#002147] mb-2 uppercase tracking-tighter">Join Our Faculty</h2>
+                <p class="text-slate-500 font-bold mb-8">2025/2026 Academic Session</p>
+            </div>
+            
+            <div class="space-y-6 text-[#002147]">
+                <div class="flex items-start space-x-4 bg-slate-50 p-4 rounded-2xl">
+                    <i class="fas fa-check-circle text-green-600 mt-1"></i>
+                    <p class="text-sm font-bold">Seeking NCE & Degree teachers in Mathematics, English, and Sciences.</p>
+                </div>
+                <div class="flex items-start space-x-4 bg-slate-50 p-4 rounded-2xl">
+                    <i class="fas fa-calendar text-[#D4AF37] mt-1"></i>
+                    <p class="text-sm font-bold italic">Interview Date: 10th Sept 2025 | 9:00 AM Sharp</p>
+                </div>
+            </div>
+
+            <div class="mt-10 flex flex-col space-y-4">
+                <button onclick="window.location.href='mailto:bfajendagba@gmail.com'" class="bg-[#002147] text-white py-4 rounded-xl font-bold uppercase tracking-widest shadow-lg">Apply via Email</button>
+                <button onclick="document.getElementById('jobPopup').style.display='none'" class="text-[#002147] font-black uppercase text-xs tracking-widest hover:text-[#D4AF37] transition">Dismiss</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Image Slider Functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const slider = document.querySelector('.slider');
-            const slides = document.querySelectorAll('.slide');
-            const dots = document.querySelectorAll('.slider-dot');
-            const prevBtn = document.querySelector('.prev');
-            const nextBtn = document.querySelector('.next');
-            let currentIndex = 0;
-            let slideInterval;
-            let touchStartX = 0;
-            let touchEndX = 0;
-            
-            // Set initial active dot
-            dots[currentIndex].classList.add('active');
-            
-            // Function to go to a specific slide
-            function goToSlide(index) {
-                slider.style.transform = `translateX(-${index * 100}%)`;
-                
-                // Update active dot
-                dots.forEach(dot => dot.classList.remove('active'));
-                dots[index].classList.add('active');
-                
-                currentIndex = index;
-            }
-            
-            // Next slide function
-            function nextSlide() {
-                if (currentIndex === slides.length - 1) {
-                    goToSlide(0);
-                } else {
-                    goToSlide(currentIndex + 1);
-                }
-            }
-            
-            // Previous slide function
-            function prevSlide() {
-                if (currentIndex === 0) {
-                    goToSlide(slides.length - 1);
-                } else {
-                    goToSlide(currentIndex - 1);
-                }
-            }
-            
-            // Start auto sliding
-            function startSlideShow() {
-                slideInterval = setInterval(nextSlide, 5000);
-            }
-            
-            // Stop auto sliding when user interacts
-            function pauseSlideShow() {
-                clearInterval(slideInterval);
-            }
-            
-            // Event listeners for buttons
-            nextBtn.addEventListener('click', () => {
-                pauseSlideShow();
-                nextSlide();
-                startSlideShow();
-            });
-            
-            prevBtn.addEventListener('click', () => {
-                pauseSlideShow();
-                prevSlide();
-                startSlideShow();
-            });
-            
-            // Dot navigation
-            dots.forEach((dot, index) => {
-                dot.addEventListener('click', () => {
-                    pauseSlideShow();
-                    goToSlide(index);
-                    startSlideShow();
-                });
-            });
-            
-            // Touch events for mobile swipe
-            slider.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-                pauseSlideShow();
-            }, {passive: true});
-            
-            slider.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-                startSlideShow();
-            }, {passive: true});
-            
-            function handleSwipe() {
-                const difference = touchStartX - touchEndX;
-                if (difference > 50) {
-                    // Swipe left - next slide
-                    nextSlide();
-                } else if (difference < -50) {
-                    // Swipe right - previous slide
-                    prevSlide();
-                }
-            }
-            
-            // Start the slideshow
-            startSlideShow();
-            
-            // Back to top button functionality
-            const backToTopBtn = document.getElementById('backToTop');
-            
-            window.addEventListener('scroll', () => {
-                if (window.pageYOffset > 300) {
-                    backToTopBtn.classList.remove('opacity-0', 'invisible');
-                    backToTopBtn.classList.add('opacity-100', 'visible');
-                } else {
-                    backToTopBtn.classList.remove('opacity-100', 'visible');
-                    backToTopBtn.classList.add('opacity-0', 'invisible');
-                }
-            });
-            
-            backToTopBtn.addEventListener('click', () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-            
-            // Mobile menu toggle
-            const mobileMenuButton = document.getElementById('mobileMenuButton');
-            const mobileMenu = document.getElementById('mobileMenu');
-            
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('open');
-                // Change icon
-                const icon = mobileMenuButton.querySelector('i');
-                if (mobileMenu.classList.contains('open')) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
-            
-            // Close mobile menu when clicking on a link
-            const mobileLinks = mobileMenu.querySelectorAll('a');
-            mobileLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.remove('open');
-                    const icon = mobileMenuButton.querySelector('i');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                });
-            });
-            
-            // Animate elements when they come into view
-            const animateOnScroll = () => {
-                const elements = document.querySelectorAll('.animate-fade-in');
-                
-                elements.forEach(element => {
-                    const elementPosition = element.getBoundingClientRect().top;
-                    const windowHeight = window.innerHeight;
-                    
-                    if (elementPosition < windowHeight - 100) {
-                        element.style.opacity = '1';
-                        element.style.transform = 'translateY(0)';
-                    }
-                });
-            };
-            
-            // Initial check
-            animateOnScroll();
-            
-            // Check on scroll
-            window.addEventListener('scroll', animateOnScroll);
-            
-            // Make sure all animations trigger after page load
-            setTimeout(animateOnScroll, 500);
-        });
+        // Menu Toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const closeMenu = document.getElementById('closeMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        menuBtn.onclick = () => mobileMenu.classList.add('open');
+        closeMenu.onclick = () => mobileMenu.classList.remove('open');
     </script>
-  <!-- Job Vacancy Popup -->
-<div id="jobPopup" style="
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-">
-  <div style="
-    background: #004d40; /* school theme color */
-    color: white;
-    padding: 30px;
-    max-width: 600px;
-    border-radius: 12px;
-    text-align: left;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-    overflow-y: auto;
-    max-height: 90vh;
-  ">
-    <h2 style="margin-top:0; color: #ffeb3b; text-align:center;">
-      📢 Join Our Team of Dedicated Educators!
-    </h2>
-    <p>
-      <strong>Mustard Seed School, Ibokun</strong>, a growing and reputable institution, is seeking highly qualified and passionate teachers to join our team. We are committed to providing quality education and nurturing the next generation of leaders.
-    </p>
-
-    <h3 style="color:#ffeb3b;">Vacancies</h3>
-    <p><strong>NCE Teachers</strong><br>
-      - All subjects (Mathematics, English Language, Biology, Chemistry, Physics, Economics, Geography, History, etc.)<br>
-      - Must possess a National Certificate in Education (NCE) from a recognized institution<br>
-      - Teaching experience and ability to learn fast
-    </p>
-    <p><strong>Degree Teachers</strong><br>
-      - Chemistry<br>
-      - Physics<br>
-      - English Language<br>
-      - Economics<br>
-      - Must possess a Bachelor's degree in the relevant subject area from a recognized institution<br>
-      - Teaching experience and ability to learn fast
-    </p>
-
-    <h3 style="color:#ffeb3b;">Requirements</h3>
-    <ul>
-      <li>Strong passion for teaching and learning</li>
-      <li>Excellent communication and interpersonal skills</li>
-      <li>Ability to work in a team and adapt to changing environments</li>
-      <li>Strong subject knowledge and pedagogical skills</li>
-    </ul>
-
-    <h3 style="color:#ffeb3b;">How to Apply</h3>
-    <p>
-      If you are a dedicated and passionate educator looking for a fulfilling career opportunity, please send your application, including:  
-      - A cover letter  
-      - CV  
-      - Relevant certificates  
-      - Contact information for two professional referees  
-    </p>
-    <p>
-      📧 Email: <strong>bfajendagba@gmail.com</strong><br>
-      📱 WhatsApp: <strong>+2349165885066</strong><br>
-      📞 Call: <strong>08033666423</strong>
-    </p>
-
-    <h3 style="color:#ffeb3b;">Interview Details</h3>
-    <p>
-      📅 Date: <strong>10th September 2025</strong><br>
-      🕘 Time: <strong>9:00 AM</strong><br>
-      📍 Venue: <strong>Mustard Seed School, Ibokun</strong><br>
-      💰 Salary: <strong>Good</strong>
-    </p>
-
-    <p style="text-align:center; margin-top:20px; font-style:italic;">
-      Mustard Seed School, Ibokun, is an equal opportunities employer. We look forward to welcoming talented educators to our team!
-    </p>
-
-    <div style="text-align:center; margin-top:20px;">
-      <button onclick="document.getElementById('jobPopup').style.display='none'" style="
-        background: #ffeb3b;
-        color: #004d40;
-        padding: 12px 25px;
-        border: none;
-        border-radius: 6px;
-        font-weight: bold;
-        cursor: pointer;
-      ">Close</button>
-    </div>
-  </div>
-</div>
 </body>
- </html>
+                  </html>
