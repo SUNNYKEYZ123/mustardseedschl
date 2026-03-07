@@ -3,174 +3,906 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mustard Seed International School | Excellence</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>MUSTARD SEED INTERNATIONAL SCHOOL | Excellence</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-
+    
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        .hero-gradient {
-            background: linear-gradient(rgba(0, 33, 71, 0.8), rgba(0, 33, 71, 0.6)), url('images/student.png');
-            background-size: cover;
-            background-position: center;
+        /* --- CSS Variables & Reset --- */
+        :root {
+            --primary-color: #5B2C6F; /* Deep Purple */
+            --secondary-color: #2E86C1; /* Bright Blue */
+            --accent-color: #8E44AD; /* Light Purple */
+            --dark-color: #1a1a1a;
+            --light-color: #f4f7f6;
+            --white: #ffffff;
+            --text-color: #333333;
+            --transition: all 0.3s ease;
         }
 
-        .gold-border { border-bottom: 4px solid #D4AF37; }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .btn-royal {
-            background: #002147;
-            color: white;
-            transition: all 0.3s ease;
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--white);
         }
 
-        .btn-royal:hover {
-            background: #D4AF37;
-            color: #002147;
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark-color);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: #4A235A;
             transform: translateY(-2px);
         }
 
-        /* Smooth Mobile Menu */
-        #mobileMenu {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateY(-100%);
-            opacity: 0;
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--white);
         }
-        #mobileMenu.open {
-            transform: translateY(0);
+
+        .btn-secondary:hover {
+            background-color: #2471A3;
+            transform: translateY(-2px);
+        }
+
+        .section-padding {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .section-title p {
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* --- Top Bar (Job Vacancy) --- */
+        .top-bar {
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .top-bar span {
+            color: #FFD700;
+        }
+
+        /* --- Header & Navigation --- */
+        header {
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo img {
+            height: 60px;
+            width: auto;
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1.2;
+        }
+
+        .logo-text span {
+            color: var(--secondary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            font-weight: 600;
+            color: var(--dark-color);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* --- Hero Slider Section --- */
+        .hero-slider {
+            position: relative;
+            height: 90vh;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .slide.active {
             opacity: 1;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slide-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(91, 44, 111, 0.7), rgba(46, 134, 193, 0.7));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-content {
+            text-align: center;
+            color: var(--white);
+            max-width: 800px;
+            padding: 20px;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--white);
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .slider-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .slider-dot.active {
+            background-color: var(--white);
+            transform: scale(1.2);
+        }
+
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255,255,255,0.3);
+            color: var(--white);
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.5rem;
+        }
+
+        .slider-arrow:hover {
+            background-color: var(--primary-color);
+        }
+
+        .slider-arrow.prev {
+            left: 20px;
+        }
+
+        .slider-arrow.next {
+            right: 20px;
+        }
+
+        /* --- Infrastructure Gallery --- */
+        .infrastructure-section {
+            background-color: var(--light-color);
+        }
+
+        .infrastructure-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .infra-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            height: 250px;
+        }
+
+        .infra-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .infra-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .infra-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(transparent, var(--primary-color));
+            color: var(--white);
+        }
+
+        .infra-overlay h3 {
+            color: var(--white);
+            font-size: 1.2rem;
+        }
+
+        /* --- About/History Section --- */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .about-img img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .about-text h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        /* --- Vision & Mission --- */
+        .vm-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+        }
+
+        .vm-section .section-title h2 {
+            color: var(--white);
+        }
+
+        .vm-section .section-title p {
+            color: #e0e0e0;
+        }
+
+        .vm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .vm-card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            border-top: 5px solid var(--secondary-color);
+            transition: var(--transition);
+        }
+
+        .vm-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .vm-card i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .vm-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .vm-card p {
+            font-style: italic;
+            color: #555;
+        }
+
+        /* --- CBT Feature Section --- */
+        .cbt-section {
+            background-color: var(--white);
+            text-align: center;
+        }
+
+        .cbt-section h2 {
+            color: var(--primary-color);
+        }
+
+        .cbt-section p {
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+        }
+
+        /* --- Testimonials --- */
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #eee;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .testimonial-card .quote-icon {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .testimonial-card p {
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .testimonial-card h4 {
+            font-size: 1rem;
+            color: var(--primary-color);
+        }
+
+        .testimonial-card span {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* --- Newsletter --- */
+        .newsletter {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            text-align: center;
+            color: var(--white);
+        }
+
+        .newsletter .section-title h2 {
+            color: var(--white);
+        }
+
+        .newsletter .section-title p {
+            color: #e0e0e0;
+        }
+
+        .newsletter-form {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 50px;
+            outline: none;
+        }
+
+        .newsletter-form button {
+            background-color: var(--white);
+            color: var(--primary-color);
+        }
+
+        .newsletter-form button:hover {
+            background-color: var(--light-color);
+        }
+
+        /* --- Footer --- */
+        footer {
+            background-color: var(--dark-color);
+            color: #ccc;
+            padding: 60px 0 20px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h3 {
+            color: var(--white);
+            margin-bottom: 20px;
+            border-left: 3px solid var(--secondary-color);
+            padding-left: 10px;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--secondary-color);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .social-links {
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            color: var(--white);
+            font-size: 1.2rem;
+            margin-right: 15px;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background: var(--white);
+                padding: 20px;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .slider-arrow {
+                padding: 10px 15px;
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
-<body class="bg-slate-50">
+<body>
 
-    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-100">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-4">
-                <img src="images/Logo.png" class="h-12 w-12 rounded-full shadow-md">
-                <div>
-                    <h1 class="text-xl font-extrabold text-[#002147] tracking-tight">MUSTARD SEED</h1>
-                    <p class="text-[9px] font-bold text-[#D4AF37] uppercase tracking-[0.3em]">International Schools</p>
-                </div>
-            </div>
-
-            <div class="hidden lg:flex items-center space-x-8 font-semibold text-sm text-[#002147]">
-                <a href="#" class="hover:text-[#D4AF37] transition">Home</a>
-                <a href="about.html" class="hover:text-[#D4AF37] transition">About</a>
-                <a href="Admission 3.html" class="hover:text-[#D4AF37] transition">Admissions</a>
-                <a href="https://sunnykeyz123.github.io/mustardseedcbt" class="bg-[#002147] text-white px-6 py-2.5 rounded-full hover:bg-[#D4AF37] hover:text-[#002147] transition shadow-md">Portal Login</a>
-            </div>
-
-            <button id="menuBtn" class="lg:hidden text-[#002147]"><i class="fas fa-bars text-2xl"></i></button>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container">
+            <i class="fas fa-bullhorn"></i> Job Vacancy! 2025/2026 Academic Session: We are hiring NCE & Degree holders. Contact: <span>08033666423</span>
         </div>
-    </nav>
-
-    <div id="mobileMenu" class="fixed inset-0 bg-white z-40 lg:hidden flex flex-col items-center justify-center space-y-8 text-2xl font-bold text-[#002147]">
-        <button id="closeMenu" class="absolute top-6 right-6"><i class="fas fa-times"></i></button>
-        <a href="#">Home</a>
-        <a href="about.html">About Us</a>
-        <a href="Admission 3.html">Admissions</a>
-        <a href="https://sunnykeyz123.github.io/mustardseedcbt" class="text-[#D4AF37]">CBT Portal</a>
     </div>
 
-    <section class="hero-gradient h-[80vh] flex items-center text-white relative">
-        <div class="container mx-auto px-6">
-            <div class="max-w-2xl">
-                <span class="bg-[#D4AF37] text-[#002147] px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-6 inline-block">Established 1995</span>
-                <h2 class="text-5xl md:text-7xl font-extrabold leading-tight mb-6">Building Future <br><span class="text-[#D4AF37]">Global Leaders.</span></h2>
-                <p class="text-lg opacity-90 mb-10 leading-relaxed font-medium">Nurturing young minds through academic excellence, moral discipline, and technological innovation in the heart of Ibokun.</p>
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button class="btn-royal px-10 py-4 rounded-xl font-bold shadow-2xl">ENROLL NOW</button>
-                    <button class="bg-white/10 backdrop-blur-md border border-white/20 px-10 py-4 rounded-xl font-bold hover:bg-white hover:text-[#002147] transition">LEARN MORE</button>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <!-- REPLACE WITH YOUR LOGO FILE -->
+                    <img src="logo.png" alt="Mustard Seed International School Logo">
+                    <div class="logo-text">
+                        MUSTARD SEED<br>
+                        <span>INTERNATIONAL SCHOOL</span>
+                    </div>
+                </a>
+                <div class="mobile-menu-btn" onclick="toggleMenu()">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="School Portal.html">Portal</a></li>
+                    <li><a href="Result Checker.html">Results</a></li>
+                    <li><a href="https://sunnykeyz123.github.io/mustardseedcbt">Take Exam</a></li>
+                    <li><a href="#admissions" class="btn btn-primary" style="padding: 8px 20px; color: white;">Admissions</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Slider Section -->
+    <section class="hero-slider">
+        <div class="slide active">
+            <img src="https://images.unsplash.com/photo-1544531586-fde5298cdd40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Students Learning">
+            <div class="slide-overlay">
+                <div class="hero-content">
+                    <h1>From Small Seeds to <br> Mighty Leaders</h1>
+                    <p>Nurturing Greatness Through Christ. Experience a world-class education in the heart of Ibokun.</p>
+                    <div class="hero-buttons">
+                        <a href="#admissions" class="btn btn-secondary">Start Admission</a>
+                        <a href="https://sunnykeyz123.github.io/mustardseedcbt" class="btn btn-primary"><i class="fas fa-laptop-code"></i> Student CBT Portal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="School Building">
+            <div class="slide-overlay">
+                <div class="hero-content">
+                    <h1>World-Class <br> Infrastructure</h1>
+                    <p>Modern facilities designed to inspire learning and excellence in every student.</p>
+                    <div class="hero-buttons">
+                        <a href="#infrastructure" class="btn btn-secondary">Explore Facilities</a>
+                        <a href="#admissions" class="btn btn-primary">Apply Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Classroom">
+            <div class="slide-overlay">
+                <div class="hero-content">
+                    <h1>Excellence in <br> Every Child</h1>
+                    <p>Blending moral discipline with cutting-edge technology for holistic development.</p>
+                    <div class="hero-buttons">
+                        <a href="#about" class="btn btn-secondary">Learn More</a>
+                        <a href="https://sunnykeyz123.github.io/mustardseedcbt" class="btn btn-primary">CBT Portal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="slider-arrow prev" onclick="changeSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+        <button class="slider-arrow next" onclick="changeSlide(1)"><i class="fas fa-chevron-right"></i></button>
+        
+        <div class="slider-controls">
+            <div class="slider-dot active" onclick="currentSlide(0)"></div>
+            <div class="slider-dot" onclick="currentSlide(1)"></div>
+            <div class="slider-dot" onclick="currentSlide(2)"></div>
+        </div>
+    </section>
+
+    <!-- Infrastructure Gallery -->
+    <section class="section-padding infrastructure-section" id="infrastructure">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Facilities</h2>
+                <p>State-of-the-art infrastructure for optimal learning</p>
+            </div>
+            <div class="infrastructure-grid">
+                <div class="infra-card">
+                    <img src="https://images.unsplash.com/photo-1562774053-701939374585?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Science Lab">
+                    <div class="infra-overlay">
+                        <h3><i class="fas fa-flask"></i> Science Laboratory</h3>
+                    </div>
+                </div>
+                <div class="infra-card">
+                    <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Classroom">
+                    <div class="infra-overlay">
+                        <h3><i class="fas fa-chalkboard-teacher"></i> Modern Classrooms</h3>
+                    </div>
+                </div>
+                <div class="infra-card">
+                    <img src="https://images.unsplash.com/photo-1544531586-fde5298cdd40?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="School Environment">
+                    <div class="infra-overlay">
+                        <h3><i class="fas fa-tree"></i> Serene Environment</h3>
+                    </div>
+                </div>
+                <div class="infra-card">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Computer Lab">
+                    <div class="infra-overlay">
+                        <h3><i class="fas fa-laptop-code"></i> Computer Laboratory</h3>
+                    </div>
+                </div>
+                <div class="infra-card">
+                    <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Library">
+                    <div class="infra-overlay">
+                        <h3><i class="fas fa-book"></i> Well-Stocked Library</h3>
+                    </div>
+                </div>
+                <div class="infra-card">
+                    <img src="https://images.unsplash.com/photo-1564981797816-1043664bf78d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Sports Facility">
+                    <div class="infra-overlay">
+                        <h3><i class="fas fa-futbol"></i> Sports Facilities</h3>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="py-24 container mx-auto px-6">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-[#002147]">Our World-Class Campus</h2>
-            <div class="w-20 h-1 bg-[#D4AF37] mx-auto mt-4 rounded-full"></div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="group relative overflow-hidden rounded-3xl shadow-lg">
-                <img src="images/lab.png" class="w-full h-80 object-cover group-hover:scale-110 transition duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#002147] to-transparent flex items-end p-8">
-                    <h3 class="text-white font-bold text-xl uppercase tracking-tighter">Science Laboratory</h3>
+    <!-- Our History -->
+    <section class="section-padding" id="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-text">
+                    <h3>Our History</h3>
+                    <p>MUSTARD SEED INTERNATIONAL SCHOOL was established with a vision to provide a safe, nurturing, and intellectually stimulating environment. Since our inception, we have grown from a small seed into a mighty tree, providing shade and knowledge to thousands of students across the region.</p>
+                    <br>
+                    <p>We blend moral discipline with cutting-edge technology to ensure every child shines.</p>
                 </div>
-            </div>
-            <div class="group relative overflow-hidden rounded-3xl shadow-lg">
-                <img src="images/compound.png" class="w-full h-80 object-cover group-hover:scale-110 transition duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#002147] to-transparent flex items-end p-8">
-                    <h3 class="text-white font-bold text-xl uppercase tracking-tighter">School Compound</h3>
-                </div>
-            </div>
-            <div class="group relative overflow-hidden rounded-3xl shadow-lg">
-                <img src="images/in.png" class="w-full h-80 object-cover group-hover:scale-110 transition duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-[#002147] to-transparent flex items-end p-8">
-                    <h3 class="text-white font-bold text-xl uppercase tracking-tighter">Modern Classrooms</h3>
+                <div class="about-img">
+                    <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="School History">
                 </div>
             </div>
         </div>
     </section>
 
-    <footer class="bg-[#002147] text-white pt-20 pb-10">
-        <div class="container mx-auto px-6 text-center">
-            <img src="images/Logo.png" class="h-20 w-20 mx-auto mb-8 rounded-full border-4 border-[#D4AF37]">
-            <h4 class="text-2xl font-bold mb-4">Mustard Seed International School</h4>
-            <p class="text-slate-400 max-w-lg mx-auto mb-10 font-medium italic">"Christ is our Cornerstone. Shaping character and competence since 1995."</p>
-            <div class="flex justify-center space-x-6 text-2xl mb-16">
-                <a href="#" class="hover:text-[#D4AF37] transition"><i class="fab fa-facebook"></i></a>
-                <a href="#" class="hover:text-[#D4AF37] transition"><i class="fab fa-whatsapp"></i></a>
-                <a href="#" class="hover:text-[#D4AF37] transition"><i class="fas fa-envelope"></i></a>
+    <!-- Vision & Mission -->
+    <section class="section-padding vm-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Core Values</h2>
+                <p>Guiding principles that shape our institution</p>
             </div>
-            <p class="text-xs font-bold text-slate-500 tracking-[0.4em] uppercase">© 2026 SUNNYKEYZ DESIGNS</p>
+            <div class="vm-grid">
+                <div class="vm-card">
+                    <i class="fas fa-eye"></i>
+                    <h3>Our Vision</h3>
+                    <p>"To be a leading educational institution that produces world-class leaders grounded in character and excellence."</p>
+                </div>
+                <div class="vm-card">
+                    <i class="fas fa-bullseye"></i>
+                    <h3>Our Mission</h3>
+                    <p>"To provide qualitative education through modern technology and moral discipline, ensuring every child reaches their full potential."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CBT Feature -->
+    <section class="section-padding cbt-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Future-Ready Learning</h2>
+                <p>Preparing students for the digital age</p>
+            </div>
+            <p>We prepare students for the digital age. Our dedicated CBT Exam Portal ensures transparent, world-class assessment standards, giving our students a competitive edge in national examinations.</p>
+            <a href="https://sunnykeyz123.github.io/mustardseedcbt" class="btn btn-primary"><i class="fas fa-laptop-code"></i> Access CBT Portal</a>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section-padding" style="background-color: var(--light-color);">
+        <div class="container">
+            <div class="section-title">
+                <h2>Community Voice</h2>
+                <p>What parents and leaders say about us</p>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <i class="fas fa-quote-left quote-icon"></i>
+                    <p>"The best school in Ibokun. My children have improved tremendously in their math and science skills."</p>
+                    <h4>Mrs. Adeyemi</h4>
+                    <span>Parent</span>
+                </div>
+                <div class="testimonial-card">
+                    <i class="fas fa-quote-left quote-icon"></i>
+                    <p>"Very disciplined students and excellent computer-based learning systems. Highly recommended!"</p>
+                    <h4>Chief Ojo</h4>
+                    <span>Community Leader</span>
+                </div>
+                <div class="testimonial-card">
+                    <i class="fas fa-quote-left quote-icon"></i>
+                    <p>"The CBT portal is world-class. It makes exams so easy and transparent for our students."</p>
+                    <h4>Staff Member</h4>
+                    <span>Educator</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="section-padding newsletter">
+        <div class="container">
+            <div class="section-title">
+                <h2>Stay Updated!</h2>
+                <p>Subscribe to our newsletter for school news and updates.</p>
+            </div>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email address" required>
+                <button type="submit" class="btn btn-primary">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>MUSTARD SEED INTERNATIONAL SCHOOL</h3>
+                    <p>Nurturing Greatness Through Christ.</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Heart of Ibokun</p>
+                    <p><i class="fas fa-phone"></i> 08033666423</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="School Portal.html">School Portal</a></li>
+                        <li><a href="Result Checker.html">Check Results</a></li>
+                        <li><a href="https://sunnykeyz123.github.io/mustardseedcbt">CBT Exam</a></li>
+                        <li><a href="#admissions">Admissions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Connect</h3>
+                    <p>Follow us on social media for daily updates.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 MUSTARD SEED INTERNATIONAL SCHOOL. Designed with Passion.</p>
+            </div>
         </div>
     </footer>
 
-    <div id="jobPopup" class="fixed inset-0 bg-[#002147]/95 z-[100] flex items-center justify-center p-6">
-        <div class="bg-white rounded-[2rem] max-w-xl w-full p-10 relative shadow-2xl overflow-hidden border-t-[10px] border-[#D4AF37]">
-            <div class="text-center">
-                <i class="fas fa-bullhorn text-4xl text-[#D4AF37] mb-6"></i>
-                <h2 class="text-3xl font-black text-[#002147] mb-2 uppercase tracking-tighter">Join Our Faculty</h2>
-                <p class="text-slate-500 font-bold mb-8">2025/2026 Academic Session</p>
-            </div>
-            
-            <div class="space-y-6 text-[#002147]">
-                <div class="flex items-start space-x-4 bg-slate-50 p-4 rounded-2xl">
-                    <i class="fas fa-check-circle text-green-600 mt-1"></i>
-                    <p class="text-sm font-bold">Seeking NCE & Degree teachers in Mathematics, English, and Sciences.</p>
-                </div>
-                <div class="flex items-start space-x-4 bg-slate-50 p-4 rounded-2xl">
-                    <i class="fas fa-calendar text-[#D4AF37] mt-1"></i>
-                    <p class="text-sm font-bold italic">Interview Date: 10th Sept 2025 | 9:00 AM Sharp</p>
-                </div>
-            </div>
-
-            <div class="mt-10 flex flex-col space-y-4">
-                <button onclick="window.location.href='mailto:bfajendagba@gmail.com'" class="bg-[#002147] text-white py-4 rounded-xl font-bold uppercase tracking-widest shadow-lg">Apply via Email</button>
-                <button onclick="document.getElementById('jobPopup').style.display='none'" class="text-[#002147] font-black uppercase text-xs tracking-widest hover:text-[#D4AF37] transition">Dismiss</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Menu Toggle
-        const menuBtn = document.getElementById('menuBtn');
-        const closeMenu = document.getElementById('closeMenu');
-        const mobileMenu = document.getElementById('mobileMenu');
+        // Slider Functionality
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.slider-dot');
+        const totalSlides = slides.length;
 
-        menuBtn.onclick = () => mobileMenu.classList.add('open');
-        closeMenu.onclick = () => mobileMenu.classList.remove('open');
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                dots[i].classList.remove('active');
+            });
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+            currentSlideIndex = index;
+        }
+
+        function changeSlide(direction) {
+            let newIndex = currentSlideIndex + direction;
+            if (newIndex >= totalSlides) {
+                newIndex = 0;
+            } else if (newIndex < 0) {
+                newIndex = totalSlides - 1;
+            }
+            showSlide(newIndex);
+        }
+
+        function currentSlide(index) {
+            showSlide(index);
+        }
+
+        // Auto slide every 5 seconds
+        setInterval(() => {
+            changeSlide(1);
+        }, 5000);
+
+        // Mobile Menu Toggle
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
     </script>
 </body>
-                  </html>
+</html>
