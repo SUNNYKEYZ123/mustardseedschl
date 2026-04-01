@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mustard Seed | Result Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        /* Combined CSS from style.css */
+        .form-input {
+            width: 100%;
+            border: 2px solid #e5e7eb;
+            padding: 12px;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .form-input:focus { border-color: #4f46e5; }
+        .submit-btn {
+            width: 100%;
+            background: #4f46e5;
+            color: white;
+            font-weight: 700;
+            padding: 14px;
+            border-radius: 12px;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .submit-btn:hover { background: green; transform: translateY(-2px); }
+        .rank-badge { padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 0.875rem; }
+        .rank-1st { background: green; color: white; border: 5px solid black; }
+        .rank-2nd { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+        .rank-3rd { background: #fff7ed; color: #9a3412; border: 1px solid #fdba74; }
+        .rank-other { color: #6b7280; font-weight: 600; }
+        
+        @media print {
+            #studentForm, .no-print, header { display: none !important; }
+            .lg\:col-span-2 { width: 100% !important; }
+            body { background: white !important; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4 md:p-10">
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-indigo-900 mb-2">SunnyKeyz Report Calculator</h1>
+            <p class="text-gray-600 font-medium">...Position & Average Calculator...</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1 no-print">
+                <div class="bg-white p-6 rounded-2xl shadow-xl border border-gray-100">
+                    <h2 class="text-xl font-bold mb-4 text-indigo-800">Add Student</h2>
+                    <form id="studentForm" class="space-y-4">
+                        <input type="text" id="studentName" placeholder="Full Name/ID No" required class="form-input">
+                        <input type="number" id="aggregateScore" placeholder="Total Score" required class="form-input">
+                        <input type="number" id="totalSubjects" placeholder="No. of Subjects" required class="form-input">
+                        <button type="submit" class="submit-btn">Calculate Position</button>
+                    </form>
+                    <div class="mt-8 pt-6 border-t border-gray-100">
+                        <p class="text-xs text-gray-400 mb-2 uppercase font-bold tracking-wider">Danger Zone</p>
+                        <button onclick="resetSystem()" class="w-full bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all">
+                            <i data-feather="refresh-cw" class="mr-2" style="width:16px"></i> Clear All Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 no-print">
+                    <h2 class="text-xl font-bold text-indigo-800">CLASS LEADERBOARD</h2>
+                    <div class="flex flex-1 max-w-md gap-2">
+                        <input type="text" id="searchInput" onkeyup="saveAndRender()" placeholder="Search name..." class="flex-1 border-2 border-gray-200 p-2 rounded-lg outline-none focus:border-indigo-500">
+                        <select id="sortSelect" onchange="saveAndRender()" class="border-2 border-gray-200 p-2 rounded-lg bg-white">
+                            <option value="pos_asc">Rank (1st-Last)</option>
+                            <option value="name_asc">Name (A-Z)</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="window.print()" class="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-green-700"><i data-feather="printer" class="mr-2" style="width:16px"></i> Print</button>
+                        <button onclick="exportToExcel()" class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-blue-700"><i data-feather="download" class="mr-2" style="width:16px"></i> Export</button>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead class="bg-indigo-900 text-white">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase">Rank</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase">Student</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase">Total</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold uppercase">Average</th>
+                                    <th class="px-6 py-4 text-right text-xs font-bold uppercase no-print">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentTableBody" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Combined JavaScript from app.js with Sort/Filter Logic
+        function getOrdinal(n) {
+            const s = ["th", "st", "nd", "rd"], v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        }
+
+        let students = JSON.parse(localStorage.getItem('mustardSeedData')) || [];
+        const studentForm = document.getElementById('studentForm');
+        const tableBody = document.getElementById('studentTableBody');
+
+        studentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('studentName').value;
+            const aggregate = parseFloat(document.getElementById('aggregateScore').value);
+            const subjects = parseInt(document.getElementById('totalSubjects').value);
+            const average = (aggregate / subjects).toFixed(2);
+
+            students.push({ id: Date.now().toString(), name, aggregate, average: parseFloat(average) });
+            saveAndRender();
+            studentForm.reset();
+        });
+
+        function saveAndRender() {
+            localStorage.setItem('mustardSeedData', JSON.stringify(students));
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+
+            // Rank everyone first
+            const ranked = [...students].sort((a, b) => b.average - a.average);
+            let currentRank = 1;
+            ranked.forEach((s, i) => {
+                if (i > 0 && s.average < ranked[i-1].average) currentRank = i + 1;
+                s.calculatedRank = currentRank;
+            });
+
+            // Filter and Sort for display
+            let displayList = ranked.filter(s => s.name.toLowerCase().includes(searchTerm));
+            if (sortBy === "name_asc") displayList.sort((a,b) => a.name.localeCompare(b.name));
+            else displayList.sort((a,b) => a.calculatedRank - b.calculatedRank);
+
+            tableBody.innerHTML = '';
+            displayList.forEach(student => {
+                let rClass = "rank-other";
+                if (student.calculatedRank === 1) rClass = "rank-badge rank-1st";
+                else if (student.calculatedRank === 2) rClass = "rank-badge rank-2nd";
+                else if (student.calculatedRank === 3) rClass = "rank-badge rank-3rd";
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4"><span class="${rClass}">${getOrdinal(student.calculatedRank)}</span></td>
+                    <td class="px-6 py-4 font-bold text-gray-800">${student.name}</td>
+                    <td class="px-6 py-4 text-gray-600">${student.aggregate}</td>
+                    <td class="px-6 py-4 font-semibold text-indigo-600">${student.average}%</td>
+                    <td class="px-6 py-4 text-right no-print">
+                        <button onclick="deleteStudent('${student.id}')" class="text-gray-400 hover:text-red-600">
+                            <i data-feather="trash-2" style="width:18px"></i>
+                        </button>
+                    </td>`;
+                tableBody.appendChild(row);
+            });
+            if (window.feather) feather.replace();
+        }
+
+        window.deleteStudent = (id) => {
+            if(confirm("Delete record?")) { students = students.filter(s => s.id !== id); saveAndRender(); }
+        };
+
+        window.resetSystem = () => {
+            if(confirm("Clear ALL records?")) { localStorage.removeItem('mustardSeedData'); students = []; saveAndRender(); }
+        };
+
+        window.exportToExcel = () => {
+            let csv = "Rank,Name,Total,Average\n";
+            students.sort((a,b) => b.average - a.average).forEach((s, i) => {
+                csv += `${i+1},${s.name},${s.aggregate},${s.average}%\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Results.csv";
+            link.click();
+        };
+
+        saveAndRender();
+    </script>
+</body>
+</html>
