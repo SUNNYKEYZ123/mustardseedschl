@@ -4,120 +4,174 @@
     <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard | School Portal</title>
+    <title>Student Portal | Mustard Seed School</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .sidebar-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        @media (max-width: 768px) { .sidebar-closed { transform: translateX(-100%); } }
+        .active-nav { @apply bg-blue-800 border-l-4 border-yellow-400; }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-50 min-h-screen flex overflow-hidden">
 
-    <nav class="bg-blue-900 text-white p-4 shadow-md">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-2">
+    <aside id="sidebar" class="sidebar-transition w-64 bg-blue-900 text-white flex flex-col h-screen z-50 fixed md:relative sidebar-closed md:translate-x-0">
+        <div class="p-6 flex items-center justify-between border-b border-blue-800">
+            <div class="flex items-center gap-3">
                 <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-8 w-8" alt="Logo">
-                <h1 class="text-xl font-bold">Mustard School Portal</h1>
+                <span class="font-bold tracking-tight">MSS PORTAL</span>
             </div>
-            <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-sm transition font-bold">Logout</button>
+            <button onclick="toggleSidebar()" class="md:hidden text-blue-200">
+                <i data-lucide="x"></i>
+            </button>
         </div>
-    </nav>
 
-    <div class="container mx-auto mt-10 px-4 pb-20">
-        <div class="max-w-4xl mx-auto">
-            
-            <div class="bg-white p-8 rounded-xl shadow-sm border-l-8 border-blue-600 mb-6">
-                <div class="flex flex-col md:flex-row items-center gap-6">
-                    <div class="relative group cursor-pointer" onclick="document.getElementById('photoInput').click()">
-                        <div class="w-24 h-24 bg-blue-50 rounded-full border-4 border-blue-100 flex items-center justify-center overflow-hidden shrink-0">
+        <nav class="flex-1 mt-6 px-4 space-y-2">
+            <a href="#" class="flex items-center gap-3 p-3 rounded-lg bg-blue-800 border-l-4 border-yellow-400">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+            </a>
+            <a href="https://sunnykeyz123.github.io/mustardseedcbt/CBT.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-800 transition group text-blue-100">
+                <i data-lucide="pen-tool" class="w-5 h-5"></i> Enter CBT Exam
+            </a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-800 transition text-blue-100">
+                <i data-lucide="book-open" class="w-5 h-5"></i> Learning Resources
+            </a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-800 transition text-blue-100">
+                <i data-lucide="file-text" class="w-5 h-5"></i> Report Cards
+            </a>
+            <div class="pt-4 pb-2 text-xs font-bold text-blue-400 uppercase tracking-widest">Account Settings</div>
+            <a href="#" onclick="document.getElementById('photoInput').click()" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-800 transition text-blue-100">
+                <i data-lucide="user-cog" class="w-5 h-5"></i> Update Photo
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-blue-800">
+            <button onclick="handleLogout()" class="flex items-center gap-3 w-full p-3 text-red-300 hover:bg-red-900/30 rounded-lg transition">
+                <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 h-screen overflow-y-auto relative">
+        <header class="bg-white border-b sticky top-0 z-30 px-4 py-3 flex justify-between items-center">
+            <button onclick="toggleSidebar()" class="p-2 hover:bg-gray-100 rounded-lg">
+                <i data-lucide="menu" class="text-gray-600"></i>
+            </button>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="header-name" class="text-sm font-bold text-gray-800">Loading...</p>
+                    <p id="header-msid" class="text-[10px] text-blue-600 font-mono">MS-XXXXX</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-blue-100 border overflow-hidden">
+                    <img id="header-img" src="" class="hidden w-full h-full object-cover">
+                </div>
+            </div>
+        </header>
+
+        <div class="p-4 md:p-8 max-w-6xl mx-auto">
+            <div class="mb-8">
+                <h1 class="text-2xl font-black text-gray-800">Student Dashboard</h1>
+                <p class="text-gray-500">Welcome back to Mustard Seed School Portal.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-6 items-center">
+                        <div class="w-24 h-24 bg-blue-50 rounded-2xl flex items-center justify-center overflow-hidden border-2 border-blue-100 relative group">
                             <img id="profile-img" src="" class="hidden w-full h-full object-cover">
-                            <svg id="placeholder-icon" class="w-16 h-16 text-blue-300" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-                            </svg>
+                            <i id="placeholder-icon" data-lucide="user" class="w-12 h-12 text-blue-200"></i>
                         </div>
-                        <div class="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span class="text-white text-[10px] font-bold uppercase">Update</span>
+                        <div class="text-center md:text-left flex-1">
+                            <div id="display-status-pill" class="inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase mb-2 bg-yellow-100 text-yellow-700">
+                                <span id="display-status">Awaiting Form</span>
+                            </div>
+                            <h2 id="display-fullname" class="text-2xl font-bold text-gray-900">Loading Profile...</h2>
+                            <p id="display-email" class="text-gray-500 text-sm">---</p>
                         </div>
-                        <input type="file" id="photoInput" class="hidden" accept="image/*" onchange="uploadPhoto(event)">
-                    </div>
-
-                    <div class="text-center md:text-left">
-                        <h2 class="text-gray-500 uppercase tracking-widest text-xs font-semibold">Student Profile</h2>
-                        <h1 id="display-fullname" class="text-3xl font-black text-gray-800 mt-1">Loading...</h1>
-                        <p id="display-email" class="text-blue-600 font-medium text-sm">---</p>
-                        <div class="mt-4 inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold uppercase">
-                            Status: <span id="display-status">Checking...</span>
+                        <div class="flex gap-2">
+                             <button onclick="window.print()" class="p-2 bg-gray-50 text-gray-600 rounded-lg border hover:bg-gray-100">
+                                <i data-lucide="printer" class="w-5 h-5"></i>
+                             </button>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                <div class="bg-gradient-to-br from-blue-700 to-blue-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
-                    <div class="relative z-10">
-                        <h3 class="text-blue-200 text-xs uppercase font-bold">Official Student ID</h3>
-                        <p id="display-msid" class="text-4xl font-mono mt-2 tracking-tighter">MS-XXXXX</p>
-                        <p class="mt-8 text-xs text-blue-300 italic">* Use this ID for CBT Exams and School Login</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Grade Level</p>
+                            <p id="display-grade" class="text-lg font-bold text-blue-900">---</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">CBT Subject</p>
+                            <p id="display-subject" class="text-lg font-bold text-blue-900">---</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Gender</p>
+                            <p id="display-gender" class="text-lg font-bold text-blue-900">---</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Nationality</p>
+                            <p id="display-nationality" class="text-lg font-bold text-blue-900">---</p>
+                        </div>
                     </div>
 
-                    <div id="admission-link-box" class="mt-10 p-6 bg-yellow-50 border-2 border-yellow-200 rounded-xl relative z-10 text-gray-800">
-                        <h3 class="font-bold text-yellow-800 text-lg">Step 2: Admission Form</h3>
-                        <p class="text-yellow-700 text-sm mb-4">Complete your official school registration.</p>
-                        <a href="Admission 3.html" class="inline-block bg-yellow-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-700 transition">
-                            Open Form →
-                        </a>
-                    </div>
-                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-                    <h3 class="text-gray-400 text-xs uppercase font-bold mb-4">Full Academic Details</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Gender:</span>
-                            <span id="display-gender" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">DOB:</span>
-                            <span id="display-dob" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Nationality:</span>
-                            <span id="display-nationality" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Class:</span>
-                            <span id="display-grade" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Parent Name:</span>
-                            <span id="display-parent-name" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Parent Phone:</span>
-                            <span id="display-parent-phone" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="flex justify-between border-b pb-1">
-                            <span class="text-gray-500 text-sm">Subject:</span>
-                            <span id="display-subject" class="font-semibold text-gray-800 text-sm">---</span>
-                        </div>
-                        <div class="pt-2">
-                            <span class="text-gray-400 text-[10px] uppercase font-bold">Address:</span>
-                            <p id="display-address" class="text-gray-800 text-xs mt-1">---</p>
+                    <div id="admission-link-box" class="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-2xl border-2 border-yellow-200">
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 bg-yellow-400 text-white rounded-xl shadow-lg">
+                                <i data-lucide="alert-circle"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-yellow-900">Step 2: Complete Admission</h3>
+                                <p class="text-yellow-700 text-sm mb-4">Your profile is incomplete. Fill the official form to access result checking.</p>
+                                <a href="Admission 3.html" class="inline-flex items-center gap-2 bg-yellow-600 text-white px-5 py-2 rounded-lg font-bold hover:bg-yellow-700 transition">
+                                    Open Form <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
 
-            <div class="mt-8 flex gap-4">
-                <button onclick="window.print()" class="bg-white border border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-50 transition">Print Profile</button>
-                <a href="https://sunnykeyz123.github.io/mustardseedcbt/CBT.html" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-bold">Enter CBT Portal</a>
-                
+                <div class="space-y-6">
+                    <div class="bg-blue-900 text-white p-6 rounded-2xl shadow-xl">
+                        <h3 class="text-blue-300 text-[10px] uppercase font-black">Official Exam ID</h3>
+                        <p id="display-msid" class="text-3xl font-mono tracking-tighter mt-1">MS-XXXXX</p>
+                        <hr class="my-4 border-blue-800">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-blue-400">Parent Name:</span>
+                                <span id="display-parent-name" class="font-bold">---</span>
+                            </div>
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-blue-400">Parent Phone:</span>
+                                <span id="display-parent-phone" class="font-bold">---</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h3 class="text-gray-400 text-[10px] uppercase font-black mb-4">Upcoming Schedule</h3>
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border-l-4 border-green-500">
+                            <i data-lucide="calendar" class="text-green-600 w-5 h-5"></i>
+                            <div>
+                                <p class="text-xs font-bold text-gray-800">CBT Mock Exam</p>
+                                <p class="text-[10px] text-gray-500">Scheduled for Friday</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+        <input type="file" id="photoInput" class="hidden" accept="image/*" onchange="uploadPhoto(event)">
+    </main>
 
     <script>
+        // Use your existing Supabase Key
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
+
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            sb.classList.toggle('sidebar-closed');
+        }
 
         async function loadProfile() {
             try {
@@ -127,47 +181,43 @@
                 const user = session.user;
                 const genID = "MS-" + user.id.substring(0, 5).toUpperCase();
 
-                // Fill Auth Data
                 document.getElementById('display-email').textContent = user.email;
-                document.getElementById('display-msid').textContent = genID;
+                document.querySelectorAll('#display-msid').forEach(el => el.textContent = genID);
+                document.getElementById('header-msid').textContent = genID;
 
-                // Fetch Student Data
-                const { data: st, error } = await _supabase
-                    .from('students')
-                    .select('*')
-                    .eq('id', user.id)
-                    .single();
+                const { data: st, error } = await _supabase.from('students').select('*').eq('id', user.id).single();
 
                 if (error || !st) {
-                    document.getElementById('display-fullname').textContent = "Registration Required";
-                    document.getElementById('display-status').textContent = "Awaiting Form";
+                    document.getElementById('display-fullname').textContent = "Incomplete Registration";
                     return;
                 }
 
-                // --- UPDATE THE UI ---
-                document.getElementById('display-fullname').textContent = st.full_name || "Anonymous";
-                document.getElementById('display-status').textContent = st.status || "Pending";
+                document.getElementById('display-fullname').textContent = st.full_name || "Anonymous Student";
+                document.getElementById('header-name').textContent = st.full_name || "Student";
+                document.getElementById('display-status').textContent = st.status || "Awaiting Form";
                 document.getElementById('display-gender').textContent = st.gender || "---";
-                document.getElementById('display-dob').textContent = st.date_of_birth || "---";
                 document.getElementById('display-nationality').textContent = st.nationality || "---";
                 document.getElementById('display-grade').textContent = st.grade_level || "---";
                 document.getElementById('display-parent-name').textContent = st.parent_name || "---";
                 document.getElementById('display-parent-phone').textContent = st.parent_phone || "---";
                 document.getElementById('display-subject').textContent = st.subject || "---";
-                document.getElementById('display-address').textContent = st.address || "---";
 
-                // Show Avatar if it exists
                 if (st.avatar_url) {
-                    document.getElementById('profile-img').src = st.avatar_url;
-                    document.getElementById('profile-img').classList.remove('hidden');
+                    const imgElements = ['profile-img', 'header-img'];
+                    imgElements.forEach(id => {
+                        const el = document.getElementById(id);
+                        el.src = st.avatar_url;
+                        el.classList.remove('hidden');
+                    });
                     document.getElementById('placeholder-icon').classList.add('hidden');
                 }
 
-                // Lock Admission box if Enrolled
                 if (st.status === "Enrolled") {
                     const box = document.getElementById('admission-link-box');
-                    box.innerHTML = `<h3 class="font-bold text-green-800">✓ Admission Completed</h3><p class="text-xs text-green-700 mt-1">Your Record Has Been Submitted!.</p>`;
-                    box.className = "mt-10 p-6 bg-green-50 border-2 border-green-200 rounded-xl";
+                    box.innerHTML = `<div class="flex items-center gap-4 text-green-800"><i data-lucide="check-circle" class="w-8 h-8"></i><div><h3 class="font-bold text-lg">Admission Completed</h3><p class="text-sm opacity-80">Your student record is fully verified.</p></div></div>`;
+                    box.className = "bg-green-50 border-2 border-green-200 p-6 rounded-2xl";
+                    document.getElementById('display-status-pill').className = "inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase mb-2 bg-green-100 text-green-700";
+                    lucide.createIcons();
                 }
 
             } catch (err) { console.error(err); }
@@ -176,20 +226,14 @@
         async function uploadPhoto(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const { data: { session } } = await _supabase.auth.getSession();
             const filePath = `avatars/${session.user.id}_${Date.now()}`;
-
             try {
-                const { error: upErr } = await _supabase.storage.from('avatars').upload(filePath, file);
-                if (upErr) throw upErr;
-
+                await _supabase.storage.from('avatars').upload(filePath, file);
                 const { data: { publicUrl } } = _supabase.storage.from('avatars').getPublicUrl(filePath);
-
                 await _supabase.from('students').update({ avatar_url: publicUrl }).eq('id', session.user.id);
-                
-                location.reload(); // Refresh to show new photo
-            } catch (err) { alert("Upload error: " + err.message); }
+                location.reload();
+            } catch (err) { alert("Error: " + err.message); }
         }
 
         async function handleLogout() {
@@ -198,7 +242,10 @@
             window.location.replace('login.html');
         }
 
-        window.onload = loadProfile;
+        window.onload = () => {
+            loadProfile();
+            lucide.createIcons();
+        };
     </script>
 </body>
 </html>
