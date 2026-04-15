@@ -4,167 +4,114 @@
     <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Portal | Mustard Seed School</title>
+    <title>Student Dashboard | School Portal</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .sidebar-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-transition { transition: all 0.3s ease-in-out; }
         @media (max-width: 768px) { .sidebar-closed { transform: translateX(-100%); } }
-        .glass-effect {
+        /* This creates the high-end background you wanted */
+        .premium-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-card {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
-<body class="bg-white min-h-screen flex overflow-hidden font-sans">
+<body class="bg-gray-100 min-h-screen flex">
 
-    <aside id="sidebar" class="sidebar-transition w-64 bg-slate-900 text-white flex flex-col h-screen z-50 fixed md:relative sidebar-closed md:translate-x-0">
-        <div class="p-6 flex items-center justify-between border-b border-slate-800">
-            <div class="flex items-center gap-3">
-                <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-8 w-8" alt="Logo">
-                <span class="font-bold tracking-tight">MSS PORTAL</span>
-            </div>
-            <button onclick="toggleSidebar()" class="md:hidden text-slate-400">
-                <i data-lucide="x"></i>
-            </button>
+    <aside id="sidebar" class="sidebar-transition w-64 bg-blue-900 text-white flex flex-col h-screen z-50 fixed md:relative sidebar-closed md:translate-x-0 shadow-2xl">
+        <div class="p-6 border-b border-blue-800 flex justify-between items-center">
+            <span class="font-bold tracking-tight">CONTROL PANEL</span>
+            <button onclick="toggleSidebar()" class="md:hidden"><i data-lucide="x"></i></button>
         </div>
-
-        <nav class="flex-1 mt-6 px-4 space-y-2">
-            <a href="#" class="flex items-center gap-3 p-3 rounded-xl bg-blue-600 font-bold text-white shadow-lg shadow-blue-900/50">
-                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
-            </a>
-            <a href="https://sunnykeyz123.github.io/mustardseedcbt/CBT.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 transition text-slate-300">
-                <i data-lucide="pen-tool" class="w-5 h-5"></i> CBT Exams
-            </a>
-            <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 transition text-slate-300">
-                <i data-lucide="file-text" class="w-5 h-5"></i> Report Cards
-            </a>
-            <div class="pt-4 pb-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] px-3">Settings</div>
-            <a href="#" onclick="document.getElementById('photoInput').click()" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 transition text-slate-300">
-                <i data-lucide="camera" class="w-5 h-5"></i> Update Photo
-            </a>
+        <nav class="flex-1 p-4 space-y-2">
+            <a href="#" class="flex items-center gap-3 p-3 rounded-lg bg-blue-800 font-bold"><i data-lucide="user"></i> My Profile</a>
+            <a href="https://sunnykeyz123.github.io/mustardseedcbt/CBT.html" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-800"><i data-lucide="pen-tool"></i> CBT Exam</a>
+            <a href="#" onclick="document.getElementById('photoInput').click()" class="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-800"><i data-lucide="camera"></i> Update Photo</a>
         </nav>
-
-        <div class="p-4 border-t border-slate-800">
-            <button onclick="handleLogout()" class="flex items-center gap-3 w-full p-3 text-red-400 hover:bg-red-900/20 rounded-xl transition font-bold">
-                <i data-lucide="log-out" class="w-5 h-5"></i> Logout
-            </button>
+        <div class="p-4 border-t border-blue-800">
+            <button onclick="handleLogout()" class="w-full bg-red-600 p-3 rounded-lg font-bold">Logout</button>
         </div>
     </aside>
 
-    <main class="flex-1 h-screen overflow-y-auto bg-white relative">
+    <div class="flex-1 h-screen overflow-y-auto">
         
-        <div class="relative bg-slate-950 min-h-[400px] flex flex-col">
-            <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div class="absolute -top-24 -left-24 w-96 h-96 bg-blue-600 rounded-full blur-[120px] opacity-30"></div>
-                <div class="absolute top-1/2 -right-24 w-80 h-80 bg-purple-600 rounded-full blur-[120px] opacity-20"></div>
-            </div>
-
-            <header class="h-16 flex items-center justify-between px-6 relative z-10">
-                <button onclick="toggleSidebar()" class="p-2 bg-white/10 hover:bg-white/20 rounded-xl border border-white/10 text-white transition">
+        <nav class="bg-blue-900 text-white p-4 shadow-md flex justify-between items-center sticky top-0 z-40">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="p-1 hover:bg-blue-800 rounded text-white">
                     <i data-lucide="menu"></i>
                 </button>
-                <div class="flex items-center gap-3 text-white">
-                    <div class="text-right hidden sm:block">
-                        <p id="header-name" class="text-xs font-bold">Loading...</p>
-                        <p class="text-[9px] text-blue-400 font-mono tracking-widest">STUDENT PORTAL</p>
-                    </div>
-                    <img id="header-img" src="" class="w-9 h-9 rounded-full hidden border-2 border-white/20 object-cover">
-                </div>
-            </header>
-
-            <div class="flex-1 flex items-center justify-center p-6 relative z-10">
-                <div class="glass-effect w-full max-w-4xl p-8 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-8 shadow-2xl">
-                    
-                    <div class="relative group cursor-pointer" onclick="document.getElementById('photoInput').click()">
-                        <div class="w-32 h-32 md:w-40 md:h-40 rounded-[2.5rem] bg-white/5 border-2 border-white/20 flex items-center justify-center overflow-hidden relative shadow-2xl">
-                            <img id="profile-img" src="" class="hidden w-full h-full object-cover">
-                            <i id="placeholder-icon" data-lucide="user" class="w-16 h-16 text-white/20"></i>
-                        </div>
-                        <div class="absolute -bottom-2 -right-2 bg-blue-500 text-white p-3 rounded-2xl shadow-xl border-4 border-slate-900 transition group-hover:scale-110">
-                            <i data-lucide="camera" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-
-                    <div class="text-center md:text-left flex-1">
-                        <div class="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
-                            <span id="display-status" class="px-4 py-1 bg-yellow-400 text-slate-900 rounded-full text-[10px] font-black uppercase tracking-widest">Checking...</span>
-                            <span id="display-msid" class="px-4 py-1 bg-white/10 text-white/80 rounded-full text-[10px] font-mono border border-white/10">MS-XXXXX</span>
-                        </div>
-                        <h1 id="display-fullname" class="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">Loading...</h1>
-                        <p id="display-email" class="text-blue-200/60 font-medium text-lg mt-1 italic">---</p>
-                    </div>
+                <div class="flex items-center gap-2">
+                    <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-8 w-8" alt="Logo">
+                    <h1 class="text-xl font-bold">Mustard School Portal</h1>
                 </div>
             </div>
-        </div>
+            <div class="flex items-center gap-3">
+                <span id="header-name-top" class="text-sm hidden sm:block">Student</span>
+                <img id="header-img" src="" class="h-8 w-8 rounded-full border border-white hidden object-cover">
+            </div>
+        </nav>
 
-        <div class="px-6 md:px-10 max-w-5xl mx-auto -mt-10 relative z-20 pb-20">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="container mx-auto mt-6 px-4 pb-20">
+            <div class="premium-bg p-8 md:p-12 rounded-3xl shadow-2xl flex flex-col md:flex-row items-center gap-8 mb-10">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full blur-[100px] opacity-20"></div>
                 
-                <div class="lg:col-span-2 space-y-6">
-                    <div class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-xl shadow-slate-200/50">
-                        <h3 class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-6">Academic Information</h3>
-                        <div class="grid grid-cols-2 gap-8">
-                            <div>
-                                <p class="text-[10px] font-bold text-blue-600 uppercase">Grade Level</p>
-                                <p id="display-grade" class="text-xl font-bold text-slate-800">---</p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-blue-600 uppercase">Main Subject</p>
-                                <p id="display-subject" class="text-xl font-bold text-slate-800">---</p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-blue-600 uppercase">Gender</p>
-                                <p id="display-gender" class="text-xl font-bold text-slate-800">---</p>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-blue-600 uppercase">Nationality</p>
-                                <p id="display-nationality" class="text-xl font-bold text-slate-800">---</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="admission-link-box" class="p-8 rounded-[2rem] border-2 border-dashed border-slate-200 flex items-center justify-between group hover:border-blue-300 transition cursor-pointer">
-                        <div>
-                            <h4 class="font-black text-slate-800">Complete Your Admission</h4>
-                            <p class="text-sm text-slate-500">Submit your bio-data for official records.</p>
-                        </div>
-                        <a href="Admission 3.html" class="bg-slate-100 p-4 rounded-2xl group-hover:bg-blue-600 group-hover:text-white transition">
-                            <i data-lucide="arrow-right"></i>
-                        </a>
+                <div class="relative group z-10">
+                    <div class="w-32 h-32 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center overflow-hidden">
+                        <img id="profile-img" src="" class="hidden w-full h-full object-cover">
+                        <i id="placeholder-icon" data-lucide="user" class="w-16 h-16 text-white/30"></i>
                     </div>
                 </div>
 
-                <div class="space-y-6">
-                    <div class="bg-slate-50 p-8 rounded-[2rem] border border-slate-100">
-                        <h3 class="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] mb-6">Guardian Info</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <p class="text-[9px] font-bold text-slate-400 uppercase">Parent Name</p>
-                                <p id="display-parent-name" class="font-bold text-slate-700">---</p>
-                            </div>
-                            <div>
-                                <p class="text-[9px] font-bold text-slate-400 uppercase">Emergency Contact</p>
-                                <p id="display-parent-phone" class="font-bold text-slate-700">---</p>
-                            </div>
-                        </div>
+                <div class="text-center md:text-left z-10">
+                    <h2 id="display-fullname" class="text-3xl md:text-5xl font-black text-white">Loading...</h2>
+                    <p id="display-email" class="text-blue-200 text-lg opacity-80">---</p>
+                    <div class="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
+                        <span id="display-status" class="bg-yellow-400 text-blue-900 px-4 py-1 rounded-full text-xs font-black uppercase">Pending</span>
+                        <span id="display-msid" class="bg-white/10 text-white px-4 py-1 rounded-full text-xs font-mono border border-white/10">MS-XXXXX</span>
                     </div>
-                    
-                    <button onclick="window.print()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-xl hover:bg-slate-800 transition flex items-center justify-center gap-2">
-                        <i data-lucide="printer" class="w-4 h-4"></i> Print Data Page
-                    </button>
                 </div>
             </div>
-        </div>
 
-        <input type="file" id="photoInput" class="hidden" accept="image/*" onchange="uploadPhoto(event)">
-    </main>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-900">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Academic Details</h3>
+                    <div class="space-y-3">
+                        <p class="text-gray-600"><strong>Grade Level:</strong> <span id="display-grade" class="text-blue-900">---</span></p>
+                        <p class="text-gray-600"><strong>Gender:</strong> <span id="display-gender">---</span></p>
+                        <p class="text-gray-600"><strong>Nationality:</strong> <span id="display-nationality">---</span></p>
+                        <p class="text-gray-600"><strong>Major Subject:</strong> <span id="display-subject" class="font-bold text-blue-700">---</span></p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-900">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Guardian Information</h3>
+                    <div class="space-y-3">
+                        <p class="text-gray-600"><strong>Parent/Guardian:</strong> <span id="display-parent-name">---</span></p>
+                        <p class="text-gray-600"><strong>Contact Phone:</strong> <span id="display-parent-phone">---</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="admission-link-box" class="mt-10 p-6 bg-white border-2 border-dashed border-blue-200 rounded-xl text-center">
+                <h3 class="font-bold text-blue-900">Finalize Admission</h3>
+                <p class="text-sm text-gray-500 mb-4">Complete your school registration to enable result checking.</p>
+                <a href="Admission 3.html" class="bg-blue-900 text-white px-6 py-2 rounded-lg font-bold inline-block hover:bg-blue-800 transition">Open Official Form</a>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="photoInput" class="hidden" accept="image/*" onchange="uploadPhoto(event)">
 
     <script>
-        // Citing your original database connection and logic
+        // ORIGINAL SUPABASE CLIENT
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
 
         function toggleSidebar() {
@@ -184,41 +131,34 @@
 
                 const { data: st, error } = await _supabase.from('students').select('*').eq('id', user.id).single();
 
-                if (error || !st) {
-                    document.getElementById('display-fullname').textContent = "Registration Required";
-                    return;
+                if (st) {
+                    document.getElementById('display-fullname').textContent = st.full_name || "New Student";
+                    document.getElementById('header-name-top').textContent = st.full_name || "Student";
+                    document.getElementById('display-status').textContent = st.status || "Awaiting Form";
+                    document.getElementById('display-gender').textContent = st.gender || "---";
+                    document.getElementById('display-nationality').textContent = st.nationality || "---";
+                    document.getElementById('display-grade').textContent = st.grade_level || "---";
+                    document.getElementById('display-parent-name').textContent = st.parent_name || "---";
+                    document.getElementById('display-parent-phone').textContent = st.parent_phone || "---";
+                    document.getElementById('display-subject').textContent = st.subject || "---";
+
+                    if (st.avatar_url) {
+                        const imgUrl = `${st.avatar_url}?t=${new Date().getTime()}`;
+                        ['profile-img', 'header-img'].forEach(id => {
+                            const el = document.getElementById(id);
+                            el.src = imgUrl;
+                            el.classList.remove('hidden');
+                        });
+                        document.getElementById('placeholder-icon').classList.add('hidden');
+                    }
+
+                    if (st.status === "Enrolled") {
+                        const box = document.getElementById('admission-link-box');
+                        box.innerHTML = `<h3 class="font-bold text-green-800">✓ Admission Completed</h3><p class="text-xs text-green-700 mt-1">Your record is verified and active.</p>`;
+                        box.className = "mt-10 p-6 bg-green-50 border-2 border-green-200 rounded-xl text-center";
+                        document.getElementById('display-status').className = "bg-green-600 text-white px-4 py-1 rounded-full text-xs font-black uppercase";
+                    }
                 }
-
-                // Mapping your data to the new UI elements
-                document.getElementById('display-fullname').textContent = st.full_name || "Anonymous";
-                document.getElementById('header-name').textContent = st.full_name || "Student";
-                document.getElementById('display-status').textContent = st.status || "Pending";
-                document.getElementById('display-gender').textContent = st.gender || "---";
-                document.getElementById('display-nationality').textContent = st.nationality || "---";
-                document.getElementById('display-grade').textContent = st.grade_level || "---";
-                document.getElementById('display-parent-name').textContent = st.parent_name || "---";
-                document.getElementById('display-parent-phone').textContent = st.parent_phone || "---";
-                document.getElementById('display-subject').textContent = st.subject || "---";
-
-                if (st.avatar_url) {
-                    // Caching fix for itel A100 browsers
-                    const imageUrl = `${st.avatar_url}?t=${new Date().getTime()}`;
-                    ['profile-img', 'header-img'].forEach(id => {
-                        const el = document.getElementById(id);
-                        el.src = imageUrl;
-                        el.classList.remove('hidden');
-                    });
-                    document.getElementById('placeholder-icon').classList.add('hidden');
-                }
-
-                if (st.status === "Enrolled") {
-                    const box = document.getElementById('admission-link-box');
-                    box.innerHTML = `<div class="flex items-center gap-4 text-green-600"><i data-lucide="check-circle" class="w-8 h-8"></i><div><h4 class="font-black">Admission Verified</h4><p class="text-xs opacity-70">Your school record is fully active.</p></div></div>`;
-                    box.className = "p-8 rounded-[2rem] bg-green-50 border-2 border-green-100 flex items-center justify-between";
-                    document.getElementById('display-status').className = "px-4 py-1 bg-green-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest";
-                    lucide.createIcons();
-                }
-
             } catch (err) { console.error(err); }
             lucide.createIcons();
         }
@@ -228,11 +168,10 @@
             if (!file) return;
 
             const { data: { session } } = await _supabase.auth.getSession();
-            // Using a structured path and content type to ensure it renders
-            const filePath = `${session.user.id}/profile_photo.png`;
+            const filePath = `${session.user.id}/avatar.png`;
 
             try {
-                // Upload with 'upsert' to overwrite old images
+                // Upload with explicit content type so it shows in browser
                 const { error: upErr } = await _supabase.storage.from('avatars').upload(filePath, file, { 
                     contentType: file.type,
                     upsert: true 
@@ -240,7 +179,6 @@
                 if (upErr) throw upErr;
 
                 const { data: { publicUrl } } = _supabase.storage.from('avatars').getPublicUrl(filePath);
-
                 await _supabase.from('students').update({ avatar_url: publicUrl }).eq('id', session.user.id);
                 
                 location.reload(); 
@@ -249,7 +187,6 @@
 
         async function handleLogout() {
             await _supabase.auth.signOut();
-            localStorage.clear();
             window.location.replace('login.html');
         }
 
