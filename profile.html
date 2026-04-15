@@ -4,7 +4,7 @@
     <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard | School Portal</title>
+    <title>Student Dashboard | MSS Portal</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -18,7 +18,7 @@
         }
         .nav-item {
             display: flex;
-            items-center: center;
+            align-items: center;
             gap: 12px;
             padding: 12px;
             border-radius: 12px;
@@ -28,13 +28,12 @@
         .nav-item:hover { background: rgba(255, 255, 255, 0.05); color: white; }
         .nav-active { background: #2563eb; color: white; font-weight: bold; }
         .badge-soon {
-            font-size: 8px;
+            font-size: 9px;
             background: #f59e0b;
             color: #451a03;
             padding: 2px 6px;
             border-radius: 4px;
             font-weight: 900;
-            text-transform: uppercase;
         }
     </style>
 </head>
@@ -44,7 +43,7 @@
         <div class="p-6 border-b border-slate-800 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-8 w-8" alt="Logo">
-                <span class="font-black text-blue-400 tracking-tighter">MSS CONTROL</span>
+                <span class="font-black text-blue-400 tracking-tighter text-sm">MSS CONTROL</span>
             </div>
             <button onclick="toggleSidebar()" class="md:hidden text-slate-500"><i data-lucide="x"></i></button>
         </div>
@@ -53,33 +52,19 @@
             <div>
                 <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest px-3 mb-3">Main Menu</p>
                 <div class="space-y-1">
-                    <a href="#" class="nav-item nav-active"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> My Dashboard</a>
-                    <a href="https://sunnykeyz123.github.io/mustardseedcbt/CBT.html" class="nav-item"><i data-lucide="pen-tool" class="w-5 h-5"></i> Computer Based Test</a>
+                    <a href="#" class="nav-item nav-active"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard</a>
+                    <a href="https://sunnykeyz123.github.io/mustardseedcbt/CBT.html" class="nav-item"><i data-lucide="pen-tool" class="w-5 h-5"></i> Take CBT Exam</a>
                 </div>
             </div>
 
             <div>
                 <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest px-3 mb-3">Academic Tools</p>
                 <div class="space-y-1">
-                    <a href="#" class="nav-item justify-between">
+                    <a href="#" class="nav-item justify-between group">
                         <span class="flex items-center gap-3"><i data-lucide="file-check" class="w-5 h-5"></i> Result Checker</span>
                         <span class="badge-soon">Soon</span>
                     </a>
-                    <a href="#" class="nav-item justify-between">
-                        <span class="flex items-center gap-3"><i data-lucide="library" class="w-5 h-5"></i> E-Library (Notes)</span>
-                        <span class="badge-soon">Soon</span>
-                    </a>
-                    <a href="#" class="nav-item"><i data-lucide="calendar" class="w-5 h-5"></i> Exam Timetable</a>
-                </div>
-            </div>
-
-            <div>
-                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest px-3 mb-3">Finance</p>
-                <div class="space-y-1">
-                    <a href="#" class="nav-item justify-between text-slate-500">
-                        <span class="flex items-center gap-3"><i data-lucide="credit-card" class="w-5 h-5"></i> School Fees</span>
-                        <i data-lucide="lock" class="w-3 h-3"></i>
-                    </a>
+                    <a href="#" class="nav-item"><i data-lucide="library" class="w-5 h-5"></i> E-Library</a>
                 </div>
             </div>
 
@@ -87,12 +72,11 @@
                 <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest px-3 mb-3">Account</p>
                 <div class="space-y-1">
                     <a href="#" onclick="document.getElementById('photoInput').click()" class="nav-item"><i data-lucide="camera" class="w-5 h-5"></i> Change Photo</a>
-                    <a href="#" class="nav-item"><i data-lucide="shield-check" class="w-5 h-5"></i> Security</a>
                 </div>
             </div>
         </nav>
 
-        <div class="p-4 bg-slate-900/50 border-t border-slate-800">
+        <div class="p-4 border-t border-slate-800">
             <button onclick="handleLogout()" class="flex items-center justify-center gap-3 w-full bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white p-3 rounded-xl font-bold transition">
                 <i data-lucide="log-out" class="w-5 h-5"></i> Logout
             </button>
@@ -100,19 +84,12 @@
     </aside>
 
     <div class="flex-1 h-screen overflow-y-auto">
-        
         <nav class="bg-blue-900 text-white p-4 shadow-md flex justify-between items-center sticky top-0 z-40">
-            <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="p-2 hover:bg-blue-800 rounded-lg text-white transition">
-                    <i data-lucide="menu"></i>
-                </button>
-                <div class="flex items-center gap-2">
-                    <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-8 w-8" alt="Logo">
-                    <h1 class="text-xl font-bold hidden sm:block">Mustard Seed School</h1>
-                </div>
-            </div>
+            <button onclick="toggleSidebar()" class="p-2 hover:bg-blue-800 rounded-lg text-white transition">
+                <i data-lucide="menu"></i>
+            </button>
             <div class="flex items-center gap-3 bg-blue-800/50 px-3 py-1 rounded-full border border-white/10">
-                <span id="header-name-top" class="text-xs font-medium">Loading...</span>
+                <span id="header-name-top" class="text-xs font-medium">Student</span>
                 <img id="header-img" src="" class="h-7 w-7 rounded-full border border-white/20 hidden object-cover shadow-lg">
             </div>
         </nav>
@@ -121,72 +98,72 @@
             <div class="premium-bg p-8 md:p-12 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row items-center gap-8 mb-10 border border-white/10">
                 <div class="absolute -top-24 -left-24 w-96 h-96 bg-blue-600 rounded-full blur-[120px] opacity-20"></div>
                 
-                <div class="relative group z-10">
-                    <div class="w-36 h-36 rounded-[2rem] bg-white/5 border-2 border-white/20 flex items-center justify-center overflow-hidden shadow-inner">
+                <div class="relative group z-10" onclick="document.getElementById('photoInput').click()">
+                    <div class="w-36 h-36 rounded-[2rem] bg-white/5 border-2 border-white/20 flex items-center justify-center overflow-hidden cursor-pointer shadow-inner">
                         <img id="profile-img" src="" class="hidden w-full h-full object-cover">
                         <i id="placeholder-icon" data-lucide="user" class="w-16 h-16 text-white/20"></i>
                     </div>
-                    <button onclick="document.getElementById('photoInput').click()" class="absolute -bottom-2 -right-2 bg-blue-500 text-white p-2 rounded-xl border-4 border-slate-900 shadow-xl">
+                    <div class="absolute -bottom-2 -right-2 bg-blue-500 text-white p-2 rounded-xl border-4 border-slate-900 shadow-xl">
                         <i data-lucide="plus" class="w-4 h-4"></i>
-                    </button>
+                    </div>
                 </div>
 
                 <div class="text-center md:text-left z-10 flex-1">
                     <div class="flex flex-wrap gap-2 justify-center md:justify-start mb-3">
-                        <span id="display-status" class="bg-yellow-400 text-blue-950 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Pending</span>
+                        <span id="display-status" class="bg-yellow-400 text-blue-950 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-md">Loading...</span>
                         <span id="display-msid" class="bg-white/10 text-blue-100 px-3 py-1 rounded-full text-[10px] font-mono border border-white/10">MS-XXXXX</span>
                     </div>
-                    <h2 id="display-fullname" class="text-4xl md:text-5xl font-black text-white tracking-tight">---</h2>
+                    <h2 id="display-fullname" class="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">Loading...</h2>
                     <p id="display-email" class="text-blue-200/60 text-lg font-medium italic">---</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border-t-4 border-blue-900">
-                    <div class="flex items-center gap-3 mb-6">
-                        <i data-lucide="graduation-cap" class="text-blue-900"></i>
-                        <h3 class="text-lg font-black text-slate-800 uppercase tracking-tight">Academic Info</h3>
-                    </div>
+                <div class="bg-white p-8 rounded-3xl shadow-xl border-t-4 border-blue-900">
+                    <h3 class="text-lg font-black text-slate-800 uppercase mb-6 flex items-center gap-2">
+                        <i data-lucide="graduation-cap" class="text-blue-900 w-5 h-5"></i> Academic Details
+                    </h3>
                     <div class="space-y-4">
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
+                        <div class="flex justify-between border-b pb-2">
                             <span class="text-gray-400 text-sm">Class Grade</span>
                             <span id="display-grade" class="font-bold text-slate-700">---</span>
                         </div>
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
-                            <span class="text-gray-400 text-sm">Main Subject</span>
-                            <span id="display-subject" class="font-bold text-blue-700">---</span>
+                        <div class="flex justify-between border-b pb-2 text-blue-700">
+                            <span class="text-gray-400 text-sm">Subject</span>
+                            <span id="display-subject" class="font-black">---</span>
                         </div>
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
+                        <div class="flex justify-between border-b pb-2">
                             <span class="text-gray-400 text-sm">Gender</span>
                             <span id="display-gender" class="font-bold text-slate-700">---</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-400 text-sm">Nationality</span>
+                            <span id="display-nationality" class="font-bold text-slate-700">---</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white p-8 rounded-3xl shadow-xl shadow-slate-200/50 border-t-4 border-blue-900">
-                    <div class="flex items-center gap-3 mb-6">
-                        <i data-lucide="users" class="text-blue-900"></i>
-                        <h3 class="text-lg font-black text-slate-800 uppercase tracking-tight">Guardian Info</h3>
-                    </div>
+                <div class="bg-white p-8 rounded-3xl shadow-xl border-t-4 border-blue-900">
+                    <h3 class="text-lg font-black text-slate-800 uppercase mb-6 flex items-center gap-2">
+                        <i data-lucide="users" class="text-blue-900 w-5 h-5"></i> Guardian Info
+                    </h3>
                     <div class="space-y-4">
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
+                        <div class="flex justify-between border-b pb-2">
                             <span class="text-gray-400 text-sm">Parent Name</span>
                             <span id="display-parent-name" class="font-bold text-slate-700">---</span>
                         </div>
-                        <div class="flex justify-between border-b border-gray-50 pb-2">
-                            <span class="text-gray-400 text-sm">Contact Number</span>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-400 text-sm">Contact</span>
                             <span id="display-parent-phone" class="font-bold text-slate-700">---</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="admission-link-box" class="mt-10 p-8 bg-blue-50/50 border-2 border-dashed border-blue-200 rounded-3xl text-center">
-                <h3 class="font-black text-blue-900 text-xl">Finalize Your Admission</h3>
-                <p class="text-sm text-slate-500 mt-1 mb-6">You must complete the official bio-data form to see your results.</p>
-                <a href="Admission 3.html" class="bg-blue-900 text-white px-8 py-3 rounded-2xl font-black shadow-lg shadow-blue-900/30 hover:scale-105 transition inline-flex items-center gap-2">
-                    Open Official Form <i data-lucide="external-link" class="w-4 h-4"></i>
-                </a>
+            <div id="admission-link-box" class="mt-10 p-8 bg-white border-2 border-dashed border-blue-200 rounded-3xl text-center">
+                <h3 class="font-black text-blue-900 text-xl">Admission Status</h3>
+                <p class="text-sm text-slate-500 mt-1 mb-6">Your bio-data form must be fully submitted to access results.</p>
+                <a href="Admission 3.html" class="bg-blue-900 text-white px-8 py-3 rounded-2xl font-black shadow-lg hover:bg-blue-800 transition inline-block">Verify Details</a>
             </div>
         </div>
     </div>
@@ -203,53 +180,67 @@
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (!session) { window.location.href = 'login.html'; return; }
 
-                const user = session.user;
-                const genID = "MS-" + user.id.substring(0, 5).toUpperCase();
-                document.getElementById('display-email').textContent = user.email;
-                document.querySelectorAll('#display-msid').forEach(el => el.textContent = genID);
-
-                const { data: st } = await _supabase.from('students').select('*').eq('id', user.id).single();
-
+                const { data: st, error } = await _supabase.from('students').select('*').eq('id', session.user.id).single();
+                
                 if (st) {
+                    // Update Text Information
                     document.getElementById('display-fullname').textContent = st.full_name || "New Student";
                     document.getElementById('header-name-top').textContent = st.full_name || "Student";
                     document.getElementById('display-status').textContent = st.status || "Pending";
                     document.getElementById('display-grade').textContent = st.grade_level || "---";
+                    document.getElementById('display-subject').textContent = st.subject || "---";
                     document.getElementById('display-gender').textContent = st.gender || "---";
                     document.getElementById('display-nationality').textContent = st.nationality || "---";
                     document.getElementById('display-parent-name').textContent = st.parent_name || "---";
                     document.getElementById('display-parent-phone').textContent = st.parent_phone || "---";
-                    document.getElementById('display-subject').textContent = st.subject || "---";
+                    document.getElementById('display-email').textContent = session.user.email;
+                    document.getElementById('display-msid').textContent = "MS-" + session.user.id.substring(0, 5).toUpperCase();
 
+                    // Update Images
                     if (st.avatar_url) {
                         const imgUrl = `${st.avatar_url}?t=${new Date().getTime()}`;
                         ['profile-img', 'header-img'].forEach(id => {
                             const el = document.getElementById(id);
-                            el.src = imgUrl; el.classList.remove('hidden');
+                            el.src = imgUrl; 
+                            el.classList.remove('hidden');
                         });
                         document.getElementById('placeholder-icon').classList.add('hidden');
                     }
 
+                    // Style for Enrolled Status
                     if (st.status === "Enrolled") {
                         const box = document.getElementById('admission-link-box');
-                        box.innerHTML = `<h3 class="font-black text-green-700 text-lg">✓ Admission Fully Verified</h3><p class="text-xs text-green-600">Your student record is complete.</p>`;
+                        box.innerHTML = `<h3 class="font-black text-green-700 text-lg">✓ Admission Verified</h3><p class="text-xs text-green-600">Your school record is fully active.</p>`;
                         box.className = "mt-10 p-8 bg-green-50 border-2 border-green-200 rounded-3xl text-center";
-                        document.getElementById('display-status').className = "bg-green-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest";
+                        document.getElementById('display-status').className = "bg-green-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-md";
                     }
                 }
-            } catch (err) { console.error(err); }
-            lucide.createIcons();
+            } catch (err) { console.error("Load Error:", err); }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         async function uploadPhoto(event) {
             const file = event.target.files[0];
             if (!file) return;
+
+            if (file.size > 1000 * 1024) {
+                alert("Image too large! Use a file under 1000KB (1MB).");
+                return;
+            }
+
             const { data: { session } } = await _supabase.auth.getSession();
             const filePath = `${session.user.id}/avatar.png`;
+
             try {
-                await _supabase.storage.from('avatars').upload(filePath, file, { contentType: file.type, upsert: true });
+                const { error: upErr } = await _supabase.storage.from('avatars').upload(filePath, file, { 
+                    contentType: file.type, 
+                    upsert: true 
+                });
+                if (upErr) throw upErr;
+
                 const { data: { publicUrl } } = _supabase.storage.from('avatars').getPublicUrl(filePath);
                 await _supabase.from('students').update({ avatar_url: publicUrl }).eq('id', session.user.id);
+                
                 location.reload(); 
             } catch (err) { alert("Upload error: " + err.message); }
         }
