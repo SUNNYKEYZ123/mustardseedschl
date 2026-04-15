@@ -28,7 +28,12 @@
         .nav-item:hover { background: rgba(255, 255, 255, 0.05); color: white; }
         .nav-active { background: #2563eb; color: white; font-weight: bold; }
         .badge-soon {
-            font-size: 9px; background: #f59e0b; color: #451a03; padding: 2px 6px; border-radius: 4px; font-weight: 900;
+            font-size: 9px;
+            background: #f59e0b;
+            color: #451a03;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 900;
         }
     </style>
 </head>
@@ -38,40 +43,54 @@
         <div class="p-6 border-b border-slate-800 flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-8 w-8">
-                <span class="font-black text-blue-400 tracking-tighter">MSS CONTROL</span>
+                <span class="font-black text-blue-400 tracking-tighter text-sm">MSS CONTROL</span>
             </div>
             <button onclick="toggleSidebar()" class="md:hidden text-slate-500"><i data-lucide="x"></i></button>
         </div>
+
         <nav class="flex-1 overflow-y-auto p-4 space-y-6">
             <div>
-                <p class="text-[10px] font-black text-slate-500 uppercase px-3 mb-3">Menu</p>
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest px-3 mb-3">Main Menu</p>
                 <div class="space-y-1">
                     <a href="#" class="nav-item nav-active"><i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard</a>
-                    <a href="https://sunnykeyz123.github.io/mustardseedcbt/CBT.html" class="nav-item"><i data-lucide="pen-tool" class="w-5 h-5"></i> CBT Exam</a>
+                    <a href="https://sunnykeyz123.github.io/mustardseedcbt/CBT.html" class="nav-item"><i data-lucide="pen-tool" class="w-5 h-5"></i> Take CBT Exam</a>
                 </div>
             </div>
+
             <div>
-                <p class="text-[10px] font-black text-slate-500 uppercase px-3 mb-3">Academic Tools</p>
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest px-3 mb-3">Academic Tools</p>
                 <div class="space-y-1">
-                    <a href="#" class="nav-item justify-between"><span class="flex items-center gap-3"><i data-lucide="file-check" class="w-5 h-5"></i> Result Checker</span><span class="badge-soon">Soon</span></a>
+                    <a href="#" class="nav-item justify-between group">
+                        <span class="flex items-center gap-3"><i data-lucide="file-check" class="w-5 h-5"></i> Result Checker</span>
+                        <span class="badge-soon">Soon</span>
+                    </a>
+                    <a href="#" class="nav-item"><i data-lucide="library" class="w-5 h-5"></i> E-Library</a>
                 </div>
             </div>
+
             <div>
-                <p class="text-[10px] font-black text-slate-500 uppercase px-3 mb-3">Settings</p>
+                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest px-3 mb-3">Account</p>
                 <div class="space-y-1">
-                    <a href="#" onclick="document.getElementById('photoInput').click()" class="nav-item"><i data-lucide="camera" class="w-5 h-5"></i> Update Photo</a>
-                    <button onclick="handleLogout()" class="nav-item w-full text-left text-red-400"><i data-lucide="log-out" class="w-5 h-5"></i> Logout</button>
+                    <a href="#" onclick="document.getElementById('photoInput').click()" class="nav-item"><i data-lucide="camera" class="w-5 h-5"></i> Change Photo</a>
                 </div>
             </div>
         </nav>
+
+        <div class="p-4 border-t border-slate-800">
+            <button onclick="handleLogout()" class="flex items-center justify-center gap-3 w-full bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white p-3 rounded-xl font-bold transition">
+                <i data-lucide="log-out" class="w-5 h-5"></i> Logout
+            </button>
+        </div>
     </aside>
 
     <div class="flex-1 h-screen overflow-y-auto">
         <nav class="bg-blue-900 text-white p-4 shadow-md flex justify-between items-center sticky top-0 z-40">
-            <button onclick="toggleSidebar()" class="p-2 hover:bg-blue-800 rounded-lg transition"><i data-lucide="menu"></i></button>
+            <button onclick="toggleSidebar()" class="p-2 hover:bg-blue-800 rounded-lg text-white transition">
+                <i data-lucide="menu"></i>
+            </button>
             <div class="flex items-center gap-3 bg-blue-800/50 px-3 py-1 rounded-full border border-white/10">
                 <span id="header-name-top" class="text-xs font-medium">Student</span>
-                <img id="header-img" src="" class="h-7 w-7 rounded-full border border-white/20 hidden object-cover">
+                <img id="header-img" src="" class="h-7 w-7 rounded-full border border-white/20 hidden object-cover shadow-lg">
             </div>
         </nav>
 
@@ -94,31 +113,57 @@
                         <span id="display-status" class="bg-yellow-400 text-blue-950 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-md">Loading...</span>
                         <span id="display-msid" class="bg-white/10 text-blue-100 px-3 py-1 rounded-full text-[10px] font-mono border border-white/10">MS-XXXXX</span>
                     </div>
-                    <h2 id="display-fullname" class="text-4xl md:text-5xl font-black text-white tracking-tight">Loading...</h2>
+                    <h2 id="display-fullname" class="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">Loading...</h2>
                     <p id="display-email" class="text-blue-200/60 text-lg font-medium italic">---</p>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white p-8 rounded-3xl shadow-xl border-t-4 border-blue-900">
-                    <h3 class="text-lg font-black text-slate-800 uppercase mb-6 flex items-center gap-2">Academic Details</h3>
+                    <h3 class="text-lg font-black text-slate-800 uppercase mb-6 flex items-center gap-2">
+                        <i data-lucide="graduation-cap" class="text-blue-900 w-5 h-5"></i> Academic Details
+                    </h3>
                     <div class="space-y-4">
-                        <div class="flex justify-between border-b pb-2"><span class="text-gray-400">Grade</span><span id="display-grade" class="font-bold">---</span></div>
-                        <div class="flex justify-between border-b pb-2"><span class="text-gray-400">Subject</span><span id="display-subject" class="font-bold text-blue-700">---</span></div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-400 text-sm">Class Grade</span>
+                            <span id="display-grade" class="font-bold text-slate-700">---</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2 text-blue-700">
+                            <span class="text-gray-400 text-sm">Subject</span>
+                            <span id="display-subject" class="font-black">---</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-400 text-sm">Gender</span>
+                            <span id="display-gender" class="font-bold text-slate-700">---</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-400 text-sm">Nationality</span>
+                            <span id="display-nationality" class="font-bold text-slate-700">---</span>
+                        </div>
                     </div>
                 </div>
+
                 <div class="bg-white p-8 rounded-3xl shadow-xl border-t-4 border-blue-900">
-                    <h3 class="text-lg font-black text-slate-800 uppercase mb-6 flex items-center gap-2">Guardian Info</h3>
+                    <h3 class="text-lg font-black text-slate-800 uppercase mb-6 flex items-center gap-2">
+                        <i data-lucide="users" class="text-blue-900 w-5 h-5"></i> Guardian Info
+                    </h3>
                     <div class="space-y-4">
-                        <div class="flex justify-between border-b pb-2"><span class="text-gray-400">Parent Name</span><span id="display-parent-name" class="font-bold">---</span></div>
-                        <div class="flex justify-between border-b pb-2"><span class="text-gray-400">Contact</span><span id="display-parent-phone" class="font-bold">---</span></div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-400 text-sm">Parent Name</span>
+                            <span id="display-parent-name" class="font-bold text-slate-700">---</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-2">
+                            <span class="text-gray-400 text-sm">Contact</span>
+                            <span id="display-parent-phone" class="font-bold text-slate-700">---</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-10 p-4 bg-black/5 rounded-xl border border-dashed border-black/10">
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">System Debugger</p>
-                <div id="status-log" class="text-[12px] text-gray-600 font-mono">System standby...</div>
+            <div id="admission-link-box" class="mt-10 p-8 bg-white border-2 border-dashed border-blue-200 rounded-3xl text-center">
+                <h3 class="font-black text-blue-900 text-xl">Admission Status</h3>
+                <p class="text-sm text-slate-500 mt-1 mb-6">Complete your bio-data to enable result checking.</p>
+                <a href="Admission 3.html" class="bg-blue-900 text-white px-8 py-3 rounded-2xl font-black shadow-lg hover:bg-blue-800 transition inline-block">Verify Details</a>
             </div>
         </div>
     </div>
@@ -129,30 +174,28 @@
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('sidebar-closed'); }
-        function log(msg) { document.getElementById('status-log').innerText = msg; }
 
         async function loadProfile() {
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (!session) { window.location.href = 'login.html'; return; }
 
-                log("Fetching data for: " + session.user.email);
-
-                const { data: st, error } = await _supabase.from('students').select('*').eq('id', session.user.id).single();
+                const { data: st } = await _supabase.from('students').select('*').eq('id', session.user.id).single();
                 
-                if (error) { log("Database Error: " + error.message); return; }
-
                 if (st) {
-                    document.getElementById('display-fullname').textContent = st.full_name || "New Student";
+                    document.getElementById('display-fullname').textContent = st.full_name || "Student";
+                    document.getElementById('header-name-top').textContent = st.full_name || "Student";
+                    document.getElementById('display-status').textContent = st.status || "Pending";
                     document.getElementById('display-grade').textContent = st.grade_level || "---";
                     document.getElementById('display-subject').textContent = st.subject || "---";
+                    document.getElementById('display-gender').textContent = st.gender || "---";
+                    document.getElementById('display-nationality').textContent = st.nationality || "---";
                     document.getElementById('display-parent-name').textContent = st.parent_name || "---";
                     document.getElementById('display-parent-phone').textContent = st.parent_phone || "---";
                     document.getElementById('display-email').textContent = session.user.email;
-                    document.getElementById('display-status').textContent = st.status || "Pending";
+                    document.getElementById('display-msid').textContent = "MS-" + session.user.id.substring(0, 5).toUpperCase();
 
                     if (st.avatar_url) {
-                        log("Loading photo from: " + st.avatar_url);
                         const imgUrl = `${st.avatar_url}?t=${new Date().getTime()}`;
                         ['profile-img', 'header-img'].forEach(id => {
                             const el = document.getElementById(id);
@@ -160,48 +203,46 @@
                             el.classList.remove('hidden');
                         });
                         document.getElementById('placeholder-icon').classList.add('hidden');
-                    } else {
-                        log("No photo URL found in students table.");
+                    }
+
+                    if (st.status === "Enrolled") {
+                        const box = document.getElementById('admission-link-box');
+                        box.innerHTML = `<h3 class=\"font-black text-green-700 text-lg\">✓ Admission Verified</h3>`;
+                        box.className = "mt-10 p-8 bg-green-50 border-2 border-green-200 rounded-3xl text-center";
+                        document.getElementById('display-status').className = "bg-green-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase shadow-md";
                     }
                 }
-            } catch (err) { log("System Crash: " + err.message); }
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            } catch (err) { console.error(err); }
+            lucide.createIcons();
         }
 
         async function uploadPhoto(event) {
             const file = event.target.files[0];
             if (!file) return;
-
-            if (file.size > 1000 * 1024) { alert("File too big! Keep it under 1000KB (1MB)."); return; }
+            if (file.size > 1000 * 1024) { alert("File too large! Keep it under 1000KB."); return; }
 
             const { data: { session } } = await _supabase.auth.getSession();
-            // Use a specific folder inside the bucket
-            const filePath = `avatars/${session.user.id}.png`;
-
-            log("Uploading photo...");
+            const filePath = `${session.user.id}/avatar.png`;
 
             try {
-                const { error: upErr } = await _supabase.storage.from('avatars').upload(filePath, file, { 
-                    contentType: file.type, 
-                    upsert: true 
-                });
-                
-                if (upErr) { log("Storage Error: " + upErr.message); return; }
+                const { error: upErr } = await _supabase.storage.from('avatars').upload(filePath, file, { contentType: file.type, upsert: true });
+                if (upErr) throw upErr;
 
                 const { data: { publicUrl } } = _supabase.storage.from('avatars').getPublicUrl(filePath);
-                
-                log("Photo uploaded. Updating record with: " + publicUrl);
-
                 const { error: dbErr } = await _supabase.from('students').update({ avatar_url: publicUrl }).eq('id', session.user.id);
                 
-                if (dbErr) { log("Database Update Failed: " + dbErr.message); return; }
-                
-                log("Success! Refreshing...");
-                setTimeout(() => location.reload(), 1000); 
-            } catch (err) { log("Upload Crash: " + err.message); }
+                if (dbErr) {
+                    alert("Database Error: Make sure you added the 'avatar_url' column to the students table in Supabase!");
+                } else {
+                    location.reload();
+                }
+            } catch (err) { alert("Upload error: " + err.message); }
         }
 
-        async function handleLogout() { await _supabase.auth.signOut(); window.location.replace('login.html'); }
+        async function handleLogout() {
+            await _supabase.auth.signOut();
+            window.location.replace('login.html');
+        }
 
         window.onload = loadProfile;
     </script>
