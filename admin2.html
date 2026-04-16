@@ -11,17 +11,17 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        
-        .sidebar { transition: transform 0.3s ease; width: 280px; }
+        .sidebar { transition: transform 0.3s ease; width: 280px; z-index: 50; }
         @media (max-width: 1023px) {
-            .sidebar { transform: translateX(-100%); position: fixed; z-index: 50; height: 100vh; }
+            .sidebar { transform: translateX(-100%); position: fixed; height: 100vh; }
             .sidebar.open { transform: translateX(0); }
             .main-content { margin-left: 0 !important; }
         }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; width: 100%; text-align: left; }
         .nav-link:hover, .nav-link.active { background: #2563eb; color: white; }
         .view-section { display: none; }
         .view-section.active { display: block; }
+        .hidden-row { display: none !important; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -30,16 +30,14 @@
         <div class="flex items-center justify-between mb-10 pb-6 border-b border-slate-800">
             <div class="flex items-center gap-3">
                 <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10">
-                <span class="font-black italic text-xl tracking-tighter">MSS ADMIN</span>
+                <span class="font-black italic text-xl tracking-tighter uppercase">MSS ADMIN</span>
             </div>
             <button onclick="toggleSidebar()" class="lg:hidden"><i data-lucide="x"></i></button>
         </div>
-
         <nav class="space-y-2 flex-1">
-            <button onclick="showView('directory')" id="btn-directory" class="nav-link active w-full"><i data-lucide="users"></i> Directory</button>
-            <button onclick="showView('engine')" id="btn-engine" class="nav-link w-full"><i data-lucide="cog"></i> Results Engine</button>
+            <button onclick="showView('directory')" id="btn-directory" class="nav-link active"><i data-lucide="users"></i> Student Directory</button>
+            <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="cog"></i> Results Engine</button>
         </nav>
-
         <button onclick="handleLogout()" class="nav-link text-red-400 hover:bg-red-400/10 mt-auto"><i data-lucide="log-out"></i> Logout</button>
     </aside>
 
@@ -48,10 +46,9 @@
             <button onclick="toggleSidebar()" class="lg:hidden p-2 bg-slate-100 rounded-lg"><i data-lucide="menu"></i></button>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden sm:block">
-                    <p class="text-[10px] font-black text-slate-400 uppercase">System Administrator</p>
-                    <p id="admin-mail" class="text-xs font-bold text-slate-800 tracking-tight">Verifying...</p>
+                    <p id="admin-mail" class="text-xs font-bold text-slate-800">Administrator</p>
                 </div>
-                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white">AD</div>
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white uppercase">AD</div>
             </div>
         </header>
 
@@ -60,13 +57,13 @@
                 <h2 class="text-2xl font-black italic tracking-tighter uppercase">Student Directory</h2>
                 <div class="relative w-full max-w-md">
                     <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
-                    <input type="text" oninput="filterData(this.value)" placeholder="Search 170+ students..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border-none ring-1 ring-slate-200 focus:ring-2 ring-blue-600 outline-none text-sm font-bold">
+                    <input type="text" id="searchInput" oninput="filterDirectory()" placeholder="Search students..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border-none ring-1 ring-slate-200 focus:ring-2 ring-blue-600 outline-none text-sm font-bold">
                 </div>
             </div>
             <div class="bg-white rounded-3xl border shadow-sm overflow-hidden">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 font-black text-[10px] text-slate-400 uppercase tracking-widest border-b">
-                        <tr><th class="p-5">Student</th><th class="p-5 text-center">Class</th><th class="p-5 text-center">CBT Status</th><th class="p-5 text-right">Actions</th></tr>
+                        <tr><th class="p-5">Student Info</th><th class="p-5 text-center">Class</th><th class="p-5 text-center">Status</th><th class="p-5 text-right">Actions</th></tr>
                     </thead>
                     <tbody id="directoryTable"></tbody>
                 </table>
@@ -76,20 +73,22 @@
         <section id="view-engine" class="view-section">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-4 bg-white rounded-3xl border flex flex-col h-[600px] overflow-hidden">
-                    <div class="p-4 border-b bg-slate-50"><input type="text" oninput="filterData(this.value)" placeholder="Find student for scores..." class="w-full p-2.5 rounded-xl border-none ring-1 ring-slate-200 text-xs font-bold"></div>
+                    <div class="p-4 border-b bg-slate-50">
+                        <input type="text" id="engineSearch" oninput="filterEngineList()" placeholder="Find student for scores..." class="w-full p-2.5 rounded-xl border-none ring-1 ring-slate-200 text-xs font-bold outline-none">
+                    </div>
                     <div id="engineList" class="overflow-y-auto divide-y"></div>
                 </div>
                 <div id="scoreForm" class="lg:col-span-8 bg-white rounded-3xl border p-8 shadow-2xl hidden">
                     <div class="flex justify-between items-center mb-8 border-b pb-6">
                         <div>
-                            <h3 id="editName" class="text-xl font-black italic uppercase">---</h3>
+                            <h3 id="editName" class="text-xl font-black italic uppercase text-slate-800">---</h3>
                             <p id="editClass" class="text-[10px] font-black text-blue-600 uppercase">---</p>
                         </div>
-                        <select id="resStatus" class="bg-slate-900 text-white text-[10px] font-black p-2 rounded-lg px-4 border-none outline-none">
+                        <select id="resStatus" class="bg-slate-900 text-white text-[10px] font-black p-2 rounded-lg px-4 outline-none border-none">
                             <option value="Draft">DRAFT</option><option value="Published">PUBLISHED</option>
                         </select>
                     </div>
-                    <table class="w-full mb-6">
+                    <table class="w-full mb-4">
                         <thead class="text-[10px] text-slate-400 font-black uppercase"><tr><th class="text-left pb-4">Subject</th><th class="text-center pb-4 w-20">Test</th><th class="text-center pb-4 w-20">Exam</th><th></th></tr></thead>
                         <tbody id="scoreRows"></tbody>
                     </table>
@@ -98,7 +97,7 @@
                         <label class="text-[10px] font-black text-slate-400 uppercase block mb-2">Teacher's Remark</label>
                         <textarea id="remark" rows="2" class="w-full p-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-100 text-sm italic outline-none focus:ring-2 ring-blue-600"></textarea>
                     </div>
-                    <button onclick="saveAll()" id="saveBtn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl hover:bg-blue-700 transition-all">SAVE REPORT CARD</button>
+                    <button onclick="saveAllScores()" id="saveBtn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl hover:bg-blue-700 transition-all">SAVE REPORT CARD</button>
                 </div>
             </div>
         </section>
@@ -116,7 +115,7 @@
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(`view-${v}`).classList.add('active');
             document.getElementById(`btn-${v}`).classList.add('active');
-            if(window.innerWidth < 1024) toggleSidebar();
+            if(window.innerWidth < 1024 && document.getElementById('sidebar').classList.contains('open')) toggleSidebar();
         }
 
         async function init() {
@@ -125,37 +124,64 @@
             const { data: prof } = await _supabase.from('students').select('is_admin').eq('id', session.user.id).single();
             if(!prof?.is_admin) { window.location.replace('conf dshb.html'); return; }
             document.getElementById('admin-mail').innerText = session.user.email;
-            loadStudents();
+            loadData();
         }
 
-        async function loadStudents() {
+        async function loadData() {
             const { data } = await _supabase.from('students').select('*').order('full_name');
-            if(data) { students = data; renderAll(data); }
+            if(data) { students = data; renderDirectory(data); renderEngineList(data); }
             lucide.createIcons();
         }
 
-        function renderAll(list) {
-            document.getElementById('directoryTable').innerHTML = list.map(s => `
-                <tr class="border-b hover:bg-slate-50 transition">
-                    <td class="p-5 font-black text-slate-800 uppercase text-xs">${s.full_name}</td>
-                    <td class="p-5 text-center text-[10px] font-bold text-slate-500">${s.grade_level || 'N/A'}</td>
-                    <td class="p-5 text-center"><span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${s.status === 'Active' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">${s.status || 'Inactive'}</span></td>
-                    <td class="p-5 text-right"><button onclick="edit('${s.id}')" class="p-2 bg-slate-900 text-white rounded-lg"><i data-lucide="award" class="w-4 h-4"></i></button></td>
+        // --- DIRECTORY LOGIC (RESTORED ACTIONS) ---
+        function renderDirectory(list) {
+            const tbody = document.getElementById('directoryTable');
+            tbody.innerHTML = list.map(st => `
+                <tr class="student-row border-b hover:bg-slate-50 transition" data-search="${st.full_name}">
+                    <td class="p-5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-black text-[10px] uppercase">${st.full_name.charAt(0)}</div>
+                            <p class="text-xs font-black text-slate-800 uppercase">${st.full_name}</p>
+                        </div>
+                    </td>
+                    <td class="p-5 text-center text-[10px] font-bold text-slate-500 uppercase">${st.grade_level || '---'}</td>
+                    <td class="p-5 text-center">
+                        <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${st.status === 'Active' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
+                            ${st.status || 'Inactive'}
+                        </span>
+                    </td>
+                    <td class="p-5 text-right">
+                        <div class="flex justify-end gap-2">
+                            <button onclick="updateStatus('${st.id}', '${st.status === 'Active' ? 'Suspended' : 'Active'}')" class="p-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-900 hover:text-white transition shadow-sm">
+                                <i data-lucide="${st.status === 'Active' ? 'user-x' : 'user-check'}" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteStudent('${st.id}')" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition shadow-sm">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
             `).join('');
+            lucide.createIcons();
+        }
+
+        // --- ENGINE ROOM LOGIC (FIXED) ---
+        function renderEngineList(list) {
             document.getElementById('engineList').innerHTML = list.map(s => `
-                <div onclick="edit('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer transition flex items-center justify-between">
-                    <div><p class="text-[11px] font-black text-slate-800 uppercase">${s.full_name}</p><p class="text-[9px] text-slate-400 font-bold uppercase">${s.result_status || 'Draft'}</p></div>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200"></i>
+                <div onclick="openScoreEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer transition flex items-center justify-between group">
+                    <div>
+                        <p class="text-[11px] font-black text-slate-800 uppercase group-hover:text-blue-600">${s.full_name}</p>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase">${s.result_status || 'Draft'}</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-blue-600"></i>
                 </div>
             `).join('');
             lucide.createIcons();
         }
 
-        function edit(id) {
+        function openScoreEditor(id) {
             activeId = id;
             const s = students.find(x => x.id === id);
-            showView('engine');
             document.getElementById('scoreForm').classList.remove('hidden');
             document.getElementById('editName').innerText = s.full_name;
             document.getElementById('editClass').innerText = s.grade_level;
@@ -170,28 +196,47 @@
 
         function addRow(n="", t=0, e=0) {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td class="pb-2"><input type="text" value="${n}" class="sn w-full p-2 bg-slate-50 rounded-lg text-xs font-black uppercase border-none ring-1 ring-slate-100 focus:ring-2 ring-blue-600 outline-none"></td><td class="pb-2 px-2"><input type="number" value="${t}" class="st w-full p-2 bg-slate-50 rounded-lg text-xs font-black text-center border-none ring-1 ring-slate-100"></td><td class="pb-2"><input type="number" value="${e}" class="se w-full p-2 bg-slate-50 rounded-lg text-xs font-black text-center border-none ring-1 ring-slate-100"></td><td class="pb-2 text-right"><button onclick="this.parentElement.parentElement.remove()" class="text-slate-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
+            tr.innerHTML = `<td class="pb-2"><input type="text" value="${n}" class="sn w-full p-2 bg-slate-50 rounded-lg text-xs font-black uppercase border-none ring-1 ring-slate-100 focus:ring-2 ring-blue-600 outline-none"></td><td class="pb-2 px-2"><input type="number" value="${t}" class="st w-full p-2 bg-slate-50 rounded-lg text-xs font-black text-center border-none ring-1 ring-slate-100 focus:ring-2 ring-blue-600"></td><td class="pb-2"><input type="number" value="${e}" class="se w-full p-2 bg-slate-50 rounded-lg text-xs font-black text-center border-none ring-1 ring-slate-100 focus:ring-2 ring-blue-600"></td><td class="pb-2 text-right"><button onclick="this.parentElement.parentElement.remove()" class="text-slate-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
             document.getElementById('scoreRows').appendChild(tr);
             lucide.createIcons();
         }
 
-        async function saveAll() {
+        async function saveAllScores() {
             const btn = document.getElementById('saveBtn');
             btn.innerText = "UPLOADING...";
             const names = document.querySelectorAll('.sn'), tests = document.querySelectorAll('.st'), exams = document.querySelectorAll('.se');
             const subs = [];
             names.forEach((n, i) => { if(n.value) subs.push({ name: n.value, test: parseFloat(tests[i].value)||0, exam: parseFloat(exams[i].value)||0 }); });
             const { error } = await _supabase.from('students').update({ subjects: subs, result_status: document.getElementById('resStatus').value, teacher_remark: document.getElementById('remark').value }).eq('id', activeId);
-            if(!error) { alert("Updated!"); loadStudents(); } else { alert(error.message); }
+            if(!error) { alert("Updated Successfully!"); loadData(); } else { alert(error.message); }
             btn.innerText = "SAVE REPORT CARD";
         }
 
-        function filterData(val) {
-            const filtered = students.filter(s => s.full_name.toLowerCase().includes(val.toLowerCase()));
-            renderAll(filtered);
+        // --- FILTERING ---
+        function filterDirectory() {
+            const val = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.student-row').forEach(row => {
+                row.classList.toggle('hidden-row', !row.getAttribute('data-search').toLowerCase().includes(val));
+            });
+        }
+        function filterEngineList() {
+            const val = document.getElementById('engineSearch').value.toLowerCase();
+            const filtered = students.filter(s => s.full_name.toLowerCase().includes(val));
+            renderEngineList(filtered);
         }
 
-        function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
+        // --- ACTION BUTTON FUNCTIONS ---
+        async function updateStatus(id, newStatus) {
+            const { error } = await _supabase.from('students').update({ status: newStatus }).eq('id', id);
+            if (!error) loadData();
+        }
+        async function deleteStudent(id) {
+            if(!confirm("⚠️ PERMANENT DELETE? This cannot be undone.")) return;
+            const { error } = await _supabase.from('students').delete().eq('id', id);
+            if (!error) { alert("Student Deleted."); loadData(); }
+        }
+        async function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
+        
         window.onload = init;
     </script>
 </body>
