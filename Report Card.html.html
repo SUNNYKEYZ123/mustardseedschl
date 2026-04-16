@@ -4,7 +4,7 @@
     <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comprehensive Report Sheet | MSS</title>
+    <title>Report Sheet | MSS</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -12,98 +12,96 @@
         body { font-family: 'Inter', sans-serif; print-color-adjust: exact; }
         .school-name { font-family: 'Cinzel', serif; }
         @media print {
+            @page { size: letter; margin: 0.4cm; }
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
-            .report-sheet { border: 2px solid #000; box-shadow: none; width: 100%; margin: 0; }
-            .bg-blue-900 { background-color: #1e3a8a !important; color: white !important; }
+            .report-sheet { border: 1px solid #000; box-shadow: none; width: 100%; margin: 0; }
+            /* Force gray backgrounds to show in B&W print */
+            .bg-slate-100 { background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; }
         }
-        .grade-a { color: #059669; font-weight: 900; }
-        .grade-f { color: #dc2626; font-weight: 900; }
     </style>
 </head>
-<body class="bg-slate-200 py-10 px-4">
+<body class="bg-slate-200 py-4 px-2">
 
-    <div class="max-w-5xl mx-auto mb-6 flex justify-between items-center no-print">
-        <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-lg font-bold text-slate-600 hover:bg-slate-50 transition">← Dashboard</button>
-        <button onclick="window.print()" class="bg-blue-900 text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest hover:bg-blue-800 transition">PRINT REPORT SHEET</button>
+    <div class="max-w-4xl mx-auto mb-4 flex justify-between items-center no-print">
+        <button onclick="window.history.back()" class="bg-white px-4 py-2 rounded-lg shadow font-bold text-slate-600 hover:bg-slate-50 transition text-sm">← Back</button>
+        <button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-lg shadow font-black tracking-widest text-sm">PRINT REPORT</button>
     </div>
 
-    <div class="max-w-5xl mx-auto bg-white shadow-2xl border-4 border-double border-slate-300 rounded-sm overflow-hidden report-sheet">
+    <div class="max-w-4xl mx-auto bg-white border border-slate-300 rounded-sm overflow-hidden report-sheet">
         
-        <div class="p-8 border-b-4 border-blue-900 flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-24 w-24" alt="School Logo">
+        <div class="p-4 border-b-2 border-slate-900 flex items-center gap-4 text-left">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-16 w-16" alt="School Logo">
             <div class="flex-1">
-                <h1 class="school-name text-4xl font-bold text-blue-900 uppercase">Mustard Seed School</h1>
-                <p class="text-sm font-bold tracking-[0.3em] text-slate-500 italic">Motto: Excellence in Technology & Character</p>
-                <p class="mt-2 text-xs font-mono bg-slate-100 inline-block px-4 py-1 rounded-full border">Ilesa, Osun State, Nigeria.</p>
+                <h1 class="school-name text-2xl font-bold text-slate-900 uppercase leading-tight">Mustard Seed School</h1>
+                <p class="text-[9px] font-bold tracking-[0.2em] text-slate-500 italic uppercase">Excellence in Technology & Character</p>
+                <p class="text-[8px] font-mono mt-0.5">Ilesa, Osun State, Nigeria.</p>
             </div>
-            <div class="border-2 border-blue-900 p-4 text-center rounded-lg min-w-[120px]">
-                <p class="text-[10px] font-black uppercase tracking-widest">Termly Average</p>
-                <p id="avg-score" class="text-3xl font-black text-blue-900">0.0</p>
+            <div class="border border-slate-900 p-2 text-center rounded min-w-[100px]">
+                <p class="text-[8px] font-black uppercase tracking-widest">Average Score</p>
+                <p id="avg-score" class="text-xl font-black text-slate-900">0.0</p>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 bg-blue-900 text-white text-[11px] uppercase font-bold">
-            <div class="p-4 border-r border-blue-800">Name: <span id="res-name" class="text-blue-200 block text-sm tracking-tighter">LOADING...</span></div>
-            <div class="p-4 border-r border-blue-800">Reg No: <span id="res-id" class="text-blue-200 block text-sm">---</span></div>
-            <div class="p-4 border-r border-blue-800">Class: <span id="res-class" class="text-blue-200 block text-sm">---</span></div>
-            <div class="p-4">Session: <span class="text-blue-200 block text-sm">2025/2026</span></div>
+        <div class="grid grid-cols-4 bg-slate-100 text-slate-900 text-[10px] uppercase font-bold border-b border-slate-300">
+            <div class="p-2 border-r border-slate-300 text-[9px]">NAME: <span id="res-name" class="block text-[11px] font-black">LOADING...</span></div>
+            <div class="p-2 border-r border-slate-300 text-[9px]">REG NO: <span id="res-id" class="block text-[11px] font-black text-slate-700">---</span></div>
+            <div class="p-2 border-r border-slate-300 text-[9px]">CLASS: <span id="res-class" class="block text-[11px] font-black text-slate-700">---</span></div>
+            <div class="p-2 text-[9px]">SESSION: <span class="block text-[11px] font-black text-slate-700">2025/2026</span></div>
         </div>
 
-        <div class="p-6">
-            <table class="w-full border-collapse border border-slate-300">
+        <div class="p-3">
+            <table class="w-full border-collapse border border-slate-400">
                 <thead>
-                    <tr class="bg-slate-100 text-[10px] uppercase font-black text-slate-600">
-                        <th class="border border-slate-300 p-3 text-left w-64">Subject</th>
-                        <th class="border border-slate-300 p-3 text-center">Test (30)</th>
-                        <th class="border border-slate-300 p-3 text-center">Exam (70)</th>
-                        <th class="border border-slate-300 p-3 text-center">Total (100)</th>
-                        <th class="border border-slate-300 p-3 text-center">Grade</th>
-                        <th class="border border-slate-300 p-3 text-left">Remarks</th>
+                    <tr class="bg-slate-50 text-[9px] uppercase font-black text-slate-700">
+                        <th class="border border-slate-400 p-1.5 text-left w-56">Subject</th>
+                        <th class="border border-slate-400 p-1.5 text-center w-16">Test</th>
+                        <th class="border border-slate-400 p-1.5 text-center w-16">Exam</th>
+                        <th class="border border-slate-400 p-1.5 text-center w-16">Total</th>
+                        <th class="border border-slate-400 p-1.5 text-center w-12">Grade</th>
+                        <th class="border border-slate-400 p-1.5 text-left">Remarks</th>
                     </tr>
                 </thead>
-                <tbody id="subject-rows" class="text-sm font-bold text-slate-700 uppercase">
+                <tbody id="subject-rows" class="text-[10px] font-bold text-slate-800 uppercase">
                     </tbody>
             </table>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-            <div class="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
-                <h4 class="text-xs font-black uppercase border-b mb-3 text-blue-900 pb-1">Behavioral Assessment</h4>
-                <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-[10px] font-bold">
-                    <p class="flex justify-between border-b border-dotted pb-1">Punctuality: <span class="text-blue-700">Excellent</span></p>
-                    <p class="flex justify-between border-b border-dotted pb-1">Neatness: <span class="text-blue-700">Good</span></p>
-                    <p class="flex justify-between border-b border-dotted pb-1">Honesty: <span class="text-blue-700">Excellent</span></p>
-                    <p class="flex justify-between border-b border-dotted pb-1">Leadership: <span class="text-blue-700">Very Good</span></p>
+        <div class="grid grid-cols-2 gap-4 px-4 pb-2">
+            <div class="border border-slate-300 rounded p-2 bg-slate-50/30">
+                <h4 class="text-[9px] font-black uppercase border-b border-slate-900 mb-1 text-slate-900 pb-0.5">Behavioral Assessment</h4>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-[8px] font-bold">
+                    <p class="flex justify-between border-b border-dotted border-slate-300">Punctuality: <span>Excellent</span></p>
+                    <p class="flex justify-between border-b border-dotted border-slate-300">Neatness: <span>Good</span></p>
+                    <p class="flex justify-between border-b border-dotted border-slate-300">Honesty: <span>Excellent</span></p>
+                    <p class="flex justify-between border-b border-dotted border-slate-300">Leadership: <span>Very Good</span></p>
                 </div>
             </div>
-            <div class="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
-                <h4 class="text-xs font-black uppercase border-b mb-3 text-blue-900 pb-1">Attendance Record</h4>
-                <div class="flex justify-around text-center py-2">
-                    <div><p class="text-[9px] text-slate-400 uppercase font-black">Days Opened</p><p class="font-black text-lg">110</p></div>
-                    <div><p class="text-[9px] text-slate-400 uppercase font-black">Days Present</p><p class="font-black text-lg text-green-600">108</p></div>
+            <div class="border border-slate-300 rounded p-2 bg-slate-50/30">
+                <h4 class="text-[9px] font-black uppercase border-b border-slate-900 mb-1 text-slate-900 pb-0.5">Attendance Record</h4>
+                <div class="flex justify-around text-center py-1">
+                    <div><p class="text-[8px] text-slate-500 uppercase font-black">Days Opened</p><p class="font-black text-sm">110</p></div>
+                    <div><p class="text-[8px] text-slate-500 uppercase font-black">Days Present</p><p class="font-black text-sm">108</p></div>
                 </div>
             </div>
         </div>
 
-        <div class="p-8 bg-slate-50 grid grid-cols-1 md:grid-cols-2 gap-10 border-t">
+        <div class="p-4 bg-slate-50/50 grid grid-cols-2 gap-8 border-t border-slate-300">
             <div>
-                <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Principal's Remark & Recommendation</p>
-                <p id="teacher-comment" class="italic text-slate-800 text-sm mt-3 border-b border-dashed border-slate-400 pb-2 font-medium">---</p>
-                <div class="mt-6">
-                    <p class="font-black text-[10px] uppercase text-slate-900 mb-1">Authenticated By:</p>
-                    <p class="font-bold text-xs uppercase border-t border-slate-300 pt-1 inline-block">School Registrar</p>
+                <p class="text-[8px] font-black uppercase text-slate-500 tracking-widest">Principal's Remark</p>
+                <p id="teacher-comment" class="italic text-slate-800 text-[10px] mt-1 border-b border-dashed border-slate-400 pb-1 font-medium uppercase">---</p>
+                <div class="mt-4">
+                    <p class="font-bold text-[9px] uppercase border-t border-slate-900 pt-0.5 inline-block">School Registrar</p>
                 </div>
             </div>
             <div class="text-right flex flex-col items-end">
-                <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Official Stamp & Signature</p>
-                <div class="mt-4 relative">
-                    <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-16 opacity-30 grayscale blur-[0.5px]">
+                <div class="relative mb-1">
+                    <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 opacity-20 grayscale grayscale-100">
                     <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-[8px] font-black text-blue-900/40 uppercase -rotate-12 border-2 border-blue-900/20 px-2">Mustard Seed Official</span>
+                        <span class="text-[7px] font-black text-slate-900/30 uppercase -rotate-12 border border-slate-900/20 px-1">OFFICIAL STAMP</span>
                     </div>
                 </div>
-                <p class="font-black text-xs uppercase mt-4 text-blue-900">School Principal</p>
+                <p class="font-black text-[9px] uppercase text-slate-900 border-t border-slate-900 pt-0.5">School Principal</p>
             </div>
         </div>
     </div>
@@ -112,40 +110,30 @@
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
 
         async function loadDynamicReport() {
-            // Get current logged in student
             const { data: { session } } = await _supabase.auth.getSession();
-            if (!session) {
-                window.location.href = 'login.html';
-                return;
-            }
+            if (!session) { window.location.href = 'login.html'; return; }
 
-            // Fetch the specific student's record (including the 'subjects' column)
             const { data: st, error } = await _supabase
                 .from('students')
                 .select('*')
                 .eq('id', session.user.id)
                 .single();
 
-            if (error || !st) {
-                console.error("Profile Load Error:", error);
-                return;
-            }
+            if (error || !st) { console.error("Error:", error); return; }
 
-            // 1. Map Bio-Data
             document.getElementById('res-name').innerText = st.full_name || "---";
             document.getElementById('res-id').innerText = "MS-" + st.id.substring(0, 5).toUpperCase();
             document.getElementById('res-class').innerText = st.grade_level || "NOT ASSIGNED";
-            document.getElementById('teacher-comment').innerText = st.teacher_remark || "No specific remark recorded.";
+            document.getElementById('teacher-comment').innerText = st.teacher_remark || "AN IMPRESSIVE PERFORMANCE. KEEP IT UP.";
 
-            // 2. Process Subjects JSON from Admin Input
             const tableBody = document.getElementById('subject-rows');
-            const subjectsData = st.subjects || []; // This targets the array saved in the Admin Engine
+            const subjectsData = st.subjects || [];
             
             let totalAverage = 0;
             let count = 0;
 
             if (subjectsData.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="6" class="p-10 text-center text-slate-400 font-bold italic uppercase">Your results are currently being compiled. Check back soon.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 font-bold italic uppercase">Compilation in progress...</td></tr>`;
                 return;
             }
 
@@ -154,32 +142,30 @@
                 const exam = parseFloat(sub.exam) || 0;
                 const total = test + exam;
                 
-                // Professional Grading Logic
+                // ABC Simplified Grading
                 let grade = "F", remark = "POOR";
-                if (total >= 75) { grade = "A1"; remark = "EXCELLENT"; }
-                else if (total >= 70) { grade = "B2"; remark = "VERY GOOD"; }
-                else if (total >= 60) { grade = "B3"; remark = "GOOD"; }
-                else if (total >= 50) { grade = "C4"; remark = "CREDIT"; }
-                else if (total >= 45) { grade = "D7"; remark = "PASS"; }
+                if (total >= 75) { grade = "A"; remark = "EXCELLENT"; }
+                else if (total >= 65) { grade = "B"; remark = "VERY GOOD"; }
+                else if (total >= 50) { grade = "C"; remark = "GOOD"; }
+                else if (total >= 45) { grade = "D"; remark = "PASS"; }
+                else if (total >= 40) { grade = "E"; remark = "FAIR"; }
 
                 totalAverage += total;
                 count++;
 
                 return `
-                    <tr class="border-b border-slate-200 hover:bg-slate-50/50 transition-colors">
-                        <td class="border border-slate-300 p-3 text-slate-900 font-black">${sub.name}</td>
-                        <td class="border border-slate-300 p-3 text-center">${test}</td>
-                        <td class="border border-slate-300 p-3 text-center">${exam}</td>
-                        <td class="border border-slate-300 p-3 text-center font-black text-blue-900">${total}</td>
-                        <td class="border border-slate-300 p-3 text-center ${total < 45 ? 'grade-f' : 'grade-a'}">${grade}</td>
-                        <td class="border border-slate-300 p-3 text-[10px] text-slate-500 font-bold">${remark}</td>
+                    <tr class="border-b border-slate-300">
+                        <td class="border border-slate-400 p-1.5 text-slate-900 font-black">${sub.name}</td>
+                        <td class="border border-slate-400 p-1.5 text-center">${test}</td>
+                        <td class="border border-slate-400 p-1.5 text-center">${exam}</td>
+                        <td class="border border-slate-400 p-1.5 text-center font-black">${total}</td>
+                        <td class="border border-slate-400 p-1.5 text-center font-black">${grade}</td>
+                        <td class="border border-slate-400 p-1.5 text-[8px] text-slate-600 font-bold">${remark}</td>
                     </tr>
                 `;
             }).join('');
 
-            // 3. Final Score Calculation
-            const finalAvg = count > 0 ? (totalAverage / count).toFixed(1) : "0.0";
-            document.getElementById('avg-score').innerText = finalAvg;
+            document.getElementById('avg-score').innerText = count > 0 ? (totalAverage / count).toFixed(1) : "0.0";
         }
 
         window.onload = loadDynamicReport;
