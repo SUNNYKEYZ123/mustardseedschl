@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive Report Sheet | MSS</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; print-color-adjust: exact; }
+        .school-name { font-family: 'Cinzel', serif; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .report-sheet { border: 2px solid #000; box-shadow: none; width: 100%; margin: 0; }
+            .bg-blue-900 { background-color: #1e3a8a !important; color: white !important; }
+        }
+        .grade-a { color: #059669; font-weight: 900; }
+        .grade-f { color: #dc2626; font-weight: 900; }
+    </style>
+</head>
+<body class="bg-slate-200 py-10 px-4">
+
+    <div class="max-w-5xl mx-auto mb-6 flex justify-between items-center no-print">
+        <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-lg font-bold text-slate-600 hover:bg-slate-50 transition">← Dashboard</button>
+        <button onclick="window.print()" class="bg-blue-900 text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest hover:bg-blue-800 transition">PRINT REPORT SHEET</button>
+    </div>
+
+    <div class="max-w-5xl mx-auto bg-white shadow-2xl border-4 border-double border-slate-300 rounded-sm overflow-hidden report-sheet">
+        
+        <div class="p-8 border-b-4 border-blue-900 flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-24 w-24" alt="School Logo">
+            <div class="flex-1">
+                <h1 class="school-name text-4xl font-bold text-blue-900 uppercase">Mustard Seed School</h1>
+                <p class="text-sm font-bold tracking-[0.3em] text-slate-500 italic">Motto: Excellence in Technology & Character</p>
+                <p class="mt-2 text-xs font-mono bg-slate-100 inline-block px-4 py-1 rounded-full border">Ilesa, Osun State, Nigeria.</p>
+            </div>
+            <div class="border-2 border-blue-900 p-4 text-center rounded-lg min-w-[120px]">
+                <p class="text-[10px] font-black uppercase tracking-widest">Termly Average</p>
+                <p id="avg-score" class="text-3xl font-black text-blue-900">0.0</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 bg-blue-900 text-white text-[11px] uppercase font-bold">
+            <div class="p-4 border-r border-blue-800">Name: <span id="res-name" class="text-blue-200 block text-sm tracking-tighter">LOADING...</span></div>
+            <div class="p-4 border-r border-blue-800">Reg No: <span id="res-id" class="text-blue-200 block text-sm">---</span></div>
+            <div class="p-4 border-r border-blue-800">Class: <span id="res-class" class="text-blue-200 block text-sm">---</span></div>
+            <div class="p-4">Session: <span class="text-blue-200 block text-sm">2025/2026</span></div>
+        </div>
+
+        <div class="p-6">
+            <table class="w-full border-collapse border border-slate-300">
+                <thead>
+                    <tr class="bg-slate-100 text-[10px] uppercase font-black text-slate-600">
+                        <th class="border border-slate-300 p-3 text-left w-64">Subject</th>
+                        <th class="border border-slate-300 p-3 text-center">Test (30)</th>
+                        <th class="border border-slate-300 p-3 text-center">Exam (70)</th>
+                        <th class="border border-slate-300 p-3 text-center">Total (100)</th>
+                        <th class="border border-slate-300 p-3 text-center">Grade</th>
+                        <th class="border border-slate-300 p-3 text-left">Remarks</th>
+                    </tr>
+                </thead>
+                <tbody id="subject-rows" class="text-sm font-bold text-slate-700 uppercase">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+            <div class="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
+                <h4 class="text-xs font-black uppercase border-b mb-3 text-blue-900 pb-1">Behavioral Assessment</h4>
+                <div class="grid grid-cols-2 gap-x-6 gap-y-2 text-[10px] font-bold">
+                    <p class="flex justify-between border-b border-dotted pb-1">Punctuality: <span class="text-blue-700">Excellent</span></p>
+                    <p class="flex justify-between border-b border-dotted pb-1">Neatness: <span class="text-blue-700">Good</span></p>
+                    <p class="flex justify-between border-b border-dotted pb-1">Honesty: <span class="text-blue-700">Excellent</span></p>
+                    <p class="flex justify-between border-b border-dotted pb-1">Leadership: <span class="text-blue-700">Very Good</span></p>
+                </div>
+            </div>
+            <div class="border border-slate-200 rounded-lg p-4 bg-slate-50/50">
+                <h4 class="text-xs font-black uppercase border-b mb-3 text-blue-900 pb-1">Attendance Record</h4>
+                <div class="flex justify-around text-center py-2">
+                    <div><p class="text-[9px] text-slate-400 uppercase font-black">Days Opened</p><p class="font-black text-lg">110</p></div>
+                    <div><p class="text-[9px] text-slate-400 uppercase font-black">Days Present</p><p class="font-black text-lg text-green-600">108</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8 bg-slate-50 grid grid-cols-1 md:grid-cols-2 gap-10 border-t">
+            <div>
+                <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Principal's Remark & Recommendation</p>
+                <p id="teacher-comment" class="italic text-slate-800 text-sm mt-3 border-b border-dashed border-slate-400 pb-2 font-medium">---</p>
+                <div class="mt-6">
+                    <p class="font-black text-[10px] uppercase text-slate-900 mb-1">Authenticated By:</p>
+                    <p class="font-bold text-xs uppercase border-t border-slate-300 pt-1 inline-block">School Registrar</p>
+                </div>
+            </div>
+            <div class="text-right flex flex-col items-end">
+                <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest">Official Stamp & Signature</p>
+                <div class="mt-4 relative">
+                    <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-16 opacity-30 grayscale blur-[0.5px]">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="text-[8px] font-black text-blue-900/40 uppercase -rotate-12 border-2 border-blue-900/20 px-2">Mustard Seed Official</span>
+                    </div>
+                </div>
+                <p class="font-black text-xs uppercase mt-4 text-blue-900">School Principal</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
+
+        async function loadDynamicReport() {
+            // Get current logged in student
+            const { data: { session } } = await _supabase.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Fetch the specific student's record (including the 'subjects' column)
+            const { data: st, error } = await _supabase
+                .from('students')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+
+            if (error || !st) {
+                console.error("Profile Load Error:", error);
+                return;
+            }
+
+            // 1. Map Bio-Data
+            document.getElementById('res-name').innerText = st.full_name || "---";
+            document.getElementById('res-id').innerText = "MS-" + st.id.substring(0, 5).toUpperCase();
+            document.getElementById('res-class').innerText = st.grade_level || "NOT ASSIGNED";
+            document.getElementById('teacher-comment').innerText = st.teacher_remark || "No specific remark recorded.";
+
+            // 2. Process Subjects JSON from Admin Input
+            const tableBody = document.getElementById('subject-rows');
+            const subjectsData = st.subjects || []; // This targets the array saved in the Admin Engine
+            
+            let totalAverage = 0;
+            let count = 0;
+
+            if (subjectsData.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="6" class="p-10 text-center text-slate-400 font-bold italic uppercase">Your results are currently being compiled. Check back soon.</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = subjectsData.map(sub => {
+                const test = parseFloat(sub.test) || 0;
+                const exam = parseFloat(sub.exam) || 0;
+                const total = test + exam;
+                
+                // Professional Grading Logic
+                let grade = "F", remark = "POOR";
+                if (total >= 75) { grade = "A1"; remark = "EXCELLENT"; }
+                else if (total >= 70) { grade = "B2"; remark = "VERY GOOD"; }
+                else if (total >= 60) { grade = "B3"; remark = "GOOD"; }
+                else if (total >= 50) { grade = "C4"; remark = "CREDIT"; }
+                else if (total >= 45) { grade = "D7"; remark = "PASS"; }
+
+                totalAverage += total;
+                count++;
+
+                return `
+                    <tr class="border-b border-slate-200 hover:bg-slate-50/50 transition-colors">
+                        <td class="border border-slate-300 p-3 text-slate-900 font-black">${sub.name}</td>
+                        <td class="border border-slate-300 p-3 text-center">${test}</td>
+                        <td class="border border-slate-300 p-3 text-center">${exam}</td>
+                        <td class="border border-slate-300 p-3 text-center font-black text-blue-900">${total}</td>
+                        <td class="border border-slate-300 p-3 text-center ${total < 45 ? 'grade-f' : 'grade-a'}">${grade}</td>
+                        <td class="border border-slate-300 p-3 text-[10px] text-slate-500 font-bold">${remark}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // 3. Final Score Calculation
+            const finalAvg = count > 0 ? (totalAverage / count).toFixed(1) : "0.0";
+            document.getElementById('avg-score').innerText = finalAvg;
+        }
+
+        window.onload = loadDynamicReport;
+    </script>
+</body>
+</html>
