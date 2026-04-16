@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Result Manager | MSS</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex">
+
+    <aside class="w-64 bg-slate-900 text-white h-screen sticky top-0 hidden md:flex flex-col p-6 shadow-2xl">
+        <div class="flex items-center gap-3 mb-10">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-8 w-8">
+            <span class="font-black tracking-tighter text-blue-400 uppercase text-xs">Mustard Seed Admin</span>
+        </div>
+        <nav class="space-y-2 flex-1">
+            <a href="#" class="flex items-center gap-3 p-3 bg-blue-600 rounded-xl font-bold text-sm transition"><i data-lucide="award" class="w-4 h-4"></i> Result Manager</a>
+            <a href="#" class="flex items-center gap-3 p-3 text-slate-400 hover:bg-slate-800 rounded-xl text-sm transition"><i data-lucide="users" class="w-4 h-4"></i> Students List</a>
+        </nav>
+        <div class="p-4 bg-slate-800 rounded-2xl">
+            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">CBT Status</p>
+            <p class="text-xs font-bold text-green-400">System Online</p>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-6 md:p-10">
+        <header class="mb-8 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tighter italic">Result Control Center</h1>
+                <p class="text-slate-500 font-medium text-sm">Manage academic scores & behavior for 170+ students.</p>
+            </div>
+            <div id="save-indicator" class="hidden bg-blue-600 text-white px-6 py-2 rounded-full text-xs font-black shadow-lg">SAVING DATA...</div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-4 bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-5 bg-slate-50 border-b">
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
+                        <input type="text" id="searchBar" placeholder="Search by name or ID..." class="w-full pl-10 pr-4 py-2 rounded-xl border-none ring-1 ring-slate-200 focus:ring-2 ring-blue-500 outline-none text-sm font-medium">
+                    </div>
+                </div>
+                <div id="studentContainer" class="divide-y max-h-[600px] overflow-y-auto">
+                    </div>
+            </div>
+
+            <div id="editorPanel" class="lg:col-span-8 hidden">
+                <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+                    
+                    <div class="p-8 bg-blue-900 text-white flex justify-between items-center">
+                        <div>
+                            <h2 id="st-name" class="text-2xl font-black">Student Name</h2>
+                            <p id="st-info" class="text-blue-300 text-xs font-bold uppercase tracking-widest">JSS 1 • 2025/2026 Session</p>
+                        </div>
+                        <div class="text-right">
+                            <label class="text-[10px] font-black uppercase text-blue-300 block mb-1">Result Visibility</label>
+                            <select id="res-status" class="bg-blue-800 text-white font-bold text-xs p-2 rounded-lg outline-none border-none">
+                                <option value="Draft">DRAFT (HIDDEN)</option>
+                                <option value="Published">PUBLISHED (VISIBLE)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="p-8 space-y-8">
+                        <section>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-black text-slate-800 text-sm uppercase flex items-center gap-2"><i data-lucide="list"></i> Subject Scores</h3>
+                                <button onclick="addRow()" class="text-blue-600 font-bold text-xs flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Add Subject</button>
+                            </div>
+                            <div class="border rounded-2xl overflow-hidden">
+                                <table class="w-full text-sm">
+                                    <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase font-black">
+                                        <tr>
+                                            <th class="p-3 text-left">Subject</th>
+                                            <th class="p-3 text-center">Test (30)</th>
+                                            <th class="p-3 text-center">Exam (70)</th>
+                                            <th class="p-3"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scoreTable"></tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <section class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-50 rounded-2xl">
+                            <div>
+                                <h4 class="text-[10px] font-black uppercase text-slate-400 mb-3 tracking-widest">Behavioral Ratings (1-5)</h4>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center text-xs font-bold">
+                                        <span>Punctuality:</span>
+                                        <input type="number" id="trait-punct" max="5" class="w-12 p-1 text-center rounded border">
+                                    </div>
+                                    <div class="flex justify-between items-center text-xs font-bold">
+                                        <span>Neatness:</span>
+                                        <input type="number" id="trait-neat" max="5" class="w-12 p-1 text-center rounded border">
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-[10px] font-black uppercase text-slate-400 mb-3 tracking-widest">Attendance</h4>
+                                <div class="flex gap-4">
+                                    <div class="flex-1"><label class="text-[9px] font-bold">Days Opened</label><input id="days-open" type="number" class="w-full p-2 border rounded-lg text-xs"></div>
+                                    <div class="flex-1"><label class="text-[9px] font-bold">Days Present</label><input id="days-present" type="number" class="w-full p-2 border rounded-lg text-xs"></div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section>
+                            <h4 class="text-[10px] font-black uppercase text-slate-400 mb-2 tracking-widest">Teacher's Remark</h4>
+                            <textarea id="teacher-remark" rows="2" class="w-full p-4 bg-white border border-slate-200 rounded-2xl text-sm italic outline-none focus:ring-2 ring-blue-500" placeholder="Type custom remark here or leave blank for automatic generation..."></textarea>
+                        </section>
+
+                        <button onclick="saveAll()" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-all">UPDATE STUDENT REPORT CARD</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="emptyPanel" class="lg:col-span-8 flex flex-col items-center justify-center bg-white rounded-3xl border-2 border-dashed border-slate-200 p-20">
+                <i data-lucide="user-plus" class="w-12 h-12 text-slate-300 mb-4"></i>
+                <p class="text-slate-400 font-bold">Select a student from the list to manage their result.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'YOUR_KEY_HERE');
+        let students = [];
+        let activeStudent = null;
+
+        async function fetchStudents() {
+            const { data } = await _supabase.from('students').select('*').order('full_name');
+            if (data) { students = data; renderList(data); }
+            lucide.createIcons();
+        }
+
+        function renderList(list) {
+            const container = document.getElementById('studentContainer');
+            container.innerHTML = list.map(s => `
+                <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer transition flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+                            <img src="${s.avatar_url || ''}" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <p class="text-xs font-black text-slate-800 uppercase">${s.full_name}</p>
+                            <p class="text-[10px] text-slate-400 font-bold">${s.grade_level}</p>
+                        </div>
+                    </div>
+                    <span class="text-[9px] font-black px-2 py-1 rounded ${s.result_status === 'Published' ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-400'} uppercase">
+                        ${s.result_status || 'Draft'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function openEditor(id) {
+            activeStudent = students.find(s => s.id === id);
+            document.getElementById('emptyPanel').classList.add('hidden');
+            document.getElementById('editorPanel').classList.remove('hidden');
+            
+            document.getElementById('st-name').innerText = activeStudent.full_name;
+            document.getElementById('res-status').value = activeStudent.result_status || 'Draft';
+            
+            // Populate scores
+            const table = document.getElementById('scoreTable');
+            table.innerHTML = "";
+            const subjects = Array.isArray(activeStudent.subjects) ? activeStudent.subjects : [];
+            subjects.forEach(sub => addRow(sub.name, sub.test, sub.exam));
+            if(subjects.length === 0) addRow();
+
+            // Populate Traits (assuming you store these in columns or another jsonb)
+            document.getElementById('teacher-remark').value = activeStudent.teacher_remark || "";
+            lucide.createIcons();
+        }
+
+        function addRow(name="", test=0, exam=0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="p-2"><input type="text" value="${name}" class="sub-name w-full p-2 bg-slate-50 border-none rounded text-xs font-bold" placeholder="Subject"></td>
+                <td class="p-2"><input type="number" value="${test}" class="sub-test w-full p-2 bg-slate-50 border-none rounded text-xs text-center font-bold"></td>
+                <td class="p-2"><input type="number" value="${exam}" class="sub-exam w-full p-2 bg-slate-50 border-none rounded text-xs text-center font-bold"></td>
+                <td class="p-2 text-center"><button onclick="this.parentElement.parentElement.remove()" class="text-red-400"><i data-lucide="x" class="w-4 h-4"></i></button></td>
+            `;
+            document.getElementById('scoreTable').appendChild(tr);
+            lucide.createIcons();
+        }
+
+        async function saveAll() {
+            const indicator = document.getElementById('save-indicator');
+            indicator.classList.remove('hidden');
+
+            const subNames = document.querySelectorAll('.sub-name');
+            const subTests = document.querySelectorAll('.sub-test');
+            const subExams = document.querySelectorAll('.sub-exam');
+            
+            const subjects = [];
+            subNames.forEach((n, i) => {
+                if(n.value) subjects.push({ name: n.value, test: subTests[i].value, exam: subExams[i].value });
+            });
+
+            const updates = {
+                subjects: subjects,
+                result_status: document.getElementById('res-status').value,
+                teacher_remark: document.getElementById('teacher-remark').value
+            };
+
+            const { error } = await _supabase.from('students').update(updates).eq('id', activeStudent.id);
+            
+            indicator.classList.add('hidden');
+            if(!error) fetchStudents(); else alert(error.message);
+        }
+
+        document.getElementById('searchBar').oninput = (e) => {
+            const val = e.target.value.toLowerCase();
+            renderList(students.filter(s => s.full_name.toLowerCase().includes(val)));
+        };
+
+        window.onload = fetchStudents;
+    </script>
+</body>
+</html>
