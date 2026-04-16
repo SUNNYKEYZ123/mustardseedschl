@@ -16,114 +16,120 @@
             font-weight: 900;
         }
 
+        /* Watermark Styles */
         .watermark-container { position: relative; }
         .watermark-bg {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
-            opacity: 0.05;
-            width: 350px;
+            opacity: 0.04;
+            width: 400px;
             pointer-events: none;
             z-index: 0;
         }
 
         @media print {
+            @page {
+                size: legal;
+                margin: 0.4in;
+            }
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
             .report-sheet { border: 2px solid #000; box-shadow: none; width: 100%; margin: 0; }
-            .bg-blue-900 { background-color: #1e3a8a !important; color: white !important; }
+            /* Force white background for B&W printers to save ink */
+            .bg-blue-900 { background-color: white !important; color: black !important; border-bottom: 2px solid black !important; }
+            .text-blue-200 { color: black !important; font-weight: bold !important; }
         }
-        .grade-a { color: #059669; font-weight: 900; }
-        .grade-f { color: #dc2626; font-weight: 900; }
+        
+        .grade-a { color: #000; font-weight: 900; }
+        .grade-f { color: #000; font-weight: 900; text-decoration: underline; }
         table { position: relative; z-index: 10; background: transparent !important; }
     </style>
 </head>
-<body class="bg-slate-200 py-4 px-4">
+<body class="bg-slate-100 py-4 px-4">
 
     <div class="max-w-5xl mx-auto mb-4 flex justify-between items-center no-print">
-        <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-lg font-bold text-slate-600 hover:bg-slate-50 transition">← Dashboard</button>
-        <button onclick="window.print()" class="bg-blue-900 text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest hover:bg-blue-800 transition">PRINT REPORT SHEET</button>
+        <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-md font-bold text-slate-600 hover:bg-slate-50 transition">← Dashboard</button>
+        <button onclick="window.print()" class="bg-black text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest hover:bg-slate-800 transition">PRINT (LEGAL SIZE)</button>
     </div>
 
-    <div class="max-w-5xl mx-auto bg-white shadow-2xl border-4 border-double border-slate-300 rounded-sm overflow-hidden report-sheet">
+    <div class="max-w-5xl mx-auto bg-white border-2 border-black rounded-sm overflow-hidden report-sheet">
         
-        <div class="p-4 border-b-4 border-blue-900 flex items-center justify-between text-center">
-            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20 hidden md:block" alt="School Logo Left">
+        <div class="p-4 border-b-2 border-black flex items-center justify-between text-center">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="School Logo Left">
             
             <div class="flex-1 px-4">
-                <h1 class="school-name text-2xl md:text-3xl text-blue-900 leading-tight">MUSTARD SEED INTERNATIONAL GROUP OF SCHOOL</h1>
-                <p class="text-[11px] font-bold text-slate-700 uppercase mt-1">Opposite Abogubkoko, Ibokun, Osun State</p>
-                <p class="text-[9px] font-bold tracking-[0.2em] text-slate-400 italic">Motto: Excellence in Technology & Character</p>
+                <h1 class="school-name text-2xl md:text-3xl text-black leading-tight">MUSTARD SEED INTERNATIONAL GROUP OF SCHOOL</h1>
+                <p class="text-[12px] font-bold text-black uppercase mt-1">Opposite Abogubkoko, Ibokun, Osun State</p>
+                <p class="text-[10px] font-bold tracking-[0.2em] text-slate-600 italic">Motto: Excellence in Technology & Character</p>
             </div>
 
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="School Logo Right">
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 bg-blue-900 text-white text-[10px] uppercase font-bold">
-            <div class="p-3 border-r border-blue-800">Name: <span id="res-name" class="text-blue-200 block text-sm tracking-tighter">LOADING...</span></div>
-            <div class="p-3 border-r border-blue-800">Reg No: <span id="res-id" class="text-blue-200 block text-sm">---</span></div>
-            <div class="p-3 border-r border-blue-800">Class: <span id="res-class" class="text-blue-200 block text-sm">---</span></div>
-            <div class="p-3">Session: <span class="text-blue-200 block text-sm">2025/2026</span></div>
+        <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-black text-[10px] uppercase font-black">
+            <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block text-sm">LOADING...</span></div>
+            <div class="p-3 border-r-2 border-black">Reg No: <span id="res-id" class="block text-sm">---</span></div>
+            <div class="p-3 border-r-2 border-black">Class: <span id="res-class" class="block text-sm">---</span></div>
+            <div class="p-3">Session: <span class="block text-sm">2025/2026</span></div>
         </div>
 
-        <div class="p-4 watermark-container">
+        <div class="p-4 watermark-container min-h-[400px]">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="watermark-bg" alt="watermark">
-            <table class="w-full border-collapse border border-slate-300 relative z-10">
+            <table class="w-full border-collapse border-2 border-black relative z-10">
                 <thead>
-                    <tr class="bg-slate-100 text-[10px] uppercase font-black text-slate-600">
-                        <th class="border border-slate-300 p-2 text-left w-64">Subject</th>
-                        <th class="border border-slate-300 p-2 text-center">Test (30)</th>
-                        <th class="border border-slate-300 p-2 text-center">Exam (70)</th>
-                        <th class="border border-slate-300 p-2 text-center">Total (100)</th>
-                        <th class="border border-slate-300 p-2 text-center">Grade</th>
-                        <th class="border border-slate-300 p-2 text-left">Remarks</th>
+                    <tr class="bg-slate-100 text-[10px] uppercase font-black text-black">
+                        <th class="border border-black p-2 text-left w-48">Subject</th>
+                        <th class="border border-black p-2 text-center">Test(30)</th>
+                        <th class="border border-black p-2 text-center">Exam(70)</th>
+                        <th class="border border-black p-2 text-center">Total</th>
+                        <th class="border border-black p-2 text-center">Grade</th>
+                        <th class="border border-black p-2 text-left">Remarks</th>
+                        <th class="border border-black p-2 text-left">Teacher</th>
                     </tr>
                 </thead>
-                <tbody id="subject-rows" class="text-sm font-bold text-slate-700 uppercase">
-                </tbody>
+                <tbody id="subject-rows" class="text-[12px] font-bold text-black uppercase">
+                    </tbody>
             </table>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 pb-4">
-            <div class="border-2 border-blue-900 p-3 text-center rounded-lg bg-blue-50/50 flex flex-col justify-center">
-                <p class="text-[10px] font-black uppercase tracking-widest text-blue-900">Termly Average</p>
-                <p id="avg-score" class="text-3xl font-black text-blue-900">0.0</p>
+            <div class="border-2 border-black p-3 text-center rounded-lg flex flex-col justify-center">
+                <p class="text-[10px] font-black uppercase tracking-widest">Termly Average</p>
+                <p id="avg-score" class="text-3xl font-black">0.0</p>
             </div>
-            <div class="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-                <h4 class="text-[10px] font-black uppercase border-b mb-2 text-blue-900 pb-1">Behavioral Assessment</h4>
+            <div class="border-2 border-black rounded-lg p-3">
+                <h4 class="text-[10px] font-black uppercase border-b border-black mb-2 pb-1">Behavioral Assessment</h4>
                 <div class="grid grid-cols-1 gap-y-1 text-[10px] font-bold">
-                    <p class="flex justify-between border-b border-dotted pb-1">Punctuality: <span class="text-blue-700">Excellent</span></p>
-                    <p class="flex justify-between border-b border-dotted pb-1">Neatness: <span class="text-blue-700">Good</span></p>
+                    <p class="flex justify-between border-b border-dotted border-black">Punctuality: <span>Excellent</span></p>
+                    <p class="flex justify-between border-b border-dotted border-black">Neatness: <span>Good</span></p>
                 </div>
             </div>
-            <div class="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-                <h4 class="text-[10px] font-black uppercase border-b mb-2 text-blue-900 pb-1">Attendance</h4>
+            <div class="border-2 border-black rounded-lg p-3">
+                <h4 class="text-[10px] font-black uppercase border-b border-black mb-2 pb-1">Attendance</h4>
                 <div class="flex justify-around text-center py-1">
-                    <div><p class="text-[8px] text-slate-400 uppercase font-black">Opened</p><p class="font-black text-base">110</p></div>
-                    <div><p class="text-[8px] text-slate-400 uppercase font-black">Present</p><p class="font-black text-base text-green-600">108</p></div>
+                    <div><p class="text-[8px] uppercase font-black">Days Opened</p><p class="font-black text-base">110</p></div>
+                    <div><p class="text-[8px] uppercase font-black">Days Present</p><p class="font-black text-base">108</p></div>
                 </div>
             </div>
         </div>
 
-        <div class="p-6 bg-slate-50 grid grid-cols-1 md:grid-cols-2 gap-6 border-t">
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-black">
             <div>
-                <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Principal's Remark</p>
-                <p id="teacher-comment" class="italic text-slate-800 text-sm mt-1 border-b border-dashed border-slate-300 pb-1 font-medium">---</p>
+                <p class="text-[9px] font-black uppercase tracking-widest text-slate-500">Principal's Remark</p>
+                <p id="teacher-comment" class="italic text-black text-sm mt-1 border-b border-dashed border-black pb-1 font-medium">---</p>
                 <div class="mt-4">
-                    <p class="font-black text-[9px] uppercase text-slate-900 mb-1">Authenticated By:</p>
-                    <p class="font-bold text-[10px] uppercase border-t border-slate-300 pt-1 inline-block">School Registrar</p>
+                    <p class="font-black text-[9px] uppercase mb-1">Authenticated By:</p>
+                    <p class="font-bold text-[10px] uppercase border-t border-black pt-1 inline-block">School Registrar</p>
                 </div>
             </div>
             <div class="text-right flex flex-col items-end">
-                <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">Official Stamp & Signature</p>
+                <p class="text-[9px] font-black uppercase tracking-widest text-slate-500">Official Stamp & Signature</p>
                 <div class="mt-2 relative">
-                    <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-14 opacity-20 grayscale blur-[0.5px]">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-[7px] font-black text-blue-900/40 uppercase -rotate-12 border border-blue-900/20 px-1">Mustard Seed Official</span>
-                    </div>
+                    <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-14 opacity-10 grayscale">
                 </div>
-                <p class="font-black text-[11px] uppercase mt-2 text-blue-900">School Principal</p>
+                <p class="font-black text-[12px] uppercase mt-2">School Principal</p>
             </div>
         </div>
     </div>
@@ -153,7 +159,7 @@
             let totalAverage = 0, count = 0;
 
             if (subjectsData.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400 font-bold italic uppercase">Results being compiled...</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="7" class="p-8 text-center font-bold italic uppercase">Results being compiled...</td></tr>`;
                 return;
             }
 
@@ -170,13 +176,14 @@
                 totalAverage += total; count++;
 
                 return `
-                    <tr class="border-b border-slate-200">
-                        <td class="border border-slate-300 p-2 text-slate-900 font-black">${sub.name}</td>
-                        <td class="border border-slate-300 p-2 text-center">${test}</td>
-                        <td class="border border-slate-300 p-2 text-center">${exam}</td>
-                        <td class="border border-slate-300 p-2 text-center font-black text-blue-900">${total}</td>
-                        <td class="border border-slate-300 p-2 text-center ${total < 45 ? 'grade-f' : 'grade-a'}">${grade}</td>
-                        <td class="border border-slate-300 p-2 text-[9px] text-slate-500 font-bold">${remark}</td>
+                    <tr class="border-b border-black">
+                        <td class="border border-black p-2 font-black">${sub.name}</td>
+                        <td class="border border-black p-2 text-center">${test}</td>
+                        <td class="border border-black p-2 text-center">${exam}</td>
+                        <td class="border border-black p-2 text-center font-black">${total}</td>
+                        <td class="border border-black p-2 text-center ${total < 45 ? 'grade-f' : 'grade-a'}">${grade}</td>
+                        <td class="border border-black p-2 text-[9px] font-bold">${remark}</td>
+                        <td class="border border-black p-2 text-[9px]">${sub.teacher || '---'}</td>
                     </tr>`;
             }).join('');
 
