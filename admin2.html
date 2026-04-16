@@ -44,10 +44,7 @@
     <main class="main-content lg:ml-[280px] p-4 md:p-10 transition-all">
         <header class="flex justify-between items-center mb-10 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
             <button onclick="toggleSidebar()" class="lg:hidden p-2 bg-slate-100 rounded-lg"><i data-lucide="menu"></i></button>
-            <div class="flex items-center gap-4">
-                <div id="save-indicator" class="hidden bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black animate-pulse">SAVING...</div>
-                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white uppercase">AD</div>
-            </div>
+            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white uppercase">AD</div>
         </header>
 
         <section id="view-directory" class="view-section active">
@@ -58,17 +55,17 @@
                 </div>
                 <div class="flex-1 max-w-md w-full relative">
                     <i data-lucide="search" class="absolute left-4 top-3.5 w-5 h-5 text-slate-300"></i>
-                    <input type="text" id="dirSearch" oninput="filterDirectory()" placeholder="Search Name, ID, or Phone..." class="w-full pl-12 pr-4 py-3.5 rounded-2xl border-none shadow-xl shadow-slate-200 focus:ring-2 ring-blue-500 outline-none text-sm font-bold">
+                    <input type="text" id="dirSearch" oninput="filterDirectory()" placeholder="Search directory..." class="w-full pl-12 pr-4 py-3.5 rounded-2xl border-none shadow-xl shadow-slate-200 focus:ring-2 ring-blue-500 outline-none text-sm font-bold">
                 </div>
             </div>
             <div class="bg-white rounded-[2.5rem] shadow-2xl border overflow-hidden">
                 <table class="w-full text-left">
                     <thead class="bg-slate-50 border-b">
-                        <tr>
-                            <th class="p-6 text-[10px] uppercase text-slate-400 font-black tracking-widest">Student Profile</th>
-                            <th class="p-6 text-center text-[10px] uppercase text-slate-400 font-black tracking-widest">Identity</th>
-                            <th class="p-6 text-center text-[10px] uppercase text-slate-400 font-black tracking-widest">Status</th>
-                            <th class="p-6 text-right text-[10px] uppercase text-slate-400 font-black tracking-widest">Power Actions</th>
+                        <tr class="text-[10px] uppercase text-slate-400 font-black tracking-widest">
+                            <th class="p-6">Student Profile</th>
+                            <th class="p-6 text-center">Identity</th>
+                            <th class="p-6 text-center">Status</th>
+                            <th class="p-6 text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="directoryTable" class="divide-y divide-slate-50"></tbody>
@@ -80,43 +77,42 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-4 bg-white rounded-3xl border flex flex-col h-[650px] overflow-hidden shadow-sm">
                     <div class="p-4 border-b bg-slate-50">
-                        <input type="text" id="engSearch" oninput="filterEngine()" placeholder="Find student for score entry..." class="w-full p-3 rounded-xl border-none ring-1 ring-slate-200 text-xs font-bold outline-none">
+                        <input type="text" id="engSearch" oninput="filterEngine()" placeholder="Search Engine Students..." class="w-full p-3 rounded-xl border-none ring-1 ring-slate-200 text-xs font-bold outline-none">
                     </div>
-                    <div id="engineList" class="overflow-y-auto divide-y"></div>
+                    <div id="engineList" class="overflow-y-auto divide-y">
+                        </div>
                 </div>
 
                 <div id="editorPanel" class="lg:col-span-8 bg-white rounded-3xl border shadow-2xl overflow-hidden hidden">
                     <div class="p-8 bg-blue-900 text-white flex justify-between items-center">
                         <div>
-                            <h2 id="editName" class="text-2xl font-black uppercase tracking-tighter">Student Name</h2>
-                            <p id="editClass" class="text-blue-300 text-[10px] font-black uppercase tracking-widest">Grade Level</p>
+                            <h2 id="editName" class="text-2xl font-black uppercase tracking-tighter">---</h2>
+                            <p id="editClass" class="text-blue-300 text-[10px] font-black uppercase">---</p>
                         </div>
-                        <select id="resStatus" class="bg-blue-800 text-white font-bold text-xs p-2.5 rounded-xl border-none outline-none">
-                            <option value="Draft">DRAFT (HIDDEN)</option>
-                            <option value="Published">PUBLISHED (VISIBLE)</option>
+                        <select id="resStatus" class="bg-blue-800 text-white font-bold text-xs p-2.5 rounded-xl border-none">
+                            <option value="Draft">DRAFT</option>
+                            <option value="Published">PUBLISHED</option>
                         </select>
                     </div>
-                    <div class="p-8 space-y-8">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="text-[10px] text-slate-400 font-black uppercase tracking-widest">
-                                    <tr><th class="text-left pb-4">Subject</th><th class="text-center pb-4 w-24">Test (30)</th><th class="text-center pb-4 w-24">Exam (70)</th><th class="pb-4 w-10"></th></tr>
-                                </thead>
-                                <tbody id="scoreRows"></tbody>
-                            </table>
-                        </div>
-                        <button onclick="addRow()" class="text-blue-600 font-black text-[10px] uppercase flex items-center gap-1 hover:bg-blue-50 p-2 rounded-lg transition"><i data-lucide="plus"></i> Add Subject</button>
+                    <div class="p-8 space-y-6">
+                        <table class="w-full text-sm">
+                            <thead class="text-[10px] text-slate-400 font-black uppercase tracking-widest">
+                                <tr><th class="text-left pb-4">Subject</th><th class="text-center pb-4 w-24">Test</th><th class="text-center pb-4 w-24">Exam</th><th class="pb-4 w-10"></th></tr>
+                            </thead>
+                            <tbody id="scoreRows"></tbody>
+                        </table>
+                        <button onclick="addRow()" class="text-blue-600 font-black text-[10px] uppercase flex items-center gap-1"><i data-lucide="plus"></i> Add Subject</button>
                         <div>
-                            <label class="text-[10px] font-black text-slate-400 uppercase block mb-2 tracking-widest">Teacher's Remark</label>
+                            <label class="text-[10px] font-black text-slate-400 uppercase block mb-2">Remark</label>
                             <textarea id="remark" rows="2" class="w-full p-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-100 text-sm italic outline-none focus:ring-2 ring-blue-600"></textarea>
                         </div>
-                        <button onclick="saveResultData()" id="saveBtn" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-all">UPDATE REPORT CARD</button>
+                        <button onclick="saveResultData()" id="saveBtn" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-black text-lg">UPDATE REPORT CARD</button>
                     </div>
                 </div>
 
                 <div id="emptyPanel" class="lg:col-span-8 flex flex-col items-center justify-center bg-white rounded-3xl border-2 border-dashed border-slate-200 p-20">
                     <i data-lucide="award" class="w-12 h-12 text-slate-200 mb-4"></i>
-                    <p class="text-slate-400 font-black uppercase text-xs tracking-widest text-center">Select a student from the engine list<br>to manage scores</p>
+                    <p class="text-slate-400 font-black uppercase text-xs tracking-widest">Select a student from the left</p>
                 </div>
             </div>
         </section>
@@ -135,6 +131,7 @@
             document.getElementById(`view-${v}`).classList.add('active');
             document.getElementById(`btn-${v}`).classList.add('active');
             if(window.innerWidth < 1024) document.getElementById('sidebar').classList.remove('open');
+            lucide.createIcons();
         }
 
         async function init() {
@@ -144,41 +141,36 @@
         }
 
         async function loadData() {
-            const { data } = await _supabase.from('students').select('*').eq('is_admin', false).order('full_name');
-            if(data) { students = data; renderDirectory(data); renderEngineList(data); }
+            const { data } = await _supabase.from('students').select('*').order('full_name');
+            if(data) { 
+                students = data; 
+                renderDirectory(data); 
+                renderEngineList(data); 
+            }
             lucide.createIcons();
         }
 
         function renderDirectory(list) {
             document.getElementById('directoryTable').innerHTML = list.map(st => {
                 const msId = "MS-" + st.id.substring(0, 5).toUpperCase();
-                const statusColor = st.status === 'Enrolled' ? 'bg-green-500' : (st.status === 'Suspended' ? 'bg-red-500' : 'bg-amber-400');
                 return `
-                    <tr class="dir-row hover:bg-blue-50/30 transition group" data-search="${st.full_name} ${msId}">
+                    <tr class="dir-row hover:bg-blue-50/30 transition" data-search="${st.full_name} ${msId}">
                         <td class="p-6">
                             <div class="flex items-center gap-4">
-                                <div class="relative">
-                                    <img src="${st.avatar_url || 'https://via.placeholder.com/100'}" class="w-12 h-12 rounded-2xl border-2 border-white shadow-md object-cover">
-                                    <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${statusColor}"></span>
-                                </div>
+                                <img src="${st.avatar_url || 'https://via.placeholder.com/100'}" class="w-10 h-10 rounded-xl object-cover">
                                 <div>
-                                    <p class="font-black text-slate-800 uppercase tracking-tighter leading-none">${st.full_name || 'INCOMPLETE REG'}</p>
-                                    <p class="text-[9px] text-slate-400 mt-1 font-bold uppercase">${st.grade_level || 'No Class'} • ${st.phone || 'NO PHONE'}</p>
+                                    <p class="font-black text-slate-800 uppercase text-xs">${st.full_name}</p>
+                                    <p class="text-[9px] text-slate-400 font-bold">${st.grade_level || '---'}</p>
                                 </div>
                             </div>
                         </td>
-                        <td class="p-6 text-center"><span class="font-black text-[10px] bg-slate-100 px-3 py-1.5 rounded-lg text-slate-500 border border-slate-200 tracking-widest">${msId}</span></td>
+                        <td class="p-6 text-center text-[10px] font-black text-slate-500">${msId}</td>
                         <td class="p-6 text-center">
-                            <span class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${st.status === 'Enrolled' ? 'text-green-600 bg-green-50 border-green-100' : 'text-amber-600 bg-amber-50 border-amber-100'}">
-                                ${st.status || 'NULL'}
-                            </span>
+                            <span class="px-3 py-1 rounded-full text-[8px] font-black uppercase border ${st.status === 'Enrolled' ? 'text-green-600 bg-green-50 border-green-100' : 'text-amber-600 bg-amber-50 border-amber-100'}">${st.status || 'NULL'}</span>
                         </td>
-                        <td class="p-6 text-right">
-                            <div class="flex justify-end gap-3">
-                                <button onclick="updateStatus('${st.id}', 'Enrolled')" class="p-2.5 rounded-xl bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition shadow-sm"><i data-lucide="check" class="w-4 h-4"></i></button>
-                                <button onclick="updateStatus('${st.id}', 'Suspended')" class="p-2.5 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition shadow-sm"><i data-lucide="user-x" class="w-4 h-4"></i></button>
-                                <button onclick="deleteStudent('${st.id}')" class="p-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                            </div>
+                        <td class="p-6 text-right flex justify-end gap-2">
+                            <button onclick="updateStatus('${st.id}', 'Enrolled')" class="p-2 bg-green-50 text-green-600 rounded-lg"><i data-lucide="check" class="w-4 h-4"></i></button>
+                            <button onclick="deleteStudent('${st.id}')" class="p-2 bg-red-50 text-red-600 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </td>
                     </tr>
                 `;
@@ -187,14 +179,13 @@
         }
 
         function renderEngineList(list) {
-            document.getElementById('engineList').innerHTML = list.map(s => `
+            const container = document.getElementById('engineList');
+            if(list.length === 0) { container.innerHTML = '<p class="p-10 text-center text-[10px] font-black text-slate-400">NO STUDENTS FOUND</p>'; return; }
+            container.innerHTML = list.map(s => `
                 <div onclick="openScoreEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer transition flex items-center justify-between group">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-black text-[10px] text-slate-400 group-hover:bg-blue-600 group-hover:text-white">${s.full_name.charAt(0)}</div>
-                        <div>
-                            <p class="text-[11px] font-black text-slate-800 uppercase group-hover:text-blue-600">${s.full_name}</p>
-                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tight">${s.result_status || 'Draft'}</p>
-                        </div>
+                    <div>
+                        <p class="text-[11px] font-black text-slate-800 uppercase group-hover:text-blue-600">${s.full_name}</p>
+                        <p class="text-[9px] text-slate-400 font-bold uppercase">${s.result_status || 'Draft'}</p>
                     </div>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200"></i>
                 </div>
@@ -221,37 +212,26 @@
         function addRow(n="", t=0, e=0) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td class="pb-3"><input type="text" value="${n}" class="sn w-full p-2.5 bg-slate-50 rounded-xl text-xs font-bold uppercase border-none ring-1 ring-slate-100 focus:ring-2 ring-blue-600 outline-none"></td>
-                <td class="pb-3 px-2"><input type="number" value="${t}" class="st w-full p-2.5 bg-slate-50 rounded-xl text-xs font-black text-center border-none ring-1 ring-slate-100"></td>
-                <td class="pb-3"><input type="number" value="${e}" class="se w-full p-2.5 bg-slate-50 rounded-xl text-xs font-black text-center border-none ring-1 ring-slate-100"></td>
-                <td class="pb-3 text-right"><button onclick="this.parentElement.parentElement.remove()" class="text-slate-300 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                <td class="pb-2"><input type="text" value="${n}" class="sn w-full p-2 bg-slate-50 rounded-lg text-xs font-bold uppercase outline-none"></td>
+                <td class="pb-2 px-2"><input type="number" value="${t}" class="st w-full p-2 bg-slate-50 rounded-lg text-xs font-black text-center outline-none"></td>
+                <td class="pb-2"><input type="number" value="${e}" class="se w-full p-2 bg-slate-50 rounded-lg text-xs font-black text-center outline-none"></td>
+                <td class="pb-2 text-right"><button onclick="this.parentElement.parentElement.remove()" class="text-slate-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
             `;
             document.getElementById('scoreRows').appendChild(tr);
             lucide.createIcons();
         }
 
         async function saveResultData() {
-            const indicator = document.getElementById('save-indicator');
-            indicator.classList.remove('hidden');
             const names = document.querySelectorAll('.sn'), tests = document.querySelectorAll('.st'), exams = document.querySelectorAll('.se');
             const subs = [];
             names.forEach((n, i) => { if(n.value) subs.push({ name: n.value, test: parseFloat(tests[i].value)||0, exam: parseFloat(exams[i].value)||0 }); });
-            
-            const { error } = await _supabase.from('students').update({
-                subjects: subs,
-                result_status: document.getElementById('resStatus').value,
-                teacher_remark: document.getElementById('remark').value
-            }).eq('id', activeId);
-
-            indicator.classList.add('hidden');
+            const { error } = await _supabase.from('students').update({ subjects: subs, result_status: document.getElementById('resStatus').value, teacher_remark: document.getElementById('remark').value }).eq('id', activeId);
             if(!error) { alert("Updated!"); loadData(); } else { alert(error.message); }
         }
 
         function filterDirectory() {
             const val = document.getElementById('dirSearch').value.toLowerCase();
-            document.querySelectorAll('.dir-row').forEach(row => {
-                row.classList.toggle('hidden-row', !row.getAttribute('data-search').toLowerCase().includes(val));
-            });
+            document.querySelectorAll('.dir-row').forEach(row => { row.classList.toggle('hidden-row', !row.getAttribute('data-search').toLowerCase().includes(val)); });
         }
         function filterEngine() {
             const val = document.getElementById('engSearch').value.toLowerCase();
@@ -259,15 +239,11 @@
         }
 
         async function updateStatus(id, s) { 
-            if(!confirm(`Set status to ${s}?`)) return;
             const { error } = await _supabase.from('students').update({ status: s }).eq('id', id);
             if(!error) loadData(); 
         }
         async function deleteStudent(id) { 
-            if(confirm("Permanently delete record?")) {
-                const { error } = await _supabase.from('students').delete().eq('id', id);
-                if(!error) loadData();
-            }
+            if(confirm("Delete record?")) { await _supabase.from('students').delete().eq('id', id); loadData(); }
         }
         function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
         window.onload = init;
