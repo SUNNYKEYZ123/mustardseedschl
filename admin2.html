@@ -11,7 +11,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .sidebar { transition: transform 0.3s ease; width: 280px; z-index: 50; }
+        .sidebar { transition: transform 0.3s ease; width: 280px; z-index: 50; background: #0f172a; }
         @media (max-width: 1023px) {
             .sidebar { transform: translateX(-100%); position: fixed; height: 100vh; }
             .sidebar.open { transform: translateX(0); }
@@ -26,17 +26,17 @@
 </head>
 <body class="bg-slate-50 min-h-screen">
 
-    <aside id="sidebar" class="sidebar bg-slate-900 text-white p-6 fixed h-screen flex flex-col shadow-2xl">
+    <aside id="sidebar" class="sidebar text-white p-6 fixed h-screen flex flex-col shadow-2xl">
         <div class="flex items-center justify-between mb-10 pb-6 border-b border-slate-800">
             <div class="flex items-center gap-3">
                 <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10">
-                <span class="font-black italic text-xl tracking-tighter uppercase">MSS ADMIN</span>
+                <span class="font-black italic text-xl tracking-tighter uppercase text-blue-400">MSS ADMIN</span>
             </div>
             <button onclick="toggleSidebar()" class="lg:hidden"><i data-lucide="x"></i></button>
         </div>
         <nav class="space-y-2 flex-1">
             <button onclick="showView('directory')" id="btn-directory" class="nav-link active"><i data-lucide="users"></i> Student Directory</button>
-            <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="cog"></i> Results Engine</button>
+            <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="award"></i> Results Engine Room</button>
         </nav>
         <button onclick="handleLogout()" class="nav-link text-red-400 hover:bg-red-400/10 mt-auto"><i data-lucide="log-out"></i> Logout</button>
     </aside>
@@ -45,59 +45,78 @@
         <header class="flex justify-between items-center mb-10 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
             <button onclick="toggleSidebar()" class="lg:hidden p-2 bg-slate-100 rounded-lg"><i data-lucide="menu"></i></button>
             <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <p id="admin-mail" class="text-xs font-bold text-slate-800">Administrator</p>
-                </div>
+                <div id="save-indicator" class="hidden bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black animate-pulse">SAVING...</div>
                 <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white uppercase">AD</div>
             </div>
         </header>
 
         <section id="view-directory" class="view-section active">
-            <div class="flex flex-col md:flex-row justify-between gap-4 mb-6">
-                <h2 class="text-2xl font-black italic tracking-tighter uppercase">Student Directory</h2>
-                <div class="relative w-full max-w-md">
-                    <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
-                    <input type="text" id="searchInput" oninput="filterDirectory()" placeholder="Search students..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border-none ring-1 ring-slate-200 focus:ring-2 ring-blue-600 outline-none text-sm font-bold">
+            <div class="flex flex-col lg:flex-row justify-between items-end gap-6 mb-10">
+                <div>
+                    <h1 class="text-4xl font-black text-slate-900 tracking-tighter uppercase">Directory</h1>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Management & Access Control</p>
+                </div>
+                <div class="flex-1 max-w-md w-full relative">
+                    <i data-lucide="search" class="absolute left-4 top-3.5 w-5 h-5 text-slate-300"></i>
+                    <input type="text" id="dirSearch" oninput="filterDirectory()" placeholder="Search Name, ID, or Phone..." class="w-full pl-12 pr-4 py-3.5 rounded-2xl border-none shadow-xl shadow-slate-200 focus:ring-2 ring-blue-500 outline-none text-sm font-bold">
                 </div>
             </div>
-            <div class="bg-white rounded-3xl border shadow-sm overflow-hidden">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 font-black text-[10px] text-slate-400 uppercase tracking-widest border-b">
-                        <tr><th class="p-5">Student Info</th><th class="p-5 text-center">Class</th><th class="p-5 text-center">Status</th><th class="p-5 text-right">Actions</th></tr>
+            <div class="bg-white rounded-[2.5rem] shadow-2xl border overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 border-b">
+                        <tr>
+                            <th class="p-6 text-[10px] uppercase text-slate-400 font-black tracking-widest">Student Profile</th>
+                            <th class="p-6 text-center text-[10px] uppercase text-slate-400 font-black tracking-widest">Identity</th>
+                            <th class="p-6 text-center text-[10px] uppercase text-slate-400 font-black tracking-widest">Status</th>
+                            <th class="p-6 text-right text-[10px] uppercase text-slate-400 font-black tracking-widest">Power Actions</th>
+                        </tr>
                     </thead>
-                    <tbody id="directoryTable"></tbody>
+                    <tbody id="directoryTable" class="divide-y divide-slate-50"></tbody>
                 </table>
             </div>
         </section>
 
         <section id="view-engine" class="view-section">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-4 bg-white rounded-3xl border flex flex-col h-[600px] overflow-hidden">
+                <div class="lg:col-span-4 bg-white rounded-3xl border flex flex-col h-[650px] overflow-hidden shadow-sm">
                     <div class="p-4 border-b bg-slate-50">
-                        <input type="text" id="engineSearch" oninput="filterEngineList()" placeholder="Find student for scores..." class="w-full p-2.5 rounded-xl border-none ring-1 ring-slate-200 text-xs font-bold outline-none">
+                        <input type="text" id="engSearch" oninput="filterEngine()" placeholder="Find student for score entry..." class="w-full p-3 rounded-xl border-none ring-1 ring-slate-200 text-xs font-bold outline-none">
                     </div>
                     <div id="engineList" class="overflow-y-auto divide-y"></div>
                 </div>
-                <div id="scoreForm" class="lg:col-span-8 bg-white rounded-3xl border p-8 shadow-2xl hidden">
-                    <div class="flex justify-between items-center mb-8 border-b pb-6">
+
+                <div id="editorPanel" class="lg:col-span-8 bg-white rounded-3xl border shadow-2xl overflow-hidden hidden">
+                    <div class="p-8 bg-blue-900 text-white flex justify-between items-center">
                         <div>
-                            <h3 id="editName" class="text-xl font-black italic uppercase text-slate-800">---</h3>
-                            <p id="editClass" class="text-[10px] font-black text-blue-600 uppercase">---</p>
+                            <h2 id="editName" class="text-2xl font-black uppercase tracking-tighter">Student Name</h2>
+                            <p id="editClass" class="text-blue-300 text-[10px] font-black uppercase tracking-widest">Grade Level</p>
                         </div>
-                        <select id="resStatus" class="bg-slate-900 text-white text-[10px] font-black p-2 rounded-lg px-4 outline-none border-none">
-                            <option value="Draft">DRAFT</option><option value="Published">PUBLISHED</option>
+                        <select id="resStatus" class="bg-blue-800 text-white font-bold text-xs p-2.5 rounded-xl border-none outline-none">
+                            <option value="Draft">DRAFT (HIDDEN)</option>
+                            <option value="Published">PUBLISHED (VISIBLE)</option>
                         </select>
                     </div>
-                    <table class="w-full mb-4">
-                        <thead class="text-[10px] text-slate-400 font-black uppercase"><tr><th class="text-left pb-4">Subject</th><th class="text-center pb-4 w-20">Test</th><th class="text-center pb-4 w-20">Exam</th><th></th></tr></thead>
-                        <tbody id="scoreRows"></tbody>
-                    </table>
-                    <button onclick="addRow()" class="text-blue-600 font-black text-[10px] uppercase flex items-center gap-1 mb-8 hover:bg-blue-50 p-2 rounded-lg"><i data-lucide="plus"></i> Add Subject</button>
-                    <div class="mb-8">
-                        <label class="text-[10px] font-black text-slate-400 uppercase block mb-2">Teacher's Remark</label>
-                        <textarea id="remark" rows="2" class="w-full p-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-100 text-sm italic outline-none focus:ring-2 ring-blue-600"></textarea>
+                    <div class="p-8 space-y-8">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="text-[10px] text-slate-400 font-black uppercase tracking-widest">
+                                    <tr><th class="text-left pb-4">Subject</th><th class="text-center pb-4 w-24">Test (30)</th><th class="text-center pb-4 w-24">Exam (70)</th><th class="pb-4 w-10"></th></tr>
+                                </thead>
+                                <tbody id="scoreRows"></tbody>
+                            </table>
+                        </div>
+                        <button onclick="addRow()" class="text-blue-600 font-black text-[10px] uppercase flex items-center gap-1 hover:bg-blue-50 p-2 rounded-lg transition"><i data-lucide="plus"></i> Add Subject</button>
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase block mb-2 tracking-widest">Teacher's Remark</label>
+                            <textarea id="remark" rows="2" class="w-full p-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-100 text-sm italic outline-none focus:ring-2 ring-blue-600"></textarea>
+                        </div>
+                        <button onclick="saveResultData()" id="saveBtn" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-all">UPDATE REPORT CARD</button>
                     </div>
-                    <button onclick="saveAllScores()" id="saveBtn" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl hover:bg-blue-700 transition-all">SAVE REPORT CARD</button>
+                </div>
+
+                <div id="emptyPanel" class="lg:col-span-8 flex flex-col items-center justify-center bg-white rounded-3xl border-2 border-dashed border-slate-200 p-20">
+                    <i data-lucide="award" class="w-12 h-12 text-slate-200 mb-4"></i>
+                    <p class="text-slate-400 font-black uppercase text-xs tracking-widest text-center">Select a student from the engine list<br>to manage scores</p>
                 </div>
             </div>
         </section>
@@ -115,65 +134,69 @@
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(`view-${v}`).classList.add('active');
             document.getElementById(`btn-${v}`).classList.add('active');
-            if(window.innerWidth < 1024 && document.getElementById('sidebar').classList.contains('open')) toggleSidebar();
+            if(window.innerWidth < 1024) document.getElementById('sidebar').classList.remove('open');
         }
 
         async function init() {
             const { data: { session } } = await _supabase.auth.getSession();
             if(!session) { window.location.replace('login.html'); return; }
-            const { data: prof } = await _supabase.from('students').select('is_admin').eq('id', session.user.id).single();
-            if(!prof?.is_admin) { window.location.replace('conf dshb.html'); return; }
-            document.getElementById('admin-mail').innerText = session.user.email;
             loadData();
         }
 
         async function loadData() {
-            const { data } = await _supabase.from('students').select('*').order('full_name');
+            const { data } = await _supabase.from('students').select('*').eq('is_admin', false).order('full_name');
             if(data) { students = data; renderDirectory(data); renderEngineList(data); }
             lucide.createIcons();
         }
 
-        // --- DIRECTORY LOGIC (RESTORED ACTIONS) ---
         function renderDirectory(list) {
-            const tbody = document.getElementById('directoryTable');
-            tbody.innerHTML = list.map(st => `
-                <tr class="student-row border-b hover:bg-slate-50 transition" data-search="${st.full_name}">
-                    <td class="p-5">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-black text-[10px] uppercase">${st.full_name.charAt(0)}</div>
-                            <p class="text-xs font-black text-slate-800 uppercase">${st.full_name}</p>
-                        </div>
-                    </td>
-                    <td class="p-5 text-center text-[10px] font-bold text-slate-500 uppercase">${st.grade_level || '---'}</td>
-                    <td class="p-5 text-center">
-                        <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${st.status === 'Active' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}">
-                            ${st.status || 'Inactive'}
-                        </span>
-                    </td>
-                    <td class="p-5 text-right">
-                        <div class="flex justify-end gap-2">
-                            <button onclick="updateStatus('${st.id}', '${st.status === 'Active' ? 'Suspended' : 'Active'}')" class="p-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-900 hover:text-white transition shadow-sm">
-                                <i data-lucide="${st.status === 'Active' ? 'user-x' : 'user-check'}" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="deleteStudent('${st.id}')" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition shadow-sm">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            document.getElementById('directoryTable').innerHTML = list.map(st => {
+                const msId = "MS-" + st.id.substring(0, 5).toUpperCase();
+                const statusColor = st.status === 'Enrolled' ? 'bg-green-500' : (st.status === 'Suspended' ? 'bg-red-500' : 'bg-amber-400');
+                return `
+                    <tr class="dir-row hover:bg-blue-50/30 transition group" data-search="${st.full_name} ${msId}">
+                        <td class="p-6">
+                            <div class="flex items-center gap-4">
+                                <div class="relative">
+                                    <img src="${st.avatar_url || 'https://via.placeholder.com/100'}" class="w-12 h-12 rounded-2xl border-2 border-white shadow-md object-cover">
+                                    <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${statusColor}"></span>
+                                </div>
+                                <div>
+                                    <p class="font-black text-slate-800 uppercase tracking-tighter leading-none">${st.full_name || 'INCOMPLETE REG'}</p>
+                                    <p class="text-[9px] text-slate-400 mt-1 font-bold uppercase">${st.grade_level || 'No Class'} • ${st.phone || 'NO PHONE'}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-6 text-center"><span class="font-black text-[10px] bg-slate-100 px-3 py-1.5 rounded-lg text-slate-500 border border-slate-200 tracking-widest">${msId}</span></td>
+                        <td class="p-6 text-center">
+                            <span class="px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest border ${st.status === 'Enrolled' ? 'text-green-600 bg-green-50 border-green-100' : 'text-amber-600 bg-amber-50 border-amber-100'}">
+                                ${st.status || 'NULL'}
+                            </span>
+                        </td>
+                        <td class="p-6 text-right">
+                            <div class="flex justify-end gap-3">
+                                <button onclick="updateStatus('${st.id}', 'Enrolled')" class="p-2.5 rounded-xl bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition shadow-sm"><i data-lucide="check" class="w-4 h-4"></i></button>
+                                <button onclick="updateStatus('${st.id}', 'Suspended')" class="p-2.5 rounded-xl bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white transition shadow-sm"><i data-lucide="user-x" class="w-4 h-4"></i></button>
+                                <button onclick="deleteStudent('${st.id}')" class="p-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition shadow-sm"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
             lucide.createIcons();
         }
 
-        // --- ENGINE ROOM LOGIC (FIXED) ---
         function renderEngineList(list) {
             document.getElementById('engineList').innerHTML = list.map(s => `
                 <div onclick="openScoreEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer transition flex items-center justify-between group">
-                    <div>
-                        <p class="text-[11px] font-black text-slate-800 uppercase group-hover:text-blue-600">${s.full_name}</p>
-                        <p class="text-[9px] text-slate-400 font-bold uppercase">${s.result_status || 'Draft'}</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-black text-[10px] text-slate-400 group-hover:bg-blue-600 group-hover:text-white">${s.full_name.charAt(0)}</div>
+                        <div>
+                            <p class="text-[11px] font-black text-slate-800 uppercase group-hover:text-blue-600">${s.full_name}</p>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tight">${s.result_status || 'Draft'}</p>
+                        </div>
                     </div>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-blue-600"></i>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200"></i>
                 </div>
             `).join('');
             lucide.createIcons();
@@ -182,9 +205,10 @@
         function openScoreEditor(id) {
             activeId = id;
             const s = students.find(x => x.id === id);
-            document.getElementById('scoreForm').classList.remove('hidden');
+            document.getElementById('emptyPanel').classList.add('hidden');
+            document.getElementById('editorPanel').classList.remove('hidden');
             document.getElementById('editName').innerText = s.full_name;
-            document.getElementById('editClass').innerText = s.grade_level;
+            document.getElementById('editClass').innerText = s.grade_level || 'General Studies';
             document.getElementById('resStatus').value = s.result_status || 'Draft';
             document.getElementById('remark').value = s.teacher_remark || '';
             const rows = document.getElementById('scoreRows');
@@ -196,47 +220,56 @@
 
         function addRow(n="", t=0, e=0) {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td class="pb-2"><input type="text" value="${n}" class="sn w-full p-2 bg-slate-50 rounded-lg text-xs font-black uppercase border-none ring-1 ring-slate-100 focus:ring-2 ring-blue-600 outline-none"></td><td class="pb-2 px-2"><input type="number" value="${t}" class="st w-full p-2 bg-slate-50 rounded-lg text-xs font-black text-center border-none ring-1 ring-slate-100 focus:ring-2 ring-blue-600"></td><td class="pb-2"><input type="number" value="${e}" class="se w-full p-2 bg-slate-50 rounded-lg text-xs font-black text-center border-none ring-1 ring-slate-100 focus:ring-2 ring-blue-600"></td><td class="pb-2 text-right"><button onclick="this.parentElement.parentElement.remove()" class="text-slate-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>`;
+            tr.innerHTML = `
+                <td class="pb-3"><input type="text" value="${n}" class="sn w-full p-2.5 bg-slate-50 rounded-xl text-xs font-bold uppercase border-none ring-1 ring-slate-100 focus:ring-2 ring-blue-600 outline-none"></td>
+                <td class="pb-3 px-2"><input type="number" value="${t}" class="st w-full p-2.5 bg-slate-50 rounded-xl text-xs font-black text-center border-none ring-1 ring-slate-100"></td>
+                <td class="pb-3"><input type="number" value="${e}" class="se w-full p-2.5 bg-slate-50 rounded-xl text-xs font-black text-center border-none ring-1 ring-slate-100"></td>
+                <td class="pb-3 text-right"><button onclick="this.parentElement.parentElement.remove()" class="text-slate-300 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+            `;
             document.getElementById('scoreRows').appendChild(tr);
             lucide.createIcons();
         }
 
-        async function saveAllScores() {
-            const btn = document.getElementById('saveBtn');
-            btn.innerText = "UPLOADING...";
+        async function saveResultData() {
+            const indicator = document.getElementById('save-indicator');
+            indicator.classList.remove('hidden');
             const names = document.querySelectorAll('.sn'), tests = document.querySelectorAll('.st'), exams = document.querySelectorAll('.se');
             const subs = [];
             names.forEach((n, i) => { if(n.value) subs.push({ name: n.value, test: parseFloat(tests[i].value)||0, exam: parseFloat(exams[i].value)||0 }); });
-            const { error } = await _supabase.from('students').update({ subjects: subs, result_status: document.getElementById('resStatus').value, teacher_remark: document.getElementById('remark').value }).eq('id', activeId);
-            if(!error) { alert("Updated Successfully!"); loadData(); } else { alert(error.message); }
-            btn.innerText = "SAVE REPORT CARD";
+            
+            const { error } = await _supabase.from('students').update({
+                subjects: subs,
+                result_status: document.getElementById('resStatus').value,
+                teacher_remark: document.getElementById('remark').value
+            }).eq('id', activeId);
+
+            indicator.classList.add('hidden');
+            if(!error) { alert("Updated!"); loadData(); } else { alert(error.message); }
         }
 
-        // --- FILTERING ---
         function filterDirectory() {
-            const val = document.getElementById('searchInput').value.toLowerCase();
-            document.querySelectorAll('.student-row').forEach(row => {
+            const val = document.getElementById('dirSearch').value.toLowerCase();
+            document.querySelectorAll('.dir-row').forEach(row => {
                 row.classList.toggle('hidden-row', !row.getAttribute('data-search').toLowerCase().includes(val));
             });
         }
-        function filterEngineList() {
-            const val = document.getElementById('engineSearch').value.toLowerCase();
-            const filtered = students.filter(s => s.full_name.toLowerCase().includes(val));
-            renderEngineList(filtered);
+        function filterEngine() {
+            const val = document.getElementById('engSearch').value.toLowerCase();
+            renderEngineList(students.filter(s => s.full_name.toLowerCase().includes(val)));
         }
 
-        // --- ACTION BUTTON FUNCTIONS ---
-        async function updateStatus(id, newStatus) {
-            const { error } = await _supabase.from('students').update({ status: newStatus }).eq('id', id);
-            if (!error) loadData();
+        async function updateStatus(id, s) { 
+            if(!confirm(`Set status to ${s}?`)) return;
+            const { error } = await _supabase.from('students').update({ status: s }).eq('id', id);
+            if(!error) loadData(); 
         }
-        async function deleteStudent(id) {
-            if(!confirm("⚠️ PERMANENT DELETE? This cannot be undone.")) return;
-            const { error } = await _supabase.from('students').delete().eq('id', id);
-            if (!error) { alert("Student Deleted."); loadData(); }
+        async function deleteStudent(id) { 
+            if(confirm("Permanently delete record?")) {
+                const { error } = await _supabase.from('students').delete().eq('id', id);
+                if(!error) loadData();
+            }
         }
-        async function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
-        
+        function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
         window.onload = init;
     </script>
 </body>
