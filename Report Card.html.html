@@ -8,11 +8,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; print-color-adjust: exact; }
-        .school-name { font-family: 'Cinzel', serif; }
         
-        /* Watermark Styles */
+        .school-name { 
+            font-family: Arial, Helvetica, sans-serif; 
+            font-weight: 900;
+        }
+
         .watermark-container { position: relative; }
         .watermark-bg {
             position: absolute;
@@ -20,7 +23,7 @@
             left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
             opacity: 0.05;
-            width: 400px;
+            width: 350px;
             pointer-events: none;
             z-index: 0;
         }
@@ -36,7 +39,7 @@
         table { position: relative; z-index: 10; background: transparent !important; }
     </style>
 </head>
-<body class="bg-slate-200 py-6 px-4">
+<body class="bg-slate-200 py-4 px-4">
 
     <div class="max-w-5xl mx-auto mb-4 flex justify-between items-center no-print">
         <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-lg font-bold text-slate-600 hover:bg-slate-50 transition">← Dashboard</button>
@@ -45,17 +48,16 @@
 
     <div class="max-w-5xl mx-auto bg-white shadow-2xl border-4 border-double border-slate-300 rounded-sm overflow-hidden report-sheet">
         
-        <div class="p-6 border-b-4 border-blue-900 flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="School Logo">
-            <div class="flex-1">
-                <h1 class="school-name text-4xl font-bold text-blue-900 uppercase leading-none">Mustard Seed School</h1>
-                <p class="mt-1 text-xs font-bold text-slate-600 uppercase tracking-widest">Ilesa, Osun State, Nigeria.</p>
-                <p class="mt-1 text-[10px] font-bold tracking-[0.2em] text-slate-400 italic">Motto: Excellence in Technology & Character</p>
+        <div class="p-4 border-b-4 border-blue-900 flex items-center justify-between text-center">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20 hidden md:block" alt="School Logo Left">
+            
+            <div class="flex-1 px-4">
+                <h1 class="school-name text-2xl md:text-3xl text-blue-900 leading-tight">MUSTARD SEED INTERNATIONAL GROUP OF SCHOOL</h1>
+                <p class="text-[11px] font-bold text-slate-700 uppercase mt-1">Opposite Abogubkoko, Ibokun, Osun State</p>
+                <p class="text-[9px] font-bold tracking-[0.2em] text-slate-400 italic">Motto: Excellence in Technology & Character</p>
             </div>
-            <div class="border-2 border-blue-900 p-3 text-center rounded-lg min-w-[110px]">
-                <p class="text-[9px] font-black uppercase tracking-widest">Termly Average</p>
-                <p id="avg-score" class="text-2xl font-black text-blue-900">0.0</p>
-            </div>
+
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="School Logo Right">
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 bg-blue-900 text-white text-[10px] uppercase font-bold">
@@ -79,25 +81,27 @@
                     </tr>
                 </thead>
                 <tbody id="subject-rows" class="text-sm font-bold text-slate-700 uppercase">
-                    </tbody>
+                </tbody>
             </table>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 pb-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 pb-4">
+            <div class="border-2 border-blue-900 p-3 text-center rounded-lg bg-blue-50/50 flex flex-col justify-center">
+                <p class="text-[10px] font-black uppercase tracking-widest text-blue-900">Termly Average</p>
+                <p id="avg-score" class="text-3xl font-black text-blue-900">0.0</p>
+            </div>
             <div class="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
                 <h4 class="text-[10px] font-black uppercase border-b mb-2 text-blue-900 pb-1">Behavioral Assessment</h4>
-                <div class="grid grid-cols-2 gap-x-6 gap-y-1 text-[10px] font-bold">
+                <div class="grid grid-cols-1 gap-y-1 text-[10px] font-bold">
                     <p class="flex justify-between border-b border-dotted pb-1">Punctuality: <span class="text-blue-700">Excellent</span></p>
                     <p class="flex justify-between border-b border-dotted pb-1">Neatness: <span class="text-blue-700">Good</span></p>
-                    <p class="flex justify-between border-b border-dotted pb-1">Honesty: <span class="text-blue-700">Excellent</span></p>
-                    <p class="flex justify-between border-b border-dotted pb-1">Leadership: <span class="text-blue-700">Very Good</span></p>
                 </div>
             </div>
             <div class="border border-slate-200 rounded-lg p-3 bg-slate-50/50">
-                <h4 class="text-[10px] font-black uppercase border-b mb-2 text-blue-900 pb-1">Attendance Record</h4>
+                <h4 class="text-[10px] font-black uppercase border-b mb-2 text-blue-900 pb-1">Attendance</h4>
                 <div class="flex justify-around text-center py-1">
-                    <div><p class="text-[8px] text-slate-400 uppercase font-black">Days Opened</p><p class="font-black text-base">110</p></div>
-                    <div><p class="text-[8px] text-slate-400 uppercase font-black">Days Present</p><p class="font-black text-base text-green-600">108</p></div>
+                    <div><p class="text-[8px] text-slate-400 uppercase font-black">Opened</p><p class="font-black text-base">110</p></div>
+                    <div><p class="text-[8px] text-slate-400 uppercase font-black">Present</p><p class="font-black text-base text-green-600">108</p></div>
                 </div>
             </div>
         </div>
@@ -125,7 +129,6 @@
     </div>
 
     <script>
-        // Supabase Logic remains same as your original script
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
 
         async function loadDynamicReport() {
@@ -180,7 +183,6 @@
             const finalAvg = count > 0 ? (totalAverage / count).toFixed(1) : "0.0";
             document.getElementById('avg-score').innerText = finalAvg;
         }
-
         window.onload = loadDynamicReport;
     </script>
 </body>
