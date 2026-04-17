@@ -10,9 +10,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap');
-        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; }
         .sidebar { width: 260px; background: #0f172a; z-index: 50; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; width: 100%; text-align: left; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; width: 100%; text-align: left;}
         .nav-link:hover, .nav-link.active { background: #2563eb; color: white; }
         .view-section { display: none; }
         .view-section.active { display: block; }
@@ -28,6 +28,7 @@
         </div>
         <nav class="space-y-2 flex-1">
             <button onclick="showView('directory')" id="btn-directory" class="nav-link active"><i data-lucide="users"></i> Students List</button>
+            <button onclick="showView('curriculum')" id="btn-curriculum" class="nav-link"><i data-lucide="book-open"></i> School Curriculum</button>
             <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="award"></i> Score Entry Room</button>
         </nav>
         <button onclick="handleLogout()" class="nav-link text-red-400 hover:bg-red-400/10 mt-auto"><i data-lucide="log-out"></i> Logout</button>
@@ -38,10 +39,10 @@
         <section id="view-directory" class="view-section active">
             <div class="flex justify-between items-end mb-8">
                 <div>
-                    <h1 class="text-3xl font-black uppercase">Directory</h1>
-                    <p id="totalCount" class="text-blue-600 text-xs font-black uppercase">Loading Registered Students...</p>
+                    <h1 class="text-3xl font-black uppercase">Student Directory</h1>
+                    <p id="totalCount" class="text-blue-600 text-xs font-black uppercase">Total Students: 0</p>
                 </div>
-                <input type="text" id="dirSearch" onkeyup="searchDirectory()" placeholder="Search Name or MS-ID..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64 uppercase outline-none">
+                <input type="text" id="dirSearch" oninput="filterDirectory()" placeholder="Search Name or MS-ID..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64 uppercase outline-none">
             </div>
             <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                 <table class="w-full text-left">
@@ -53,16 +54,52 @@
             </div>
         </section>
 
+        <section id="view-curriculum" class="view-section">
+            <div class="mb-8">
+                <h1 class="text-3xl font-black uppercase">Class Curriculum</h1>
+                <p class="text-slate-400 text-xs font-bold uppercase">Assign Subjects to Class Groups</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                    <h3 class="font-black text-xs uppercase mb-4 text-blue-600">Add New Subject</h3>
+                    <div class="space-y-4">
+                        <select id="currClass" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
+                            <optgroup label="Junior Secondary">
+                                <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                            </optgroup>
+                            <optgroup label="Senior Secondary">
+                                <option>SSS 1 ART</option><option>SSS 1 SCIENCE</option>
+                                <option>SSS 2 ART</option><option>SSS 2 SCIENCE</option>
+                                <option>SSS 3 ART</option><option>SSS 3 SCIENCE</option>
+                                <option>SSS GENERAL</option>
+                            </optgroup>
+                        </select>
+                        <input type="text" id="currSub" placeholder="Subject Name" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm uppercase">
+                        <input type="text" id="currTeacher" placeholder="Teacher Name" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
+                        <button onclick="addCurriculum()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black uppercase text-xs">Update Curriculum</button>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b text-[10px] uppercase font-black text-slate-400">
+                            <tr><th class="p-4">Group</th><th class="p-4">Subject</th><th class="p-4">Teacher</th><th class="p-4"></th></tr>
+                        </thead>
+                        <tbody id="curriculumTable" class="text-xs font-bold divide-y uppercase"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
         <section id="view-engine" class="view-section">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-4 bg-white rounded-2xl border h-[750px] flex flex-col shadow-sm overflow-hidden">
                     <div class="p-4 bg-slate-50 border-b space-y-2">
-                        <select id="engineClassFilter" onchange="searchEngine()" class="w-full p-2 rounded bg-white ring-1 ring-slate-200 border-none text-[10px] font-black uppercase outline-none">
+                        <select id="engineClassFilter" onchange="filterEngineList()" class="w-full p-2 rounded bg-white ring-1 ring-slate-200 border-none text-[10px] font-black uppercase outline-none">
                             <option value="ALL">All Classes</option>
                             <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
                             <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
                         </select>
-                        <input type="text" id="engSearch" onkeyup="searchEngine()" placeholder="Find Student..." class="w-full p-3 rounded-lg border-none ring-1 ring-slate-200 text-xs font-black uppercase outline-none">
+                        <input type="text" id="engSearch" oninput="filterEngineList()" placeholder="Find Student..." class="w-full p-3 rounded-lg border-none ring-1 ring-slate-200 text-xs font-black uppercase outline-none">
                     </div>
                     <div id="engineList" class="overflow-y-auto divide-y"></div>
                 </div>
@@ -70,10 +107,13 @@
                 <div id="editorPanel" class="lg:col-span-8 bg-white rounded-2xl border shadow-xl hidden flex flex-col overflow-hidden">
                     <div class="p-6 bg-blue-900 text-white flex justify-between items-center">
                         <div>
-                            <h2 id="editName" class="text-xl font-black uppercase leading-none">---</h2>
+                            <h2 id="editName" class="text-xl font-black uppercase">---</h2>
                             <p id="editMeta" class="text-blue-300 text-[10px] font-black uppercase mt-2">---</p>
                         </div>
-                        <button onclick="saveScores()" class="bg-green-500 px-6 py-2 rounded-lg font-black text-[9px] uppercase shadow-md hover:bg-green-600 transition">Save Record</button>
+                        <div class="flex gap-2">
+                            <button onclick="addExtraRow()" class="bg-amber-500 px-4 py-2 rounded-lg font-black text-[9px] uppercase shadow-md">+ Extra</button>
+                            <button onclick="saveScores()" class="bg-green-500 px-6 py-2 rounded-lg font-black text-[9px] uppercase shadow-md">Save Record</button>
+                        </div>
                     </div>
 
                     <div class="p-6 flex-1 overflow-y-auto">
@@ -87,13 +127,17 @@
                                 <input type="number" id="timesPresent" class="w-full mt-1 p-2 rounded bg-white ring-1 ring-slate-200 border-none font-black text-sm outline-none">
                             </div>
                         </div>
+
                         <table class="w-full">
                             <thead class="text-[10px] text-slate-400 font-black uppercase border-b">
-                                <tr><th class="text-left py-3">Subject Name</th><th class="text-center w-24">Test</th><th class="text-center w-24">Exam</th><th></th></tr>
+                                <tr><th class="text-left py-3">Subject</th><th class="text-center w-24">Test</th><th class="text-center w-24">Exam</th><th></th></tr>
                             </thead>
                             <tbody id="scoreRows"></tbody>
                         </table>
-                        <button onclick="addExtraRow()" class="mt-4 text-blue-600 font-black text-[10px] uppercase">+ Add Subject Line</button>
+                        <div class="mt-8 pt-6 border-t">
+                            <label class="text-[10px] font-black text-slate-400 uppercase">Principal's Remark</label>
+                            <textarea id="remark" class="w-full p-4 mt-2 bg-slate-50 rounded-xl border-none ring-1 ring-slate-100 italic outline-none text-sm"></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -102,16 +146,16 @@
 
     <div id="groupModal" class="fixed inset-0 bg-slate-900/60 hidden z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 class="font-black uppercase text-sm mb-2 text-center">Update Permanent Group</h3>
-            <p id="modalName" class="text-xs font-bold text-slate-400 mb-6 uppercase text-center"></p>
-            <select id="modalGroup" class="w-full p-3 rounded-xl bg-slate-50 ring-1 ring-slate-200 border-none font-bold mb-6 outline-none">
+            <h3 class="font-black uppercase text-sm mb-4">Set Permanent Student Group</h3>
+            <p id="modalStudentName" class="text-xs font-bold text-slate-500 mb-4 uppercase"></p>
+            <select id="modalGroupSelect" class="w-full p-3 rounded-xl bg-slate-50 ring-1 ring-slate-200 border-none font-bold mb-6 outline-none">
                 <option value="GENERAL">GENERAL</option>
                 <option value="ART">ART STUDENT</option>
                 <option value="SCIENCE">SCIENCE STUDENT</option>
             </select>
             <div class="flex gap-2">
-                <button onclick="closeModal()" class="flex-1 py-3 font-black text-xs uppercase text-slate-300">Cancel</button>
-                <button onclick="saveGroupToDB()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase shadow-lg">Apply Permanently</button>
+                <button onclick="closeModal()" class="flex-1 py-3 font-black text-xs uppercase text-slate-400">Cancel</button>
+                <button onclick="updateStudentGroup()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase">Save Group</button>
             </div>
         </div>
     </div>
@@ -121,16 +165,20 @@
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        let students = [], activeId = null;
+        let students = [], curriculum = [], activeId = null;
 
-        async function loadAllStudents() {
-            const { data, error } = await _supabase.from('students').select('*').eq('is_admin', false).order('full_name');
-            if(data) {
-                students = data;
-                document.getElementById('totalCount').innerText = `Total Students: ${students.length}`;
-                renderDirectory();
-                renderEngineList();
-            }
+        async function init() { loadData(); }
+
+        async function loadData() {
+            const { data: st } = await _supabase.from('students').select('*').eq('is_admin', false).order('full_name');
+            const { data: cu } = await _supabase.from('school_curriculum').select('*').order('class_name');
+            students = st || [];
+            curriculum = cu || [];
+            
+            document.getElementById('totalCount').innerText = `Total Students: ${students.length}`;
+            renderDirectory();
+            renderCurriculum();
+            renderEngineList();
             lucide.createIcons();
         }
 
@@ -139,80 +187,108 @@
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(`view-${v}`).classList.add('active');
             document.getElementById(`btn-${v}`).classList.add('active');
+            lucide.createIcons();
         }
 
-        // --- SEARCH LOGIC (FULLY FUNCTIONAL) ---
-        function searchDirectory() {
-            const query = document.getElementById('dirSearch').value.toLowerCase();
-            const rows = document.querySelectorAll('.student-row');
-            rows.forEach(row => {
-                const text = row.getAttribute('data-search').toLowerCase();
-                row.classList.toggle('hidden-row', !text.includes(query));
-            });
-        }
-
-        function searchEngine() {
-            const query = document.getElementById('engSearch').value.toLowerCase();
-            const classFilter = document.getElementById('engineClassFilter').value;
-            const items = document.querySelectorAll('.engine-item');
-            
-            items.forEach(item => {
-                const text = item.getAttribute('data-search').toLowerCase();
-                const studentClass = item.getAttribute('data-class');
-                const matchesSearch = text.includes(query);
-                const matchesClass = (classFilter === 'ALL' || studentClass === classFilter);
-                item.classList.toggle('hidden-row', !(matchesSearch && matchesClass));
-            });
-        }
-
+        // --- DIRECTORY LOGIC ---
         function renderDirectory() {
-            document.getElementById('directoryTable').innerHTML = students.map(s => {
+            const val = document.getElementById('dirSearch').value.toUpperCase();
+            const filtered = students.filter(s => {
                 const msId = "MS-" + s.id.substring(0, 5).toUpperCase();
-                return `
-                <tr class="student-row hover:bg-slate-50 transition" data-search="${s.full_name} ${msId}">
+                return s.full_name.toUpperCase().includes(val) || msId.includes(val);
+            });
+
+            document.getElementById('directoryTable').innerHTML = filtered.map(s => {
+                const msId = "MS-" + s.id.substring(0, 5).toUpperCase();
+                return `<tr class="hover:bg-slate-50">
                     <td class="p-4 text-blue-600 font-black">${msId}</td>
                     <td class="p-4">${s.full_name}</td>
                     <td class="p-4">${s.grade_level || '---'}</td>
                     <td class="p-4"><span class="px-2 py-1 rounded bg-slate-100 text-[9px] font-black">${s.student_group || 'GENERAL'}</span></td>
                     <td class="p-4 text-right flex justify-end gap-2">
                         <button onclick="openGroupModal('${s.id}', '${s.full_name}', '${s.student_group}')" class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i data-lucide="settings-2" class="w-4 h-4"></i></button>
-                        <button onclick="toggleSuspension('${s.id}', '${s.status}')" class="p-2 bg-slate-100 ${s.status === 'Suspended' ? 'text-red-500' : 'text-amber-600'} rounded-lg"><i data-lucide="user-minus" class="w-4 h-4"></i></button>
+                        <button onclick="toggleSuspension('${s.id}', '${s.status}')" class="p-2 bg-slate-100 rounded-lg"><i data-lucide="user-minus" class="w-4 h-4 text-amber-600"></i></button>
                     </td>
                 </tr>`;
             }).join('');
             lucide.createIcons();
         }
+        function filterDirectory() { renderDirectory(); }
 
+        // --- GROUP MODAL ---
+        function openGroupModal(id, name, group) {
+            activeId = id;
+            document.getElementById('modalStudentName').innerText = name;
+            document.getElementById('modalGroupSelect').value = group || 'GENERAL';
+            document.getElementById('groupModal').classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('groupModal').classList.add('hidden'); }
+        async function updateStudentGroup() {
+            const grp = document.getElementById('modalGroupSelect').value;
+            await _supabase.from('students').update({ student_group: grp }).eq('id', activeId);
+            closeModal(); loadData();
+        }
+
+        // --- CURRICULUM LOGIC ---
+        function renderCurriculum() {
+            document.getElementById('curriculumTable').innerHTML = curriculum.map(c => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-4 text-blue-600 font-black">${c.class_name}</td>
+                    <td class="p-4">${c.subject_name}</td>
+                    <td class="p-4 text-slate-400 italic">${c.assigned_teacher || 'Staff'}</td>
+                    <td class="p-4 text-right"><button onclick="deleteCurr('${c.id}')" class="text-red-400"><i data-lucide="trash" class="w-4 h-4"></i></button></td>
+                </tr>`).join('');
+            lucide.createIcons();
+        }
+        async function addCurriculum() {
+            const class_name = document.getElementById('currClass').value;
+            const subject_name = document.getElementById('currSub').value;
+            const assigned_teacher = document.getElementById('currTeacher').value;
+            if(!subject_name) return alert("Enter subject");
+            await _supabase.from('school_curriculum').insert([{ class_name, subject_name, assigned_teacher }]);
+            loadData();
+        }
+        async function deleteCurr(id) { await _supabase.from('school_curriculum').delete().eq('id', id); loadData(); }
+
+        // --- ENGINE LOGIC ---
         function renderEngineList() {
-            document.getElementById('engineList').innerHTML = students.map(s => `
-                <div onclick="openEditor('${s.id}')" class="engine-item p-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition" data-search="${s.full_name}" data-class="${s.grade_level}">
-                    <div class="uppercase text-left">
+            const val = document.getElementById('engSearch').value.toUpperCase();
+            const classVal = document.getElementById('engineClassFilter').value;
+            const filtered = students.filter(s => {
+                const matchesSearch = s.full_name.toUpperCase().includes(val);
+                const matchesClass = (classVal === 'ALL' || s.grade_level === classVal);
+                return matchesSearch && matchesClass;
+            });
+
+            document.getElementById('engineList').innerHTML = filtered.map(s => `
+                <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center group transition">
+                    <div class="uppercase">
                         <p class="text-[11px] font-black text-slate-800">${s.full_name}</p>
                         <p class="text-[9px] font-bold text-slate-400">${s.grade_level} • ${s.student_group || 'GENERAL'}</p>
                     </div>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200"></i>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-blue-500"></i>
                 </div>`).join('');
             lucide.createIcons();
         }
+        function filterEngineList() { renderEngineList(); }
 
         function openEditor(id) {
             activeId = id;
             const s = students.find(x => x.id === id);
             document.getElementById('editorPanel').classList.remove('hidden');
             document.getElementById('editName').innerText = s.full_name;
-            document.getElementById('editMeta').innerText = `${s.grade_level} • MS-${s.id.substring(0, 5).toUpperCase()} • ${s.student_group || 'GENERAL'}`;
+            document.getElementById('editMeta').innerText = `${s.grade_level} • MS-${s.id.substring(0, 5).toUpperCase()}`;
             document.getElementById('timesOpened').value = s.times_opened || 0;
             document.getElementById('timesPresent').value = s.times_present || 0;
+            document.getElementById('remark').value = s.teacher_remark || '';
             
-            const rows = document.getElementById('scoreRows');
-            rows.innerHTML = (s.subjects || []).map(sub => `
+            const existing = s.subjects || [];
+            document.getElementById('scoreRows').innerHTML = existing.map(sub => `
                 <tr class="bg-slate-50 border-b border-white">
-                    <td class="p-3">
-                        <input type="text" value="${sub.name}" class="extra-n w-full p-2 bg-transparent font-black text-[11px] uppercase outline-none">
-                    </td>
-                    <td class="p-3 w-24"><input type="number" value="${sub.test}" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs ring-1 ring-slate-100"></td>
-                    <td class="p-3 w-24"><input type="number" value="${sub.exam}" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs ring-1 ring-slate-100"></td>
-                    <td class="p-3 text-center"><button onclick="this.closest('tr').remove()" class="text-slate-300 hover:text-red-500"><i data-lucide="trash" class="w-4 h-4"></i></button></td>
+                    <td class="p-3"><span class="font-black text-[11px] uppercase block">${sub.name}</span><span class="hidden extra-n-val">${sub.name}</span></td>
+                    <td class="p-3 w-24"><input type="number" value="${sub.test}" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none ring-1 ring-slate-100"></td>
+                    <td class="p-3 w-24"><input type="number" value="${sub.exam}" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none ring-1 ring-slate-100"></td>
+                    <td class="p-3 w-10 text-center"><button onclick="this.closest('tr').remove()" class="text-slate-300 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button></td>
                 </tr>`).join('');
             lucide.createIcons();
         }
@@ -220,7 +296,7 @@
         async function saveScores() {
             const subs = [];
             document.querySelectorAll('#scoreRows tr').forEach(row => {
-                const name = row.querySelector('.extra-n').value;
+                const name = row.querySelector('.extra-n') ? row.querySelector('.extra-n').value : row.querySelector('.extra-n-val').innerText;
                 const test = parseFloat(row.querySelector('.st').value) || 0;
                 const exam = parseFloat(row.querySelector('.se').value) || 0;
                 if(name) subs.push({ name: name.toUpperCase(), test, exam });
@@ -228,50 +304,27 @@
 
             await _supabase.from('students').update({
                 subjects: subs,
-                times_opened: parseInt(document.getElementById('timesOpened').value) || 0,
-                times_present: parseInt(document.getElementById('timesPresent').value) || 0
+                times_opened: parseInt(document.getElementById('timesOpened').value),
+                times_present: parseInt(document.getElementById('timesPresent').value),
+                teacher_remark: document.getElementById('remark').value
             }).eq('id', activeId);
-
-            alert("Record Updated!"); loadAllStudents();
+            alert("Record Updated!"); loadData();
         }
 
         function addExtraRow() {
             const tr = document.createElement('tr');
             tr.className = "bg-amber-50 border-b border-white";
-            tr.innerHTML = `
-                <td class="p-2"><input type="text" placeholder="Subject Name" class="extra-n w-full p-2 rounded font-black text-xs uppercase bg-white outline-none ring-1 ring-amber-200"></td>
+            tr.innerHTML = `<td class="p-2"><input type="text" placeholder="Subject Name" class="extra-n w-full p-2 rounded border-none font-black text-xs uppercase bg-white outline-none ring-1 ring-amber-200"></td>
                 <td class="p-2 w-24"><input type="number" value="0" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
                 <td class="p-2 w-24"><input type="number" value="0" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
-                <td class="p-2 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button></td>`;
+                <td class="p-2 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500"><i data-lucide="x-circle" class="w-4 h-4"></i></button></td>`;
             document.getElementById('scoreRows').appendChild(tr);
             lucide.createIcons();
         }
 
-        // --- PERMANENT GROUP LOGIC ---
-        function openGroupModal(id, name, current) {
-            activeId = id;
-            document.getElementById('modalName').innerText = name;
-            document.getElementById('modalGroup').value = current || 'GENERAL';
-            document.getElementById('groupModal').classList.remove('hidden');
-        }
-
-        function closeModal() { document.getElementById('groupModal').classList.add('hidden'); }
-
-        async function saveGroupToDB() {
-            const val = document.getElementById('modalGroup').value;
-            await _supabase.from('students').update({ student_group: val }).eq('id', activeId);
-            closeModal(); 
-            loadAllStudents();
-        }
-
-        async function toggleSuspension(id, cur) {
-            await _supabase.from('students').update({ status: cur === 'Suspended' ? 'Active' : 'Suspended' }).eq('id', id);
-            loadAllStudents();
-        }
-
+        async function toggleSuspension(id, cur) { await _supabase.from('students').update({ status: cur === 'Suspended' ? 'Active' : 'Suspended' }).eq('id', id); loadData(); }
         async function handleLogout() { await _supabase.auth.signOut(); window.location.replace('login.html'); }
-        
-        window.onload = loadAllStudents;
+        window.onload = init;
     </script>
 </body>
 </html>
