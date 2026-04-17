@@ -39,9 +39,16 @@
             <div class="flex justify-between items-end mb-8">
                 <div>
                     <h1 class="text-3xl font-black uppercase text-slate-900">Directory</h1>
-                    <p class="text-slate-400 text-xs font-bold uppercase">Assign Art/Science Groups & IDs</p>
+                    <p id="dirCount" class="text-blue-600 text-xs font-black uppercase">Loading Students...</p>
                 </div>
-                <input type="text" oninput="filterDirectory(this.value)" placeholder="Search Name or ID..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64 uppercase">
+                <div class="flex gap-3">
+                    <select id="dirClassFilter" onchange="renderDirectory()" class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-xs font-bold uppercase outline-none">
+                        <option value="ALL">All Classes</option>
+                        <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                        <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                    </select>
+                    <input type="text" id="dirSearchInput" oninput="renderDirectory()" placeholder="Search Name or ID..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64 uppercase outline-none">
+                </div>
             </div>
             <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                 <table class="w-full text-left">
@@ -90,8 +97,13 @@
         <section id="view-engine" class="view-section">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-4 bg-white rounded-2xl border h-[750px] flex flex-col overflow-hidden">
-                    <div class="p-4 bg-slate-50 border-b">
-                        <input type="text" oninput="filterEngine(this.value)" placeholder="Search Student..." class="w-full p-3 rounded-lg border-none ring-1 ring-slate-200 text-xs font-black uppercase">
+                    <div class="p-4 bg-slate-50 border-b space-y-2">
+                        <select id="engineClassFilter" onchange="renderEngineList(students)" class="w-full p-2 rounded bg-white ring-1 ring-slate-200 border-none text-[10px] font-black uppercase outline-none">
+                            <option value="ALL">All Classes Filter</option>
+                            <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                            <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                        </select>
+                        <input type="text" oninput="filterEngine(this.value)" placeholder="Search Student..." class="w-full p-3 rounded-lg border-none ring-1 ring-slate-200 text-xs font-black uppercase outline-none">
                     </div>
                     <div id="engineList" class="overflow-y-auto divide-y"></div>
                 </div>
@@ -112,6 +124,17 @@
                     </div>
 
                     <div class="p-6 flex-1 overflow-y-auto">
+                        <div class="grid grid-cols-2 gap-4 mb-6 p-4 bg-slate-50 rounded-xl border">
+                            <div>
+                                <label class="text-[9px] font-black text-slate-400 uppercase">Total School Opened</label>
+                                <input type="number" id="timesOpened" class="w-full mt-1 p-2 rounded bg-white ring-1 ring-slate-200 border-none font-black text-sm outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-black text-slate-400 uppercase">Total Times Attended</label>
+                                <input type="number" id="timesPresent" class="w-full mt-1 p-2 rounded bg-white ring-1 ring-slate-200 border-none font-black text-sm outline-none">
+                            </div>
+                        </div>
+
                         <table class="w-full">
                             <thead class="text-[10px] text-slate-400 font-black uppercase border-b">
                                 <tr><th class="text-left py-3">Subject & Teacher</th><th class="text-center w-24">Test</th><th class="text-center w-24">Exam</th><th></th></tr>
@@ -167,9 +190,20 @@
             lucide.createIcons();
         }
 
-        // --- DIRECTORY LOGIC ---
+        // --- DIRECTORY LOGIC (UPDATED WITH FILTER & COUNTER) ---
         function renderDirectory() {
-            document.getElementById('directoryTable').innerHTML = students.map(s => `
+            const searchVal = document.getElementById('dirSearchInput').value.toUpperCase();
+            const classFilter = document.getElementById('dirClassFilter').value;
+
+            const filtered = students.filter(s => {
+                const matchesSearch = s.full_name.toUpperCase().includes(searchVal) || s.id.toUpperCase().includes(searchVal);
+                const matchesClass = (classFilter === 'ALL' || s.grade_level === classFilter);
+                return matchesSearch && matchesClass;
+            });
+
+            document.getElementById('dirCount').innerText = `Total Students: ${filtered.length}`;
+
+            document.getElementById('directoryTable').innerHTML = filtered.map(s => `
                 <tr class="hover:bg-slate-50">
                     <td class="p-4 text-blue-600">ID-${s.id.substring(0,5)}</td>
                     <td class="p-4">${s.full_name}</td>
@@ -204,7 +238,7 @@
                 const idx = students.findIndex(x => x.id === activeId);
                 if(idx !== -1) students[idx].student_group = group;
                 closeModal(); renderDirectory(); renderEngineList(students);
-            } else { alert("Make sure 'student_group' column exists in Supabase!"); }
+            } else { alert("Error updating group!"); }
             btn.innerText = "UPDATE"; btn.disabled = false;
         }
 
@@ -214,9 +248,12 @@
             loadData();
         }
 
-        // --- ENGINE ROOM LOGIC ---
+        // --- ENGINE ROOM LOGIC (UPDATED WITH CLASS FILTER) ---
         function renderEngineList(l) {
-            document.getElementById('engineList').innerHTML = l.map(s => `
+            const classFilter = document.getElementById('engineClassFilter').value;
+            const filtered = l.filter(s => (classFilter === 'ALL' || s.grade_level === classFilter));
+
+            document.getElementById('engineList').innerHTML = filtered.map(s => `
                 <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center group">
                     <div class="uppercase">
                         <p class="text-[11px] font-black text-slate-800">${s.full_name}</p>
@@ -237,6 +274,10 @@
             document.getElementById('editClass').innerText = s.grade_level;
             document.getElementById('editGroupTag').innerText = sGroup;
             document.getElementById('remark').value = s.teacher_remark || '';
+            
+            // Set Attendance values
+            document.getElementById('timesOpened').value = s.times_opened || 0;
+            document.getElementById('timesPresent').value = s.times_present || 0;
             
             const allowed = curriculum.filter(c => c.class_name === s.grade_level && (c.subject_group === 'GENERAL' || c.subject_group === sGroup));
             const existing = s.subjects || [];
@@ -268,7 +309,15 @@
                 const exam = parseFloat(row.querySelector('.se').value) || 0;
                 if(name) subs.push({ name: name.toUpperCase(), test, exam, teacher });
             });
-            await _supabase.from('students').update({ subjects: subs, teacher_remark: document.getElementById('remark').value }).eq('id', activeId);
+            
+            // Save including Attendance
+            await _supabase.from('students').update({ 
+                subjects: subs, 
+                teacher_remark: document.getElementById('remark').value,
+                times_opened: parseInt(document.getElementById('timesOpened').value) || 0,
+                times_present: parseInt(document.getElementById('timesPresent').value) || 0
+            }).eq('id', activeId);
+            
             alert("Results Saved!"); loadData();
         }
 
@@ -311,7 +360,6 @@
 
         async function deleteCurr(id) { await _supabase.from('school_curriculum').delete().eq('id', id); loadData(); }
         async function deleteStudent(id) { if(confirm("Permanently delete?")) { await _supabase.from('students').delete().eq('id', id); loadData(); } }
-        function filterDirectory(v) { renderDirectory(); } 
         function filterEngine(v) { renderEngineList(students.filter(s => s.full_name.toLowerCase().includes(v.toLowerCase()))); }
         function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
         window.onload = init;
