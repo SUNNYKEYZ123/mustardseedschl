@@ -39,14 +39,14 @@
             <div class="flex justify-between items-end mb-8">
                 <div>
                     <h1 class="text-3xl font-black text-slate-900 uppercase">Student Directory</h1>
-                    <p class="text-slate-400 text-xs font-bold uppercase">Manage access and student status</p>
+                    <p class="text-slate-400 text-xs font-bold uppercase">View Names & IDs</p>
                 </div>
-                <input type="text" oninput="filterTable('directoryTable', this.value)" placeholder="Search students..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64">
+                <input type="text" oninput="filterTable('directoryTable', this.value)" placeholder="Search Name or ID..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64">
             </div>
             <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                 <table class="w-full text-left">
                     <thead class="bg-slate-50 border-b text-[10px] uppercase font-black text-slate-400">
-                        <tr><th class="p-4">Profile</th><th class="p-4">Class</th><th class="p-4">Status</th><th class="p-4 text-right">Action</th></tr>
+                        <tr><th class="p-4">Reg ID</th><th class="p-4">Student Name</th><th class="p-4">Class</th><th class="p-4">Status</th><th class="p-4 text-right">Action</th></tr>
                     </thead>
                     <tbody id="directoryTable" class="divide-y divide-slate-50"></tbody>
                 </table>
@@ -56,25 +56,32 @@
         <section id="view-curriculum" class="view-section">
             <div class="mb-8">
                 <h1 class="text-3xl font-black text-slate-900 uppercase">Class Curriculum</h1>
-                <p class="text-slate-400 text-xs font-bold uppercase">Define subjects for each class</p>
+                <p class="text-slate-400 text-xs font-bold uppercase">JSS (General) | SSS (Art/Science/General)</p>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border">
-                    <h3 class="font-black text-xs uppercase mb-4 text-blue-600">Add New Subject to Class</h3>
+                    <h3 class="font-black text-xs uppercase mb-4 text-blue-600">Add Subject to Class Group</h3>
                     <div class="space-y-4">
                         <select id="currClass" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
-                            <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
-                            <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                            <optgroup label="Junior Secondary">
+                                <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                            </optgroup>
+                            <optgroup label="Senior Secondary">
+                                <option>SSS 1 ART</option><option>SSS 1 SCIENCE</option>
+                                <option>SSS 2 ART</option><option>SSS 2 SCIENCE</option>
+                                <option>SSS 3 ART</option><option>SSS 3 SCIENCE</option>
+                                <option>SSS GENERAL</option>
+                            </optgroup>
                         </select>
-                        <input type="text" id="currSub" placeholder="Subject Name (e.g. Maths)" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm uppercase">
+                        <input type="text" id="currSub" placeholder="Subject Name" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm uppercase">
                         <input type="text" id="currTeacher" placeholder="Teacher Name" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
-                        <button onclick="addCurriculum()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black uppercase text-xs">Save to Curriculum</button>
+                        <button onclick="addCurriculum()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black uppercase text-xs">Update Curriculum</button>
                     </div>
                 </div>
                 <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border overflow-hidden">
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b text-[10px] uppercase font-black text-slate-400">
-                            <tr><th class="p-4">Class</th><th class="p-4">Subject</th><th class="p-4">Teacher</th><th class="p-4"></th></tr>
+                            <tr><th class="p-4">Group</th><th class="p-4">Subject</th><th class="p-4">Teacher</th><th class="p-4"></th></tr>
                         </thead>
                         <tbody id="curriculumTable" class="text-xs font-bold divide-y uppercase"></tbody>
                     </table>
@@ -84,9 +91,9 @@
 
         <section id="view-engine" class="view-section">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-4 bg-white rounded-2xl border h-[700px] flex flex-col overflow-hidden">
+                <div class="lg:col-span-4 bg-white rounded-2xl border h-[700px] flex flex-col">
                     <div class="p-4 border-b bg-slate-50">
-                        <input type="text" oninput="filterEngine(this.value)" placeholder="Find student..." class="w-full p-2.5 rounded-lg border-none ring-1 ring-slate-200 text-xs font-bold">
+                        <input type="text" oninput="filterEngine(this.value)" placeholder="Find student..." class="w-full p-2.5 rounded-lg border-none ring-1 ring-slate-200 text-xs font-bold uppercase">
                     </div>
                     <div id="engineList" class="overflow-y-auto divide-y"></div>
                 </div>
@@ -96,18 +103,21 @@
                             <h2 id="editName" class="text-xl font-black uppercase">---</h2>
                             <p id="editClass" class="text-blue-300 text-[10px] font-black uppercase tracking-widest">---</p>
                         </div>
-                        <button onclick="saveScores()" class="bg-green-500 px-6 py-2 rounded-xl font-black text-xs uppercase shadow-lg">Save Scores</button>
+                        <div class="flex gap-2">
+                            <button onclick="addExtraRow()" class="bg-amber-500 px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-lg">+ Extra Subject</button>
+                            <button onclick="saveScores()" class="bg-green-500 px-6 py-2 rounded-xl font-black text-[10px] uppercase shadow-lg">Save Results</button>
+                        </div>
                     </div>
                     <div class="p-6">
-                        <table class="w-full text-sm border-separate border-spacing-y-2">
+                        <table class="w-full text-sm">
                             <thead class="text-[10px] text-slate-400 font-black uppercase">
-                                <tr><th class="text-left">Subject</th><th class="text-center w-24">Test</th><th class="text-center w-24">Exam</th></tr>
+                                <tr><th class="text-left p-2">Subject Name</th><th class="text-center w-24">Test</th><th class="text-center w-24">Exam</th><th></th></tr>
                             </thead>
                             <tbody id="scoreRows"></tbody>
                         </table>
                         <div class="mt-6 pt-6 border-t">
-                            <label class="text-[10px] font-black text-slate-400 uppercase">Principal Remark</label>
-                            <textarea id="remark" class="w-full p-4 mt-2 bg-slate-50 rounded-xl border-none ring-1 ring-slate-100 italic outline-none"></textarea>
+                            <label class="text-[10px] font-black text-slate-400 uppercase">Terminal Remark</label>
+                            <textarea id="remark" class="w-full p-4 mt-2 bg-slate-50 rounded-xl border-none ring-1 ring-slate-100 italic outline-none text-sm"></textarea>
                         </div>
                     </div>
                 </div>
@@ -120,8 +130,6 @@
         let students = [], curriculum = [], activeId = null;
 
         async function init() {
-            const { data: { session } } = await _supabase.auth.getSession();
-            if(!session) window.location.replace('login.html');
             loadData();
         }
 
@@ -144,17 +152,17 @@
             lucide.createIcons();
         }
 
-        // --- DIRECTORY LOGIC ---
         function renderDirectory() {
             document.getElementById('directoryTable').innerHTML = students.map(s => `
                 <tr class="hover:bg-slate-50">
+                    <td class="p-4 font-black text-xs text-blue-600 uppercase">ID-${s.id.substring(0,5)}</td>
                     <td class="p-4 font-black text-xs uppercase">${s.full_name}</td>
-                    <td class="p-4 text-xs font-bold text-slate-500">${s.grade_level || 'N/A'}</td>
+                    <td class="p-4 text-[10px] font-bold text-slate-500 uppercase">${s.grade_level || '---'}</td>
                     <td class="p-4">
-                        <span class="px-2 py-1 rounded-md text-[9px] font-black uppercase ${s.status === 'Suspended' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">${s.status || 'Enrolled'}</span>
+                        <span class="px-2 py-1 rounded text-[9px] font-black uppercase ${s.status === 'Suspended' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">${s.status || 'Active'}</span>
                     </td>
                     <td class="p-4 text-right flex justify-end gap-2">
-                        <button onclick="toggleSuspension('${s.id}', '${s.status}')" class="p-2 bg-slate-100 rounded-lg" title="Toggle Suspension"><i data-lucide="slash" class="w-4 h-4 text-amber-600"></i></button>
+                        <button onclick="toggleSuspension('${s.id}', '${s.status}')" class="p-2 bg-slate-100 rounded-lg"><i data-lucide="user-minus" class="w-4 h-4 text-amber-600"></i></button>
                         <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
                     </td>
                 </tr>
@@ -162,57 +170,17 @@
             lucide.createIcons();
         }
 
-        async function toggleSuspension(id, current) {
-            const next = current === 'Suspended' ? 'Enrolled' : 'Suspended';
-            await _supabase.from('students').update({ status: next }).eq('id', id);
-            loadData();
-        }
-
-        async function deleteStudent(id) {
-            if(confirm("DANGER: This will permanently erase this student from the school records. Proceed?")) {
-                await _supabase.from('students').delete().eq('id', id);
-                loadData();
-            }
-        }
-
-        // --- CURRICULUM LOGIC ---
-        function renderCurriculum() {
-            document.getElementById('curriculumTable').innerHTML = curriculum.map(c => `
-                <tr>
-                    <td class="p-4 text-blue-600 font-black">${c.class_name}</td>
-                    <td class="p-4">${c.subject_name}</td>
-                    <td class="p-4 text-slate-400 italic">${c.assigned_teacher || 'No Teacher'}</td>
-                    <td class="p-4 text-right"><button onclick="deleteCurr('${c.id}')" class="text-red-400"><i data-lucide="x" class="w-4 h-4"></i></button></td>
-                </tr>
-            `).join('');
-            lucide.createIcons();
-        }
-
-        async function addCurriculum() {
-            const class_name = document.getElementById('currClass').value;
-            const subject_name = document.getElementById('currSub').value;
-            const assigned_teacher = document.getElementById('currTeacher').value;
-            if(!subject_name) return alert("Enter subject name");
-            await _supabase.from('school_curriculum').insert([{ class_name, subject_name, assigned_teacher }]);
-            loadData();
-        }
-
-        async function deleteCurr(id) {
-            await _supabase.from('school_curriculum').delete().eq('id', id);
-            loadData();
-        }
-
-        // --- RESULTS ENGINE ROOM (AUTO-SUBJECTS) ---
-        function renderEngineList(list) {
-            document.getElementById('engineList').innerHTML = list.map(s => `
-                <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center group">
-                    <div>
-                        <p class="text-xs font-black uppercase text-slate-800">${s.full_name}</p>
-                        <p class="text-[9px] font-bold text-slate-400">${s.grade_level}</p>
-                    </div>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-blue-500"></i>
-                </div>
-            `).join('');
+        function addExtraRow() {
+            const tbody = document.getElementById('scoreRows');
+            const tr = document.createElement('tr');
+            tr.className = "bg-amber-50 rounded-lg";
+            tr.innerHTML = `
+                <td class="p-2"><input type="text" placeholder="Extra Subject Name" class="extra-n w-full p-2 rounded border-none font-black text-xs uppercase outline-none bg-white ring-1 ring-amber-200"></td>
+                <td class="p-2"><input type="number" value="0" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
+                <td class="p-2"><input type="number" value="0" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
+                <td class="p-2 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500"><i data-lucide="x-circle" class="w-4 h-4"></i></button></td>
+            `;
+            tbody.appendChild(tr);
             lucide.createIcons();
         }
 
@@ -224,19 +192,20 @@
             document.getElementById('editClass').innerText = s.grade_level;
             document.getElementById('remark').value = s.teacher_remark || '';
             
-            // Get subjects for this class from Curriculum
-            const classSubs = curriculum.filter(c => c.class_name === s.grade_level);
+            // Logic: Class Subjects + Science/Art Specifics
+            const classGroup = s.grade_level; 
+            const classSubs = curriculum.filter(c => c.class_name === classGroup || c.class_name === 'SSS GENERAL');
             const existingScores = s.subjects || [];
 
             const rows = document.getElementById('scoreRows');
             rows.innerHTML = classSubs.map(cs => {
-                // Check if student already has a score for this subject
                 const score = existingScores.find(es => es.name.toUpperCase() === cs.subject_name.toUpperCase()) || { test: 0, exam: 0 };
                 return `
-                    <tr class="bg-slate-50 rounded-lg overflow-hidden">
-                        <td class="p-3 font-black text-xs uppercase">${cs.subject_name} <span class="block text-[8px] text-slate-400 font-bold">${cs.assigned_teacher || ''}</span></td>
+                    <tr class="bg-slate-50 border-b border-white">
+                        <td class="p-3 font-black text-xs uppercase text-slate-700">${cs.subject_name} <span class="hidden extra-n-val">${cs.subject_name}</span></td>
                         <td class="p-3"><input type="number" value="${score.test}" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none focus:ring-2 ring-blue-500" data-sub="${cs.subject_name}" data-teacher="${cs.assigned_teacher}"></td>
                         <td class="p-3"><input type="number" value="${score.exam}" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none focus:ring-2 ring-blue-500"></td>
+                        <td></td>
                     </tr>
                 `;
             }).join('');
@@ -244,37 +213,53 @@
 
         async function saveScores() {
             const subs = [];
-            const tests = document.querySelectorAll('.st');
-            const exams = document.querySelectorAll('.se');
-
-            tests.forEach((t, i) => {
-                subs.push({
-                    name: t.getAttribute('data-sub'),
-                    teacher: t.getAttribute('data-teacher'),
-                    test: parseFloat(t.value) || 0,
-                    exam: parseFloat(exams[i].value) || 0
-                });
+            const rows = document.querySelectorAll('#scoreRows tr');
+            
+            rows.forEach(row => {
+                const name = row.querySelector('.extra-n') ? row.querySelector('.extra-n').value : row.querySelector('.extra-n-val').innerText;
+                const test = parseFloat(row.querySelector('.st').value) || 0;
+                const exam = parseFloat(row.querySelector('.se').value) || 0;
+                const teacher = row.querySelector('.st').getAttribute('data-teacher') || "Subject Staff";
+                
+                if(name) subs.push({ name: name.toUpperCase(), test, exam, teacher });
             });
 
             const { error } = await _supabase.from('students').update({
                 subjects: subs,
-                teacher_remark: document.getElementById('remark').value,
-                result_status: 'Published'
+                teacher_remark: document.getElementById('remark').value
             }).eq('id', activeId);
 
-            if(!error) {
-                alert("Report Updated Successfully!");
-                loadData();
-            } else {
-                alert("Error: " + error.message);
-            }
+            if(!error) { alert("Student Data Saved!"); loadData(); }
         }
 
-        function filterEngine(val) {
-            renderEngineList(students.filter(s => s.full_name.toLowerCase().includes(val.toLowerCase())));
+        // Standard helpers
+        function renderCurriculum() {
+            document.getElementById('curriculumTable').innerHTML = curriculum.map(c => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-4 text-blue-600 font-black">${c.class_name}</td>
+                    <td class="p-4">${c.subject_name}</td>
+                    <td class="p-4 text-slate-400 italic">${c.assigned_teacher || 'Staff'}</td>
+                    <td class="p-4 text-right"><button onclick="deleteCurr('${c.id}')" class="text-red-400"><i data-lucide="trash" class="w-4 h-4"></i></button></td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
         }
 
-        function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
+        async function addCurriculum() {
+            const class_name = document.getElementById('currClass').value;
+            const subject_name = document.getElementById('currSub').value;
+            const assigned_teacher = document.getElementById('currTeacher').value;
+            if(!subject_name) return alert("Enter subject");
+            await _supabase.from('school_curriculum').insert([{ class_name, subject_name, assigned_teacher }]);
+            loadData();
+        }
+
+        async function deleteCurr(id) { await _supabase.from('school_curriculum').delete().eq('id', id); loadData(); }
+        async function deleteStudent(id) { if(confirm("Delete student permanently?")) { await _supabase.from('students').delete().eq('id', id); loadData(); } }
+        async function toggleSuspension(id, cur) { await _supabase.from('students').update({ status: cur === 'Suspended' ? 'Active' : 'Suspended' }).eq('id', id); loadData(); }
+        function renderEngineList(l) { document.getElementById('engineList').innerHTML = l.map(s => `<div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer text-xs font-black uppercase">${s.full_name} <span class="block text-[9px] text-slate-400">${s.grade_level}</span></div>`).join(''); }
+        function filterEngine(v) { renderEngineList(students.filter(s => s.full_name.toLowerCase().includes(v.toLowerCase()))); }
+        function filterTable(id, v) { loadData(); } // Basic reload for filter
         window.onload = init;
     </script>
 </body>
