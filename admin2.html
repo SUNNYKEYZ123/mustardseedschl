@@ -28,26 +28,24 @@
         </div>
         <nav class="space-y-2 flex-1">
             <button onclick="showView('directory')" id="btn-directory" class="nav-link active"><i data-lucide="users"></i> Students List</button>
-            <button onclick="showView('curriculum')" id="btn-curriculum" class="nav-link"><i data-lucide="book-open"></i> Class Subjects</button>
             <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="award"></i> Score Entry Room</button>
         </nav>
         <button onclick="handleLogout()" class="nav-link text-red-400 hover:bg-red-400/10 mt-auto"><i data-lucide="log-out"></i> Logout</button>
     </aside>
 
     <main class="flex-1 ml-[260px] p-8">
-        
         <section id="view-directory" class="view-section active">
             <div class="flex justify-between items-end mb-8">
                 <div>
                     <h1 class="text-3xl font-black uppercase">Directory</h1>
-                    <p id="studentCount" class="text-blue-600 text-xs font-black uppercase">Total Students: 0</p>
+                    <p id="totalCount" class="text-blue-600 text-xs font-black uppercase">Total Students: 0</p>
                 </div>
-                <input type="text" id="dirSearch" oninput="filterDirectory()" placeholder="Search Name or MS-ID..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64 uppercase outline-none">
+                <input type="text" id="dirSearch" oninput="renderDirectory()" placeholder="Search Name or MS-ID..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64 uppercase outline-none">
             </div>
             <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                 <table class="w-full text-left">
                     <thead class="bg-slate-50 border-b text-[10px] uppercase font-black text-slate-400">
-                        <tr><th class="p-4">Reg ID</th><th class="p-4">Full Name</th><th class="p-4">Class</th><th class="p-4">Group</th><th class="p-4">Status</th><th class="p-4 text-right">Action</th></tr>
+                        <tr><th class="p-4">Reg ID</th><th class="p-4">Student Name</th><th class="p-4">Class</th><th class="p-4">Group</th><th class="p-4 text-right">Action</th></tr>
                     </thead>
                     <tbody id="directoryTable" class="divide-y divide-slate-50 uppercase text-[11px] font-bold"></tbody>
                 </table>
@@ -56,14 +54,14 @@
 
         <section id="view-engine" class="view-section">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-4 bg-white rounded-2xl border h-[750px] flex flex-col overflow-hidden shadow-sm">
+                <div class="lg:col-span-4 bg-white rounded-2xl border h-[750px] flex flex-col shadow-sm overflow-hidden">
                     <div class="p-4 bg-slate-50 border-b space-y-2">
-                        <select id="engineClassFilter" onchange="filterEngineList()" class="w-full p-2 rounded bg-white ring-1 ring-slate-200 border-none text-[10px] font-black uppercase outline-none">
+                        <select id="engineClassFilter" onchange="renderEngineList()" class="w-full p-2 rounded bg-white ring-1 ring-slate-200 border-none text-[10px] font-black uppercase outline-none">
                             <option value="ALL">All Classes</option>
                             <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
                             <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
                         </select>
-                        <input type="text" id="engSearch" oninput="filterEngineList()" placeholder="Find Student..." class="w-full p-3 rounded-lg border-none ring-1 ring-slate-200 text-xs font-black uppercase outline-none">
+                        <input type="text" id="engSearch" oninput="renderEngineList()" placeholder="Find Student..." class="w-full p-3 rounded-lg border-none ring-1 ring-slate-200 text-xs font-black uppercase outline-none">
                     </div>
                     <div id="engineList" class="overflow-y-auto divide-y"></div>
                 </div>
@@ -75,13 +73,13 @@
                             <p id="editMeta" class="text-blue-300 text-[10px] font-black uppercase tracking-widest mt-2">---</p>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="addExtraRow()" class="bg-amber-500 px-4 py-2 rounded-lg font-black text-[9px] uppercase shadow-md">+ One-off</button>
+                            <button onclick="addExtraRow()" class="bg-amber-500 px-4 py-2 rounded-lg font-black text-[9px] uppercase shadow-md">+ Extra</button>
                             <button onclick="saveScores()" class="bg-green-500 px-6 py-2 rounded-lg font-black text-[9px] uppercase shadow-md">Save Everything</button>
                         </div>
                     </div>
 
                     <div class="p-6 flex-1 overflow-y-auto">
-                        <div class="grid grid-cols-2 gap-4 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="grid grid-cols-2 gap-4 mb-6 p-4 bg-slate-50 rounded-xl border">
                             <div>
                                 <label class="text-[9px] font-black text-slate-400 uppercase">Times School Opened</label>
                                 <input type="number" id="timesOpened" class="w-full mt-1 p-2 rounded bg-white ring-1 ring-slate-200 border-none font-black text-sm outline-none">
@@ -91,38 +89,34 @@
                                 <input type="number" id="timesPresent" class="w-full mt-1 p-2 rounded bg-white ring-1 ring-slate-200 border-none font-black text-sm outline-none">
                             </div>
                         </div>
-
                         <table class="w-full">
                             <thead class="text-[10px] text-slate-400 font-black uppercase border-b">
-                                <tr><th class="text-left py-3">Subject & Teacher</th><th class="text-center w-24">Test</th><th class="text-center w-24">Exam</th><th></th></tr>
+                                <tr><th class="text-left py-3">Subject Name</th><th class="text-center w-24">Test</th><th class="text-center w-24">Exam</th><th></th></tr>
                             </thead>
                             <tbody id="scoreRows"></tbody>
                         </table>
                         <div class="mt-8 pt-6 border-t">
-                            <label class="text-[10px] font-black text-slate-400 uppercase">Principal/Teacher's Remark</label>
+                            <label class="text-[10px] font-black text-slate-400 uppercase">Principal Remark</label>
                             <textarea id="remark" class="w-full p-4 mt-2 bg-slate-50 rounded-xl border-none ring-1 ring-slate-100 italic outline-none text-sm"></textarea>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-        
-        <section id="view-curriculum" class="view-section">
-             </section>
     </main>
 
     <div id="groupModal" class="fixed inset-0 bg-slate-900/60 hidden z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 class="font-black uppercase text-sm mb-4">Assign Student Group</h3>
-            <p id="modalStudentName" class="text-xs font-bold text-slate-500 mb-4 uppercase"></p>
-            <select id="modalGroupSelect" class="w-full p-3 rounded-xl bg-slate-50 ring-1 ring-slate-200 border-none font-bold mb-6 outline-none">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center">
+            <h3 class="font-black uppercase text-sm mb-2">Set Student Group</h3>
+            <p id="modalName" class="text-xs font-bold text-slate-400 mb-6 uppercase"></p>
+            <select id="modalGroup" class="w-full p-3 rounded-xl bg-slate-50 ring-1 ring-slate-200 border-none font-bold mb-6 outline-none">
                 <option value="GENERAL">GENERAL</option>
                 <option value="ART">ART STUDENT</option>
                 <option value="SCIENCE">SCIENCE STUDENT</option>
             </select>
             <div class="flex gap-2">
-                <button onclick="closeModal()" class="flex-1 py-3 font-black text-xs uppercase text-slate-400">Cancel</button>
-                <button onclick="updateStudentGroup()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase">Save Permanently</button>
+                <button onclick="closeModal()" class="flex-1 py-3 font-black text-xs uppercase text-slate-300">Cancel</button>
+                <button onclick="savePermanentGroup()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase shadow-lg">Save Group</button>
             </div>
         </div>
     </div>
@@ -132,21 +126,14 @@
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
-        let students = [], curriculum = [], activeId = null;
-
-        async function init() {
-            loadData();
-        }
+        let students = [], activeId = null;
 
         async function loadData() {
-            const { data: st } = await _supabase.from('students').select('*').order('full_name');
-            const { data: cu } = await _supabase.from('school_curriculum').select('*').order('class_name');
-            students = st || [];
-            curriculum = cu || [];
-            
-            document.getElementById('studentCount').innerText = `Total Students: ${students.length}`;
+            const { data } = await _supabase.from('students').select('*').eq('is_admin', false).order('full_name');
+            students = data || [];
+            document.getElementById('totalCount').innerText = `Total Students: ${students.length}`;
             renderDirectory();
-            renderEngineList(students);
+            renderEngineList();
             lucide.createIcons();
         }
 
@@ -158,12 +145,11 @@
             lucide.createIcons();
         }
 
-        // --- DIRECTORY LOGIC ---
         function renderDirectory() {
-            const val = document.getElementById('dirSearch').value.toUpperCase();
+            const search = document.getElementById('dirSearch').value.toUpperCase();
             const filtered = students.filter(s => {
                 const msId = "MS-" + s.id.substring(0, 5).toUpperCase();
-                return s.full_name.toUpperCase().includes(val) || msId.includes(val);
+                return s.full_name.toUpperCase().includes(search) || msId.includes(search);
             });
 
             document.getElementById('directoryTable').innerHTML = filtered.map(s => {
@@ -174,46 +160,27 @@
                     <td class="p-4">${s.full_name}</td>
                     <td class="p-4">${s.grade_level || '---'}</td>
                     <td class="p-4"><span class="px-2 py-1 rounded bg-slate-100 text-[9px] font-black">${s.student_group || 'GENERAL'}</span></td>
-                    <td class="p-4">
-                        <span class="px-2 py-1 rounded text-[9px] font-black uppercase ${s.status === 'Suspended' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">${s.status || 'Active'}</span>
-                    </td>
                     <td class="p-4 text-right flex justify-end gap-2">
-                        <button onclick="openGroupModal('${s.id}', '${s.full_name}', '${s.student_group}')" class="p-2 bg-blue-50 rounded-lg text-blue-600"><i data-lucide="settings-2" class="w-4 h-4"></i></button>
-                        <button onclick="toggleSuspension('${s.id}', '${s.status}')" class="p-2 bg-slate-100 rounded-lg"><i data-lucide="user-minus" class="w-4 h-4 text-amber-600"></i></button>
-                        <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 rounded-lg text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <button onclick="openGroupModal('${s.id}', '${s.full_name}', '${s.student_group}')" class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i data-lucide="settings-2" class="w-4 h-4"></i></button>
+                        <button onclick="toggleSuspension('${s.id}', '${s.status}')" class="p-2 bg-slate-100 text-amber-600 rounded-lg"><i data-lucide="user-minus" class="w-4 h-4"></i></button>
+                        <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 text-red-600 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </td>
                 </tr>`;
             }).join('');
             lucide.createIcons();
         }
 
-        function filterDirectory() { renderDirectory(); }
+        function renderEngineList() {
+            const search = document.getElementById('engSearch').value.toUpperCase();
+            const classVal = document.getElementById('engineClassFilter').value;
+            
+            const filtered = students.filter(s => {
+                const matchesSearch = s.full_name.toUpperCase().includes(search);
+                const matchesClass = (classVal === 'ALL' || s.grade_level === classVal);
+                return matchesSearch && matchesClass;
+            });
 
-        // --- GROUP ASSIGNMENT LOGIC ---
-        function openGroupModal(id, name, group) {
-            activeId = id;
-            document.getElementById('modalStudentName').innerText = name;
-            document.getElementById('modalGroupSelect').value = group || 'GENERAL';
-            document.getElementById('groupModal').classList.remove('hidden');
-        }
-
-        function closeModal() { document.getElementById('groupModal').classList.add('hidden'); }
-
-        async function updateStudentGroup() {
-            const grp = document.getElementById('modalGroupSelect').value;
-            const { error } = await _supabase.from('students').update({ student_group: grp }).eq('id', activeId);
-            if(!error) { await loadData(); closeModal(); }
-        }
-
-        async function toggleSuspension(id, cur) {
-            const nextStatus = cur === 'Suspended' ? 'Active' : 'Suspended';
-            await _supabase.from('students').update({ status: nextStatus }).eq('id', id);
-            loadData();
-        }
-
-        // --- ENGINE ROOM LOGIC ---
-        function renderEngineList(list) {
-            document.getElementById('engineList').innerHTML = list.map(s => `
+            document.getElementById('engineList').innerHTML = filtered.map(s => `
                 <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center group transition">
                     <div class="uppercase">
                         <p class="text-[11px] font-black text-slate-800">${s.full_name}</p>
@@ -222,18 +189,6 @@
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-blue-500"></i>
                 </div>`).join('');
             lucide.createIcons();
-        }
-
-        function filterEngineList() {
-            const search = document.getElementById('engSearch').value.toUpperCase();
-            const classFilter = document.getElementById('engineClassFilter').value;
-            
-            const filtered = students.filter(s => {
-                const matchesSearch = s.full_name.toUpperCase().includes(search);
-                const matchesClass = (classFilter === 'ALL' || s.grade_level === classFilter);
-                return matchesSearch && matchesClass;
-            });
-            renderEngineList(filtered);
         }
 
         function openEditor(id) {
@@ -246,53 +201,79 @@
             document.getElementById('timesPresent').value = s.times_present || 0;
             document.getElementById('remark').value = s.teacher_remark || '';
             
-            const existing = s.subjects || [];
-            document.getElementById('scoreRows').innerHTML = existing.map(sub => `
+            const subs = s.subjects || [];
+            document.getElementById('scoreRows').innerHTML = subs.map(sub => `
                 <tr class="bg-slate-50 border-b border-white">
                     <td class="p-3">
                         <span class="font-black text-[11px] uppercase block">${sub.name}</span>
                         <span class="hidden extra-n-val">${sub.name}</span>
                     </td>
-                    <td class="p-3"><input type="number" value="${sub.test}" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
-                    <td class="p-3"><input type="number" value="${sub.exam}" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
-                    <td></td>
+                    <td class="p-3 w-24"><input type="number" value="${sub.test}" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none ring-1 ring-slate-100"></td>
+                    <td class="p-3 w-24"><input type="number" value="${sub.exam}" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none ring-1 ring-slate-100"></td>
+                    <td class="p-3 w-10 text-center"><button onclick="this.closest('tr').remove()" class="text-slate-300 hover:text-red-500"><i data-lucide="x" class="w-4 h-4"></i></button></td>
                 </tr>`).join('');
+            lucide.createIcons();
         }
 
         async function saveScores() {
-            const subs = [];
+            const finalSubs = [];
             document.querySelectorAll('#scoreRows tr').forEach(row => {
                 const name = row.querySelector('.extra-n') ? row.querySelector('.extra-n').value : row.querySelector('.extra-n-val').innerText;
                 const test = parseFloat(row.querySelector('.st').value) || 0;
                 const exam = parseFloat(row.querySelector('.se').value) || 0;
-                if(name) subs.push({ name: name.toUpperCase(), test, exam });
+                if(name) finalSubs.push({ name: name.toUpperCase(), test, exam });
             });
 
-            const { error } = await _supabase.from('students').update({
-                subjects: subs,
+            await _supabase.from('students').update({
+                subjects: finalSubs,
                 times_opened: parseInt(document.getElementById('timesOpened').value),
                 times_present: parseInt(document.getElementById('timesPresent').value),
                 teacher_remark: document.getElementById('remark').value
             }).eq('id', activeId);
 
-            if(!error) { alert("Record Updated Successfully!"); loadData(); }
+            alert("Saved Successfully!");
+            loadData();
         }
 
         function addExtraRow() {
             const tr = document.createElement('tr');
             tr.className = "bg-amber-50 border-b border-white";
             tr.innerHTML = `
-                <td class="p-2"><input type="text" placeholder="Extra Subject" class="extra-n w-full p-2 rounded border-none font-black text-xs uppercase outline-none bg-white ring-1 ring-amber-200"></td>
-                <td class="p-2"><input type="number" value="0" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
-                <td class="p-2"><input type="number" value="0" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
-                <td class="p-2 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500"><i data-lucide="x-circle" class="w-4 h-4"></i></button></td>`;
+                <td class="p-2"><input type="text" placeholder="Subject Name" class="extra-n w-full p-2 rounded border-none font-black text-xs uppercase bg-white outline-none ring-1 ring-amber-200"></td>
+                <td class="p-2 w-24"><input type="number" value="0" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
+                <td class="p-2 w-24"><input type="number" value="0" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
+                <td class="p-2 w-10 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500"><i data-lucide="x-circle" class="w-4 h-4"></i></button></td>`;
             document.getElementById('scoreRows').appendChild(tr);
             lucide.createIcons();
         }
 
-        async function deleteStudent(id) { if(confirm("Wipe student from record?")) { await _supabase.from('students').delete().eq('id', id); loadData(); } }
+        function openGroupModal(id, name, group) {
+            activeId = id;
+            document.getElementById('modalName').innerText = name;
+            document.getElementById('modalGroup').value = group || 'GENERAL';
+            document.getElementById('groupModal').classList.remove('hidden');
+        }
+        function closeModal() { document.getElementById('groupModal').classList.add('hidden'); }
+        async function savePermanentGroup() {
+            const val = document.getElementById('modalGroup').value;
+            await _supabase.from('students').update({ student_group: val }).eq('id', activeId);
+            closeModal(); loadData();
+        }
+
+        async function toggleSuspension(id, cur) {
+            await _supabase.from('students').update({ status: cur === 'Suspended' ? 'Active' : 'Suspended' }).eq('id', id);
+            loadData();
+        }
+
+        async function deleteStudent(id) {
+            if(confirm("Permanently delete student?")) {
+                await _supabase.from('students').delete().eq('id', id);
+                loadData();
+            }
+        }
+
         async function handleLogout() { await _supabase.auth.signOut(); window.location.replace('login.html'); }
-        window.onload = init;
+        window.onload = loadData;
     </script>
 </body>
 </html>
