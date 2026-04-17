@@ -11,108 +11,105 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .sidebar { transition: transform 0.3s ease; width: 280px; z-index: 50; background: #0f172a; }
-        @media (max-width: 1023px) {
-            .sidebar { transform: translateX(-100%); position: fixed; height: 100vh; }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0 !important; }
-        }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; width: 100%; text-align: left; }
+        .sidebar { width: 260px; background: #0f172a; z-index: 50; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; width: 100%; }
         .nav-link:hover, .nav-link.active { background: #2563eb; color: white; }
         .view-section { display: none; }
         .view-section.active { display: block; }
-        .hidden-row { display: none !important; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-50 min-h-screen flex">
 
-    <aside id="sidebar" class="sidebar text-white p-6 fixed h-screen flex flex-col shadow-2xl">
-        <div class="flex items-center justify-between mb-10 pb-6 border-b border-slate-800">
-            <div class="flex items-center gap-3">
-                <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10">
-                <span class="font-black italic text-xl tracking-tighter uppercase text-blue-400">MSS ADMIN</span>
-            </div>
-            <button onclick="toggleSidebar()" class="lg:hidden"><i data-lucide="x"></i></button>
+    <aside class="sidebar text-white p-6 fixed h-screen flex flex-col shadow-2xl">
+        <div class="flex items-center gap-3 mb-10 pb-6 border-b border-slate-800">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10">
+            <span class="font-black text-lg tracking-tighter uppercase text-blue-400">MSS ADMIN</span>
         </div>
         <nav class="space-y-2 flex-1">
-            <button onclick="showView('directory')" id="btn-directory" class="nav-link active"><i data-lucide="users"></i> Student Directory</button>
-            <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="award"></i> Results Engine Room</button>
+            <button onclick="showView('directory')" id="btn-directory" class="nav-link active"><i data-lucide="users"></i> Students List</button>
+            <button onclick="showView('curriculum')" id="btn-curriculum" class="nav-link"><i data-lucide="book-open"></i> Class Subjects</button>
+            <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="award"></i> Score Entry</button>
         </nav>
         <button onclick="handleLogout()" class="nav-link text-red-400 hover:bg-red-400/10 mt-auto"><i data-lucide="log-out"></i> Logout</button>
     </aside>
 
-    <main class="main-content lg:ml-[280px] p-4 md:p-10 transition-all">
-        <header class="flex justify-between items-center mb-10 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
-            <button onclick="toggleSidebar()" class="lg:hidden p-2 bg-slate-100 rounded-lg"><i data-lucide="menu"></i></button>
-            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white uppercase">AD</div>
-        </header>
-
+    <main class="flex-1 ml-[260px] p-8">
+        
         <section id="view-directory" class="view-section active">
-            <div class="flex flex-col lg:flex-row justify-between items-end gap-6 mb-10">
+            <div class="flex justify-between items-end mb-8">
                 <div>
-                    <h1 class="text-4xl font-black text-slate-900 tracking-tighter uppercase">Directory</h1>
-                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Management & Access Control</p>
+                    <h1 class="text-3xl font-black text-slate-900 uppercase">Student Directory</h1>
+                    <p class="text-slate-400 text-xs font-bold uppercase">Manage access and student status</p>
                 </div>
-                <div class="flex-1 max-w-md w-full relative">
-                    <i data-lucide="search" class="absolute left-4 top-3.5 w-5 h-5 text-slate-300"></i>
-                    <input type="text" id="dirSearch" oninput="filterDirectory()" placeholder="Search directory..." class="w-full pl-12 pr-4 py-3.5 rounded-2xl border-none shadow-xl shadow-slate-200 focus:ring-2 ring-blue-500 outline-none text-sm font-bold">
-                </div>
+                <input type="text" oninput="filterTable('directoryTable', this.value)" placeholder="Search students..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64">
             </div>
-            <div class="bg-white rounded-[2.5rem] shadow-2xl border overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                 <table class="w-full text-left">
-                    <thead class="bg-slate-50 border-b">
-                        <tr class="text-[10px] uppercase text-slate-400 font-black tracking-widest">
-                            <th class="p-6">Student Profile</th>
-                            <th class="p-6 text-center">Identity</th>
-                            <th class="p-6 text-center">Status</th>
-                            <th class="p-6 text-right">Actions</th>
-                        </tr>
+                    <thead class="bg-slate-50 border-b text-[10px] uppercase font-black text-slate-400">
+                        <tr><th class="p-4">Profile</th><th class="p-4">Class</th><th class="p-4">Status</th><th class="p-4 text-right">Action</th></tr>
                     </thead>
                     <tbody id="directoryTable" class="divide-y divide-slate-50"></tbody>
                 </table>
             </div>
         </section>
 
+        <section id="view-curriculum" class="view-section">
+            <div class="mb-8">
+                <h1 class="text-3xl font-black text-slate-900 uppercase">Class Curriculum</h1>
+                <p class="text-slate-400 text-xs font-bold uppercase">Define subjects for each class</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                    <h3 class="font-black text-xs uppercase mb-4 text-blue-600">Add New Subject to Class</h3>
+                    <div class="space-y-4">
+                        <select id="currClass" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
+                            <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                            <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                        </select>
+                        <input type="text" id="currSub" placeholder="Subject Name (e.g. Maths)" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm uppercase">
+                        <input type="text" id="currTeacher" placeholder="Teacher Name" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
+                        <button onclick="addCurriculum()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black uppercase text-xs">Save to Curriculum</button>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b text-[10px] uppercase font-black text-slate-400">
+                            <tr><th class="p-4">Class</th><th class="p-4">Subject</th><th class="p-4">Teacher</th><th class="p-4"></th></tr>
+                        </thead>
+                        <tbody id="curriculumTable" class="text-xs font-bold divide-y uppercase"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
         <section id="view-engine" class="view-section">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-4 bg-white rounded-3xl border flex flex-col h-[650px] overflow-hidden shadow-sm">
+                <div class="lg:col-span-4 bg-white rounded-2xl border h-[700px] flex flex-col overflow-hidden">
                     <div class="p-4 border-b bg-slate-50">
-                        <input type="text" id="engSearch" oninput="filterEngine()" placeholder="Search Engine Students..." class="w-full p-3 rounded-xl border-none ring-1 ring-slate-200 text-xs font-bold outline-none">
+                        <input type="text" oninput="filterEngine(this.value)" placeholder="Find student..." class="w-full p-2.5 rounded-lg border-none ring-1 ring-slate-200 text-xs font-bold">
                     </div>
-                    <div id="engineList" class="overflow-y-auto divide-y">
-                        </div>
+                    <div id="engineList" class="overflow-y-auto divide-y"></div>
                 </div>
-
-                <div id="editorPanel" class="lg:col-span-8 bg-white rounded-3xl border shadow-2xl overflow-hidden hidden">
-                    <div class="p-8 bg-blue-900 text-white flex justify-between items-center">
+                <div id="editorPanel" class="lg:col-span-8 bg-white rounded-2xl border shadow-xl hidden overflow-hidden">
+                    <div class="p-6 bg-blue-900 text-white flex justify-between items-center">
                         <div>
-                            <h2 id="editName" class="text-2xl font-black uppercase tracking-tighter">---</h2>
-                            <p id="editClass" class="text-blue-300 text-[10px] font-black uppercase">---</p>
+                            <h2 id="editName" class="text-xl font-black uppercase">---</h2>
+                            <p id="editClass" class="text-blue-300 text-[10px] font-black uppercase tracking-widest">---</p>
                         </div>
-                        <select id="resStatus" class="bg-blue-800 text-white font-bold text-xs p-2.5 rounded-xl border-none">
-                            <option value="Draft">DRAFT</option>
-                            <option value="Published">PUBLISHED</option>
-                        </select>
+                        <button onclick="saveScores()" class="bg-green-500 px-6 py-2 rounded-xl font-black text-xs uppercase shadow-lg">Save Scores</button>
                     </div>
-                    <div class="p-8 space-y-6">
-                        <table class="w-full text-sm">
-                            <thead class="text-[10px] text-slate-400 font-black uppercase tracking-widest">
-                                <tr><th class="text-left pb-4">Subject</th><th class="text-center pb-4 w-24">Test</th><th class="text-center pb-4 w-24">Exam</th><th class="pb-4 w-10"></th></tr>
+                    <div class="p-6">
+                        <table class="w-full text-sm border-separate border-spacing-y-2">
+                            <thead class="text-[10px] text-slate-400 font-black uppercase">
+                                <tr><th class="text-left">Subject</th><th class="text-center w-24">Test</th><th class="text-center w-24">Exam</th></tr>
                             </thead>
                             <tbody id="scoreRows"></tbody>
                         </table>
-                        <button onclick="addRow()" class="text-blue-600 font-black text-[10px] uppercase flex items-center gap-1"><i data-lucide="plus"></i> Add Subject</button>
-                        <div>
-                            <label class="text-[10px] font-black text-slate-400 uppercase block mb-2">Remark</label>
-                            <textarea id="remark" rows="2" class="w-full p-4 bg-slate-50 rounded-2xl border-none ring-1 ring-slate-100 text-sm italic outline-none focus:ring-2 ring-blue-600"></textarea>
+                        <div class="mt-6 pt-6 border-t">
+                            <label class="text-[10px] font-black text-slate-400 uppercase">Principal Remark</label>
+                            <textarea id="remark" class="w-full p-4 mt-2 bg-slate-50 rounded-xl border-none ring-1 ring-slate-100 italic outline-none"></textarea>
                         </div>
-                        <button onclick="saveResultData()" id="saveBtn" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-black text-lg">UPDATE REPORT CARD</button>
                     </div>
-                </div>
-
-                <div id="emptyPanel" class="lg:col-span-8 flex flex-col items-center justify-center bg-white rounded-3xl border-2 border-dashed border-slate-200 p-20">
-                    <i data-lucide="award" class="w-12 h-12 text-slate-200 mb-4"></i>
-                    <p class="text-slate-400 font-black uppercase text-xs tracking-widest">Select a student from the left</p>
                 </div>
             </div>
         </section>
@@ -120,131 +117,163 @@
 
     <script>
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
-        let students = [];
-        let activeId = null;
+        let students = [], curriculum = [], activeId = null;
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-        
+        async function init() {
+            const { data: { session } } = await _supabase.auth.getSession();
+            if(!session) window.location.replace('login.html');
+            loadData();
+        }
+
+        async function loadData() {
+            const { data: st } = await _supabase.from('students').select('*').order('full_name');
+            const { data: cu } = await _supabase.from('school_curriculum').select('*').order('class_name');
+            students = st || [];
+            curriculum = cu || [];
+            renderDirectory();
+            renderCurriculum();
+            renderEngineList(students);
+            lucide.createIcons();
+        }
+
         function showView(v) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(`view-${v}`).classList.add('active');
             document.getElementById(`btn-${v}`).classList.add('active');
-            if(window.innerWidth < 1024) document.getElementById('sidebar').classList.remove('open');
             lucide.createIcons();
         }
 
-        async function init() {
-            const { data: { session } } = await _supabase.auth.getSession();
-            if(!session) { window.location.replace('login.html'); return; }
+        // --- DIRECTORY LOGIC ---
+        function renderDirectory() {
+            document.getElementById('directoryTable').innerHTML = students.map(s => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-4 font-black text-xs uppercase">${s.full_name}</td>
+                    <td class="p-4 text-xs font-bold text-slate-500">${s.grade_level || 'N/A'}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded-md text-[9px] font-black uppercase ${s.status === 'Suspended' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">${s.status || 'Enrolled'}</span>
+                    </td>
+                    <td class="p-4 text-right flex justify-end gap-2">
+                        <button onclick="toggleSuspension('${s.id}', '${s.status}')" class="p-2 bg-slate-100 rounded-lg" title="Toggle Suspension"><i data-lucide="slash" class="w-4 h-4 text-amber-600"></i></button>
+                        <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        async function toggleSuspension(id, current) {
+            const next = current === 'Suspended' ? 'Enrolled' : 'Suspended';
+            await _supabase.from('students').update({ status: next }).eq('id', id);
             loadData();
         }
 
-        async function loadData() {
-            const { data } = await _supabase.from('students').select('*').order('full_name');
-            if(data) { 
-                students = data; 
-                renderDirectory(data); 
-                renderEngineList(data); 
+        async function deleteStudent(id) {
+            if(confirm("DANGER: This will permanently erase this student from the school records. Proceed?")) {
+                await _supabase.from('students').delete().eq('id', id);
+                loadData();
             }
+        }
+
+        // --- CURRICULUM LOGIC ---
+        function renderCurriculum() {
+            document.getElementById('curriculumTable').innerHTML = curriculum.map(c => `
+                <tr>
+                    <td class="p-4 text-blue-600 font-black">${c.class_name}</td>
+                    <td class="p-4">${c.subject_name}</td>
+                    <td class="p-4 text-slate-400 italic">${c.assigned_teacher || 'No Teacher'}</td>
+                    <td class="p-4 text-right"><button onclick="deleteCurr('${c.id}')" class="text-red-400"><i data-lucide="x" class="w-4 h-4"></i></button></td>
+                </tr>
+            `).join('');
             lucide.createIcons();
         }
 
-        function renderDirectory(list) {
-            document.getElementById('directoryTable').innerHTML = list.map(st => {
-                const msId = "MS-" + st.id.substring(0, 5).toUpperCase();
-                return `
-                    <tr class="dir-row hover:bg-blue-50/30 transition" data-search="${st.full_name} ${msId}">
-                        <td class="p-6">
-                            <div class="flex items-center gap-4">
-                                <img src="${st.avatar_url || 'https://via.placeholder.com/100'}" class="w-10 h-10 rounded-xl object-cover">
-                                <div>
-                                    <p class="font-black text-slate-800 uppercase text-xs">${st.full_name}</p>
-                                    <p class="text-[9px] text-slate-400 font-bold">${st.grade_level || '---'}</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="p-6 text-center text-[10px] font-black text-slate-500">${msId}</td>
-                        <td class="p-6 text-center">
-                            <span class="px-3 py-1 rounded-full text-[8px] font-black uppercase border ${st.status === 'Enrolled' ? 'text-green-600 bg-green-50 border-green-100' : 'text-amber-600 bg-amber-50 border-amber-100'}">${st.status || 'NULL'}</span>
-                        </td>
-                        <td class="p-6 text-right flex justify-end gap-2">
-                            <button onclick="updateStatus('${st.id}', 'Enrolled')" class="p-2 bg-green-50 text-green-600 rounded-lg"><i data-lucide="check" class="w-4 h-4"></i></button>
-                            <button onclick="deleteStudent('${st.id}')" class="p-2 bg-red-50 text-red-600 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-            lucide.createIcons();
+        async function addCurriculum() {
+            const class_name = document.getElementById('currClass').value;
+            const subject_name = document.getElementById('currSub').value;
+            const assigned_teacher = document.getElementById('currTeacher').value;
+            if(!subject_name) return alert("Enter subject name");
+            await _supabase.from('school_curriculum').insert([{ class_name, subject_name, assigned_teacher }]);
+            loadData();
         }
 
+        async function deleteCurr(id) {
+            await _supabase.from('school_curriculum').delete().eq('id', id);
+            loadData();
+        }
+
+        // --- RESULTS ENGINE ROOM (AUTO-SUBJECTS) ---
         function renderEngineList(list) {
-            const container = document.getElementById('engineList');
-            if(list.length === 0) { container.innerHTML = '<p class="p-10 text-center text-[10px] font-black text-slate-400">NO STUDENTS FOUND</p>'; return; }
-            container.innerHTML = list.map(s => `
-                <div onclick="openScoreEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer transition flex items-center justify-between group">
+            document.getElementById('engineList').innerHTML = list.map(s => `
+                <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center group">
                     <div>
-                        <p class="text-[11px] font-black text-slate-800 uppercase group-hover:text-blue-600">${s.full_name}</p>
-                        <p class="text-[9px] text-slate-400 font-bold uppercase">${s.result_status || 'Draft'}</p>
+                        <p class="text-xs font-black uppercase text-slate-800">${s.full_name}</p>
+                        <p class="text-[9px] font-bold text-slate-400">${s.grade_level}</p>
                     </div>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200"></i>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-blue-500"></i>
                 </div>
             `).join('');
             lucide.createIcons();
         }
 
-        function openScoreEditor(id) {
+        function openEditor(id) {
             activeId = id;
             const s = students.find(x => x.id === id);
-            document.getElementById('emptyPanel').classList.add('hidden');
             document.getElementById('editorPanel').classList.remove('hidden');
             document.getElementById('editName').innerText = s.full_name;
-            document.getElementById('editClass').innerText = s.grade_level || 'General Studies';
-            document.getElementById('resStatus').value = s.result_status || 'Draft';
+            document.getElementById('editClass').innerText = s.grade_level;
             document.getElementById('remark').value = s.teacher_remark || '';
+            
+            // Get subjects for this class from Curriculum
+            const classSubs = curriculum.filter(c => c.class_name === s.grade_level);
+            const existingScores = s.subjects || [];
+
             const rows = document.getElementById('scoreRows');
-            rows.innerHTML = '';
-            (s.subjects || []).forEach(sub => addRow(sub.name, sub.test, sub.exam));
-            if(!s.subjects?.length) addRow();
-            lucide.createIcons();
+            rows.innerHTML = classSubs.map(cs => {
+                // Check if student already has a score for this subject
+                const score = existingScores.find(es => es.name.toUpperCase() === cs.subject_name.toUpperCase()) || { test: 0, exam: 0 };
+                return `
+                    <tr class="bg-slate-50 rounded-lg overflow-hidden">
+                        <td class="p-3 font-black text-xs uppercase">${cs.subject_name} <span class="block text-[8px] text-slate-400 font-bold">${cs.assigned_teacher || ''}</span></td>
+                        <td class="p-3"><input type="number" value="${score.test}" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none focus:ring-2 ring-blue-500" data-sub="${cs.subject_name}" data-teacher="${cs.assigned_teacher}"></td>
+                        <td class="p-3"><input type="number" value="${score.exam}" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none focus:ring-2 ring-blue-500"></td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        function addRow(n="", t=0, e=0) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="pb-2"><input type="text" value="${n}" class="sn w-full p-2 bg-slate-50 rounded-lg text-xs font-bold uppercase outline-none"></td>
-                <td class="pb-2 px-2"><input type="number" value="${t}" class="st w-full p-2 bg-slate-50 rounded-lg text-xs font-black text-center outline-none"></td>
-                <td class="pb-2"><input type="number" value="${e}" class="se w-full p-2 bg-slate-50 rounded-lg text-xs font-black text-center outline-none"></td>
-                <td class="pb-2 text-right"><button onclick="this.parentElement.parentElement.remove()" class="text-slate-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
-            `;
-            document.getElementById('scoreRows').appendChild(tr);
-            lucide.createIcons();
-        }
-
-        async function saveResultData() {
-            const names = document.querySelectorAll('.sn'), tests = document.querySelectorAll('.st'), exams = document.querySelectorAll('.se');
+        async function saveScores() {
             const subs = [];
-            names.forEach((n, i) => { if(n.value) subs.push({ name: n.value, test: parseFloat(tests[i].value)||0, exam: parseFloat(exams[i].value)||0 }); });
-            const { error } = await _supabase.from('students').update({ subjects: subs, result_status: document.getElementById('resStatus').value, teacher_remark: document.getElementById('remark').value }).eq('id', activeId);
-            if(!error) { alert("Updated!"); loadData(); } else { alert(error.message); }
+            const tests = document.querySelectorAll('.st');
+            const exams = document.querySelectorAll('.se');
+
+            tests.forEach((t, i) => {
+                subs.push({
+                    name: t.getAttribute('data-sub'),
+                    teacher: t.getAttribute('data-teacher'),
+                    test: parseFloat(t.value) || 0,
+                    exam: parseFloat(exams[i].value) || 0
+                });
+            });
+
+            const { error } = await _supabase.from('students').update({
+                subjects: subs,
+                teacher_remark: document.getElementById('remark').value,
+                result_status: 'Published'
+            }).eq('id', activeId);
+
+            if(!error) {
+                alert("Report Updated Successfully!");
+                loadData();
+            } else {
+                alert("Error: " + error.message);
+            }
         }
 
-        function filterDirectory() {
-            const val = document.getElementById('dirSearch').value.toLowerCase();
-            document.querySelectorAll('.dir-row').forEach(row => { row.classList.toggle('hidden-row', !row.getAttribute('data-search').toLowerCase().includes(val)); });
-        }
-        function filterEngine() {
-            const val = document.getElementById('engSearch').value.toLowerCase();
-            renderEngineList(students.filter(s => s.full_name.toLowerCase().includes(val)));
+        function filterEngine(val) {
+            renderEngineList(students.filter(s => s.full_name.toLowerCase().includes(val.toLowerCase())));
         }
 
-        async function updateStatus(id, s) { 
-            const { error } = await _supabase.from('students').update({ status: s }).eq('id', id);
-            if(!error) loadData(); 
-        }
-        async function deleteStudent(id) { 
-            if(confirm("Delete record?")) { await _supabase.from('students').delete().eq('id', id); loadData(); }
-        }
         function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
         window.onload = init;
     </script>
