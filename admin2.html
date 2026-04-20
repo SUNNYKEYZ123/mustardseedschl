@@ -4,183 +4,144 @@
     <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MSS Admin Portal</title>
+    <title>Master Admin | Mustard Seed</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; transition: all 0.3s ease; }
-        .sidebar { transition: width 0.3s; width: 260px; overflow: hidden; }
-        .sidebar.collapsed { width: 80px; }
-        .sidebar.collapsed span, .sidebar.collapsed .logo-text { display: none; }
-        .main-content { transition: margin-left 0.3s; margin-left: 260px; }
-        .main-content.expanded { margin-left: 80px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar { width: 260px; background: #0f172a; z-index: 50; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; width: 100%; }
+        .nav-link:hover, .nav-link.active { background: #2563eb; color: white; }
         .view-section { display: none; }
         .view-section.active { display: block; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px; color: #94a3b8; font-weight: 700; font-size: 13px; width: 100%; white-space: nowrap; }
-        .nav-link.active { background: #2563eb; color: white; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-900 uppercase">
+<body class="bg-slate-50 min-h-screen flex">
 
-    <aside id="sidebar" class="sidebar bg-[#0f172a] text-white fixed h-screen flex flex-col p-4 z-50">
-        <div class="flex items-center gap-3 mb-10 pb-6 border-b border-slate-800 overflow-hidden">
-            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10 min-w-[40px]">
-            <span class="logo-text font-black text-lg text-blue-400">MSS ADMIN</span>
+    <aside class="sidebar text-white p-6 fixed h-screen flex flex-col shadow-2xl">
+        <div class="flex items-center gap-3 mb-10 pb-6 border-b border-slate-800">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10">
+            <span class="font-black text-lg tracking-tighter uppercase text-blue-400">MSS ADMIN</span>
         </div>
-        
         <nav class="space-y-2 flex-1">
-            <button onclick="showView('directory')" id="btn-directory" class="nav-link active"><i data-lucide="users"></i> <span>Student List</span></button>
-            <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="edit-3"></i> <span>Score Entry</span></button>
-            <button onclick="showView('curriculum')" id="btn-curriculum" class="nav-link"><i data-lucide="book-open"></i> <span>Subjects & Teachers</span></button>
+            <button onclick="showView('directory')" id="btn-directory" class="nav-link active"><i data-lucide="users"></i> Students List</button>
+            <button onclick="showView('curriculum')" id="btn-curriculum" class="nav-link"><i data-lucide="book-open"></i> Class Subjects</button>
+            <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="award"></i> Score Entry</button>
         </nav>
-
-        <button onclick="toggleSidebar()" class="nav-link mb-2 text-slate-400"><i data-lucide="arrow-left-right"></i> <span>Shrink Menu</span></button>
-        <button onclick="handleLogout()" class="nav-link text-red-400 hover:bg-red-400/10"><i data-lucide="log-out"></i> <span>Logout</span></button>
+        <button onclick="handleLogout()" class="nav-link text-red-400 hover:bg-red-400/10 mt-auto"><i data-lucide="log-out"></i> Logout</button>
     </aside>
 
-    <main id="mainContent" class="main-content p-8">
+    <main class="flex-1 ml-[260px] p-8">
         
         <section id="view-directory" class="view-section active">
-            <div class="flex justify-between items-center mb-8">
+            <div class="flex justify-between items-end mb-8">
                 <div>
-                    <h1 class="text-3xl font-black">Student List</h1>
-                    <p id="totalCounter" class="text-blue-600 text-xs font-bold">Total: 0 Students</p>
+                    <h1 class="text-3xl font-black text-slate-900 uppercase">Student Directory</h1>
+                    <p class="text-slate-400 text-xs font-bold uppercase">View Names & IDs</p>
                 </div>
-                <div class="flex gap-4">
-                    <select id="dirClass" onchange="renderDirectory()" class="p-3 rounded-xl ring-1 ring-slate-200 font-bold text-xs outline-none bg-white">
-                        <option value="ALL">All Classes</option>
-                        <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
-                        <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
-                    </select>
-                    <input type="text" id="dirSearch" oninput="renderDirectory()" placeholder="Search Name..." class="p-3 rounded-xl ring-1 ring-slate-200 font-bold text-xs w-64 outline-none">
-                </div>
+                <input type="text" oninput="filterTable('directoryTable', this.value)" placeholder="Search Name or ID..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64">
             </div>
-
-            <div class="bg-white rounded-2xl border overflow-hidden shadow-sm">
+            <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                 <table class="w-full text-left">
-                    <thead class="bg-slate-50 border-b text-[10px] font-black text-slate-400 uppercase">
-                        <tr><th class="p-4">Reg ID</th><th class="p-4">Name & Class</th><th class="p-4">Department</th><th class="p-4 text-right">Settings</th></tr>
+                    <thead class="bg-slate-50 border-b text-[10px] uppercase font-black text-slate-400">
+                        <tr><th class="p-4">Reg ID</th><th class="p-4">Student Name</th><th class="p-4">Class</th><th class="p-4">Status</th><th class="p-4 text-right">Action</th></tr>
                     </thead>
-                    <tbody id="directoryTable" class="divide-y divide-slate-50 text-[11px] font-bold"></tbody>
+                    <tbody id="directoryTable" class="divide-y divide-slate-50"></tbody>
                 </table>
             </div>
         </section>
 
-        <section id="view-engine" class="view-section">
-            <div class="grid grid-cols-12 gap-6">
-                <div class="col-span-4 bg-white rounded-2xl border h-[80vh] flex flex-col shadow-sm">
-                    <div class="p-4 bg-slate-50 border-b space-y-2">
-                        <h2 class="text-xs font-black">Select Student</h2>
-                        <input type="text" id="scoreSearch" oninput="renderScoreList()" placeholder="Quick Search..." class="w-full p-3 rounded-lg ring-1 ring-slate-200 border-none text-xs font-bold outline-none">
-                    </div>
-                    <div id="scoreList" class="overflow-y-auto flex-1 divide-y"></div>
-                </div>
-
-                <div id="scoreEditor" class="col-span-8 bg-white rounded-2xl border shadow-xl hidden flex flex-col overflow-hidden">
-                    <div class="p-6 bg-[#0f172a] text-white flex justify-between items-center">
-                        <div>
-                            <h2 id="stName" class="text-xl font-black">---</h2>
-                            <span id="stMeta" class="text-blue-400 text-[10px] font-black uppercase">---</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="saveScores(false)" class="bg-slate-700 px-4 py-2 rounded-lg font-black text-[10px]">Save Draft</button>
-                            <button onclick="saveScores(true)" class="bg-green-600 px-4 py-2 rounded-lg font-black text-[10px] shadow-lg">Publish Report</button>
-                        </div>
-                    </div>
-                    
-                    <div class="p-6 overflow-y-auto flex-1">
-                        <div class="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl grid grid-cols-2 gap-6">
-                            <div>
-                                <label class="text-[10px] font-black text-blue-900 block mb-1">Global: Total School Opened</label>
-                                <input type="number" id="schoolOpened" class="w-full p-3 rounded-xl border-none ring-2 ring-blue-200 font-black text-sm" placeholder="e.g. 110">
-                                <p class="text-[8px] mt-1 text-blue-500">* Changes for all students</p>
-                            </div>
-                            <div>
-                                <label class="text-[10px] font-black text-blue-900 block mb-1">Individual: Times Present</label>
-                                <input type="number" id="timesPresent" class="w-full p-3 rounded-xl border-none ring-1 ring-slate-200 font-black text-sm">
-                            </div>
-                        </div>
-
-                        <table class="w-full">
-                            <thead class="text-[10px] text-slate-400 font-black border-b uppercase">
-                                <tr><th class="text-left py-3">Subject & Teacher</th><th class="text-center w-24">Test (40)</th><th class="text-center w-24">Exam (60)</th></tr>
-                            </thead>
-                            <tbody id="scoreRows"></tbody>
-                        </table>
-                        <div class="mt-6">
-                            <label class="text-[10px] font-black text-slate-400 block mb-2 uppercase">Principal's Remark</label>
-                            <textarea id="remark" class="w-full p-4 bg-slate-50 rounded-xl ring-1 ring-slate-100 text-sm font-medium h-24" placeholder="Enter remark..."></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section id="view-curriculum" class="view-section">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-2xl border shadow-sm h-fit">
-                    <h2 class="font-black text-sm mb-6">Add New Subject</h2>
+            <div class="mb-8">
+                <h1 class="text-3xl font-black text-slate-900 uppercase">Class Curriculum</h1>
+                <p class="text-slate-400 text-xs font-bold uppercase">JSS (General) | SSS (Art/Science/General)</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border">
+                    <h3 class="font-black text-xs uppercase mb-4 text-blue-600">Add Subject to Class Group</h3>
                     <div class="space-y-4">
-                        <select id="newClass" class="w-full p-3 rounded-xl ring-1 ring-slate-200 font-bold text-sm">
-                            <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
-                            <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                        <select id="currClass" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
+                            <optgroup label="Junior Secondary">
+                                <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                            </optgroup>
+                            <optgroup label="Senior Secondary">
+                                <option>SSS 1 ART</option><option>SSS 1 SCIENCE</option>
+                                <option>SSS 2 ART</option><option>SSS 2 SCIENCE</option>
+                                <option>SSS 3 ART</option><option>SSS 3 SCIENCE</option>
+                                <option>SSS GENERAL</option>
+                            </optgroup>
                         </select>
-                        <select id="newGroup" class="w-full p-3 rounded-xl ring-1 ring-slate-200 font-bold text-sm">
-                            <option value="GENERAL">GENERAL</option>
-                            <option value="ART">ART (Department)</option>
-                            <option value="SCIENCE">SCIENCE (Department)</option>
-                        </select>
-                        <input type="text" id="newSub" placeholder="Subject Name" class="w-full p-3 rounded-xl ring-1 ring-slate-200 font-bold text-sm uppercase">
-                        <input type="text" id="newTeacher" placeholder="Assigned Teacher Name" class="w-full p-3 rounded-xl ring-1 ring-slate-200 font-bold text-sm">
-                        <button onclick="addSubject()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg">Add to List</button>
+                        <input type="text" id="currSub" placeholder="Subject Name" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm uppercase">
+                        <input type="text" id="currTeacher" placeholder="Teacher Name" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
+                        <button onclick="addCurriculum()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black uppercase text-xs">Update Curriculum</button>
                     </div>
                 </div>
-                <div class="lg:col-span-2 bg-white rounded-2xl border shadow-sm overflow-hidden">
-                    <table class="w-full text-left text-[11px] font-bold">
-                        <thead class="bg-slate-50 border-b text-slate-400 uppercase">
-                            <tr><th class="p-4">Class</th><th class="p-4">Dept</th><th class="p-4">Subject</th><th class="p-4">Teacher</th><th class="p-4"></th></tr>
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b text-[10px] uppercase font-black text-slate-400">
+                            <tr><th class="p-4">Group</th><th class="p-4">Subject</th><th class="p-4">Teacher</th><th class="p-4"></th></tr>
                         </thead>
-                        <tbody id="currTable" class="divide-y"></tbody>
+                        <tbody id="curriculumTable" class="text-xs font-bold divide-y uppercase"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-    </main>
-
-    <div id="deptModal" class="fixed inset-0 bg-slate-900/60 hidden z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-8 w-full max-w-sm shadow-2xl">
-            <h3 class="font-black text-lg mb-1">Set Department</h3>
-            <p id="modalName" class="text-[11px] font-bold text-slate-400 mb-8 uppercase"></p>
-            <div class="space-y-3">
-                <button onclick="updateDept('GENERAL')" class="w-full p-4 rounded-xl border-2 border-slate-100 hover:border-blue-500 font-black text-xs text-left flex justify-between items-center">GENERAL <span>JSS / BASIC</span></button>
-                <button onclick="updateDept('ART')" class="w-full p-4 rounded-xl border-2 border-slate-100 hover:border-blue-500 font-black text-xs text-left flex justify-between items-center">ART <span>SOCIAL SCI</span></button>
-                <button onclick="updateDept('SCIENCE')" class="w-full p-4 rounded-xl border-2 border-slate-100 hover:border-blue-500 font-black text-xs text-left flex justify-between items-center">SCIENCE <span>STEM</span></button>
+        <section id="view-engine" class="view-section">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-4 bg-white rounded-2xl border h-[700px] flex flex-col">
+                    <div class="p-4 border-b bg-slate-50">
+                        <input type="text" oninput="filterEngine(this.value)" placeholder="Find student..." class="w-full p-2.5 rounded-lg border-none ring-1 ring-slate-200 text-xs font-bold uppercase">
+                    </div>
+                    <div id="engineList" class="overflow-y-auto divide-y"></div>
+                </div>
+                <div id="editorPanel" class="lg:col-span-8 bg-white rounded-2xl border shadow-xl hidden overflow-hidden">
+                    <div class="p-6 bg-blue-900 text-white flex justify-between items-center">
+                        <div>
+                            <h2 id="editName" class="text-xl font-black uppercase">---</h2>
+                            <p id="editClass" class="text-blue-300 text-[10px] font-black uppercase tracking-widest">---</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="addExtraRow()" class="bg-amber-500 px-4 py-2 rounded-xl font-black text-[10px] uppercase shadow-lg">+ Extra Subject</button>
+                            <button onclick="saveScores()" class="bg-green-500 px-6 py-2 rounded-xl font-black text-[10px] uppercase shadow-lg">Save Results</button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <table class="w-full text-sm">
+                            <thead class="text-[10px] text-slate-400 font-black uppercase">
+                                <tr><th class="text-left p-2">Subject Name</th><th class="text-center w-24">Test</th><th class="text-center w-24">Exam</th><th></th></tr>
+                            </thead>
+                            <tbody id="scoreRows"></tbody>
+                        </table>
+                        <div class="mt-6 pt-6 border-t">
+                            <label class="text-[10px] font-black text-slate-400 uppercase">Terminal Remark</label>
+                            <textarea id="remark" class="w-full p-4 mt-2 bg-slate-50 rounded-xl border-none ring-1 ring-slate-100 italic outline-none text-sm"></textarea>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button onclick="closeModal()" class="w-full mt-6 text-slate-400 font-black text-[10px] uppercase">Close</button>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script>
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
         let students = [], curriculum = [], activeId = null;
 
         async function init() {
-            const { data: st } = await _supabase.from('students').select('*').order('full_name');
-            const { data: cu } = await _supabase.from('school_curriculum').select('*').order('class_name');
-            students = st || []; curriculum = cu || [];
-            renderDirectory(); renderScoreList(); renderCurriculum();
-            lucide.createIcons();
+            loadData();
         }
 
-        // SIDEBAR TOGGLE
-        function toggleSidebar() {
-            const side = document.getElementById('sidebar');
-            const main = document.getElementById('mainContent');
-            side.classList.toggle('collapsed');
-            main.classList.toggle('expanded');
+        async function loadData() {
+            const { data: st } = await _supabase.from('students').select('*').order('full_name');
+            const { data: cu } = await _supabase.from('school_curriculum').select('*').order('class_name');
+            students = st || [];
+            curriculum = cu || [];
+            renderDirectory();
+            renderCurriculum();
+            renderEngineList(students);
+            lucide.createIcons();
         }
 
         function showView(v) {
@@ -192,117 +153,113 @@
         }
 
         function renderDirectory() {
-            const cls = document.getElementById('dirClass').value;
-            const search = document.getElementById('dirSearch').value.toLowerCase();
-            const filtered = students.filter(s => (cls === 'ALL' || s.grade_level === cls) && s.full_name.toLowerCase().includes(search));
-            
-            document.getElementById('totalCounter').innerText = `Total: ${filtered.length} Students`;
-            document.getElementById('directoryTable').innerHTML = filtered.map(s => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="p-4 text-blue-600 font-black">#${s.id.substring(0,4)}</td>
-                    <td class="p-4"><span class="block">${s.full_name}</span><span class="text-[9px] text-slate-400">${s.grade_level}</span></td>
-                    <td class="p-4"><span class="px-2 py-1 rounded bg-slate-100 text-[9px] font-black">${s.student_group || 'GENERAL'}</span></td>
-                    <td class="p-4 text-right"><button onclick="openModal('${s.id}', '${s.full_name}')" class="p-2 hover:bg-blue-100 text-blue-600 rounded-lg"><i data-lucide="settings" class="w-4 h-4"></i></button></td>
-                </tr>`).join('');
+            document.getElementById('directoryTable').innerHTML = students.map(s => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-4 font-black text-xs text-blue-600 uppercase">ID-${s.id.substring(0,5)}</td>
+                    <td class="p-4 font-black text-xs uppercase">${s.full_name}</td>
+                    <td class="p-4 text-[10px] font-bold text-slate-500 uppercase">${s.grade_level || '---'}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded text-[9px] font-black uppercase ${s.status === 'Suspended' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">${s.status || 'Active'}</span>
+                    </td>
+                    <td class="p-4 text-right flex justify-end gap-2">
+                        <button onclick="toggleSuspension('${s.id}', '${s.status}')" class="p-2 bg-slate-100 rounded-lg"><i data-lucide="user-minus" class="w-4 h-4 text-amber-600"></i></button>
+                        <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
+                    </td>
+                </tr>
+            `).join('');
             lucide.createIcons();
         }
 
-        function renderScoreList() {
-            const search = document.getElementById('scoreSearch').value.toLowerCase();
-            const filtered = students.filter(s => s.full_name.toLowerCase().includes(search));
-            document.getElementById('scoreList').innerHTML = filtered.map(s => `
-                <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition group">
-                    <div><p class="font-black text-[11px]">${s.full_name}</p><p class="text-[9px] text-slate-400">${s.grade_level}</p></div>
-                    <div class="text-[8px] font-black px-2 py-1 rounded-full ${s.result_status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}">${s.result_status || 'Draft'}</div>
-                </div>`).join('');
+        function addExtraRow() {
+            const tbody = document.getElementById('scoreRows');
+            const tr = document.createElement('tr');
+            tr.className = "bg-amber-50 rounded-lg";
+            tr.innerHTML = `
+                <td class="p-2"><input type="text" placeholder="Extra Subject Name" class="extra-n w-full p-2 rounded border-none font-black text-xs uppercase outline-none bg-white ring-1 ring-amber-200"></td>
+                <td class="p-2"><input type="number" value="0" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
+                <td class="p-2"><input type="number" value="0" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none"></td>
+                <td class="p-2 text-center"><button onclick="this.closest('tr').remove()" class="text-red-500"><i data-lucide="x-circle" class="w-4 h-4"></i></button></td>
+            `;
+            tbody.appendChild(tr);
+            lucide.createIcons();
         }
 
         function openEditor(id) {
             activeId = id;
             const s = students.find(x => x.id === id);
-            document.getElementById('scoreEditor').classList.remove('hidden');
-            document.getElementById('stName').innerText = s.full_name;
-            document.getElementById('stMeta').innerText = `${s.grade_level} | ${s.student_group || 'GENERAL'}`;
-            document.getElementById('schoolOpened').value = s.times_opened || 0;
-            document.getElementById('timesPresent').value = s.times_present || 0;
+            document.getElementById('editorPanel').classList.remove('hidden');
+            document.getElementById('editName').innerText = s.full_name;
+            document.getElementById('editClass').innerText = s.grade_level;
             document.getElementById('remark').value = s.teacher_remark || '';
             
-            const saved = s.subjects || [];
-            const match = curriculum.filter(c => c.class_name === s.grade_level && (c.subject_group === 'GENERAL' || c.subject_group === s.student_group));
-            
-            document.getElementById('scoreRows').innerHTML = match.map(c => {
-                const sv = saved.find(e => e.name === c.subject_name) || { test: 0, exam: 0 };
-                return `<tr class="border-b border-slate-50">
-                    <td class="py-4">
-                        <span class="font-black text-[12px] block">${c.subject_name}</span>
-                        <span class="text-[10px] text-blue-500 font-bold">${c.assigned_teacher || 'NO TEACHER'}</span>
-                    </td>
-                    <td class="py-4 text-center"><input type="number" value="${sv.test}" class="st w-16 p-2 rounded-lg bg-slate-50 border-none ring-1 ring-slate-200 text-center font-black text-xs" data-sub="${c.subject_name}" data-teacher="${c.assigned_teacher}"></td>
-                    <td class="py-4 text-center"><input type="number" value="${sv.exam}" class="se w-16 p-2 rounded-lg bg-slate-50 border-none ring-1 ring-slate-200 text-center font-black text-xs"></td>
-                </tr>`;
+            // Logic: Class Subjects + Science/Art Specifics
+            const classGroup = s.grade_level; 
+            const classSubs = curriculum.filter(c => c.class_name === classGroup || c.class_name === 'SSS GENERAL');
+            const existingScores = s.subjects || [];
+
+            const rows = document.getElementById('scoreRows');
+            rows.innerHTML = classSubs.map(cs => {
+                const score = existingScores.find(es => es.name.toUpperCase() === cs.subject_name.toUpperCase()) || { test: 0, exam: 0 };
+                return `
+                    <tr class="bg-slate-50 border-b border-white">
+                        <td class="p-3 font-black text-xs uppercase text-slate-700">${cs.subject_name} <span class="hidden extra-n-val">${cs.subject_name}</span></td>
+                        <td class="p-3"><input type="number" value="${score.test}" class="st w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none focus:ring-2 ring-blue-500" data-sub="${cs.subject_name}" data-teacher="${cs.assigned_teacher}"></td>
+                        <td class="p-3"><input type="number" value="${score.exam}" class="se w-full p-2 rounded bg-white border-none font-black text-center text-xs outline-none focus:ring-2 ring-blue-500"></td>
+                        <td></td>
+                    </tr>
+                `;
             }).join('');
         }
 
-        async function saveScores(isPublish) {
+        async function saveScores() {
             const subs = [];
-            const tests = document.querySelectorAll('.st');
-            const exams = document.querySelectorAll('.se');
-            const globalOpen = parseInt(document.getElementById('schoolOpened').value) || 0;
+            const rows = document.querySelectorAll('#scoreRows tr');
             
-            tests.forEach((t, i) => subs.push({ 
-                name: t.getAttribute('data-sub'), 
-                teacher: t.getAttribute('data-teacher'), 
-                test: parseFloat(t.value)||0, 
-                exam: parseFloat(exams[i].value)||0 
-            }));
+            rows.forEach(row => {
+                const name = row.querySelector('.extra-n') ? row.querySelector('.extra-n').value : row.querySelector('.extra-n-val').innerText;
+                const test = parseFloat(row.querySelector('.st').value) || 0;
+                const exam = parseFloat(row.querySelector('.se').value) || 0;
+                const teacher = row.querySelector('.st').getAttribute('data-teacher') || "Subject Staff";
+                
+                if(name) subs.push({ name: name.toUpperCase(), test, exam, teacher });
+            });
 
-            // 1. Update Current Student
-            await _supabase.from('students').update({ 
-                subjects: subs, 
-                teacher_remark: document.getElementById('remark').value, 
-                times_opened: globalOpen, 
-                times_present: parseInt(document.getElementById('timesPresent').value)||0, 
-                result_status: isPublish ? 'Published' : 'Draft' 
+            const { error } = await _supabase.from('students').update({
+                subjects: subs,
+                teacher_remark: document.getElementById('remark').value
             }).eq('id', activeId);
 
-            // 2. Global Attendance Update
-            await _supabase.from('students').update({ times_opened: globalOpen }).neq('id', 'null');
-
-            alert(isPublish ? "Result Published Successfully!" : "Draft Saved!");
-            init();
+            if(!error) { alert("Student Data Saved!"); loadData(); }
         }
 
-        function openModal(id, name) { activeId = id; document.getElementById('modalName').innerText = name; document.getElementById('deptModal').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('deptModal').classList.add('hidden'); }
-        async function updateDept(g) {
-            await _supabase.from('students').update({ student_group: g }).eq('id', activeId);
-            closeModal(); init();
-        }
-
-        async function addSubject() {
-            const class_name = document.getElementById('newClass').value;
-            const subject_group = document.getElementById('newGroup').value;
-            const subject_name = document.getElementById('newSub').value.toUpperCase();
-            const assigned_teacher = document.getElementById('newTeacher').value;
-            if(!subject_name) return alert("Enter Subject Name");
-            await _supabase.from('school_curriculum').insert([{ class_name, subject_group, subject_name, assigned_teacher }]);
-            init();
-        }
-
+        // Standard helpers
         function renderCurriculum() {
-            document.getElementById('currTable').innerHTML = curriculum.map(c => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="p-4">${c.class_name}</td>
-                    <td class="p-4"><span class="px-2 py-1 rounded bg-blue-50 text-blue-600 text-[9px] font-black">${c.subject_group}</span></td>
-                    <td class="p-4 font-black">${c.subject_name}</td>
-                    <td class="p-4 text-slate-500 font-bold">${c.assigned_teacher || '---'}</td>
-                    <td class="p-4 text-right"><button onclick="deleteCurr('${c.id}')" class="text-red-300 hover:text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
-                </tr>`).join('');
+            document.getElementById('curriculumTable').innerHTML = curriculum.map(c => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-4 text-blue-600 font-black">${c.class_name}</td>
+                    <td class="p-4">${c.subject_name}</td>
+                    <td class="p-4 text-slate-400 italic">${c.assigned_teacher || 'Staff'}</td>
+                    <td class="p-4 text-right"><button onclick="deleteCurr('${c.id}')" class="text-red-400"><i data-lucide="trash" class="w-4 h-4"></i></button></td>
+                </tr>
+            `).join('');
             lucide.createIcons();
         }
 
-        async function deleteCurr(id) { if(confirm("Delete this subject?")) { await _supabase.from('school_curriculum').delete().eq('id', id); init(); } }
-        function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
+        async function addCurriculum() {
+            const class_name = document.getElementById('currClass').value;
+            const subject_name = document.getElementById('currSub').value;
+            const assigned_teacher = document.getElementById('currTeacher').value;
+            if(!subject_name) return alert("Enter subject");
+            await _supabase.from('school_curriculum').insert([{ class_name, subject_name, assigned_teacher }]);
+            loadData();
+        }
+
+        async function deleteCurr(id) { await _supabase.from('school_curriculum').delete().eq('id', id); loadData(); }
+        async function deleteStudent(id) { if(confirm("Delete student permanently?")) { await _supabase.from('students').delete().eq('id', id); loadData(); } }
+        async function toggleSuspension(id, cur) { await _supabase.from('students').update({ status: cur === 'Suspended' ? 'Active' : 'Suspended' }).eq('id', id); loadData(); }
+        function renderEngineList(l) { document.getElementById('engineList').innerHTML = l.map(s => `<div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer text-xs font-black uppercase">${s.full_name} <span class="block text-[9px] text-slate-400">${s.grade_level}</span></div>`).join(''); }
+        function filterEngine(v) { renderEngineList(students.filter(s => s.full_name.toLowerCase().includes(v.toLowerCase()))); }
+        function filterTable(id, v) { loadData(); } // Basic reload for filter
         window.onload = init;
     </script>
 </body>
