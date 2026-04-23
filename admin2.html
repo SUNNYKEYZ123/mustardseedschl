@@ -59,7 +59,7 @@
             <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
                 <table class="w-full text-left">
                     <thead class="bg-slate-50 border-b text-[10px] font-black text-slate-400">
-                        <tr><th class="p-4">Reg ID</th><th class="p-4">Name, Class & Dept</th><th class="p-4">Status</th><th class="p-4 text-right">Settings</th></tr>
+                        <tr><th class="p-4">Reg ID</th><th class="p-4">Name, Class & Dept</th><th class="p-4 text-right">Settings</th></tr>
                     </thead>
                     <tbody id="directoryTable" class="divide-y text-[11px] font-bold"></tbody>
                 </table>
@@ -92,27 +92,31 @@
                         </div>
                     </div>
                     <div class="p-6 flex-1 overflow-y-auto">
-                        <div class="grid grid-cols-3 gap-4 mb-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                        <div class="grid grid-cols-4 gap-2 mb-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
                             <div>
-                                <label class="text-[9px] font-black text-blue-800 uppercase">Previous Total</label>
-                                <input type="number" id="prevTermTotal" class="w-full mt-1 p-2 rounded bg-white border-none font-black text-sm outline-none ring-1 ring-slate-200">
+                                <label class="text-[8px] font-black text-blue-800 uppercase">1st Term Tot</label>
+                                <input type="number" id="t1Total" class="w-full mt-1 p-2 rounded bg-white border-none font-black text-sm outline-none ring-1 ring-slate-200">
                             </div>
                             <div>
-                                <label class="text-[9px] font-black text-blue-800 uppercase">Total Opened</label>
+                                <label class="text-[8px] font-black text-blue-800 uppercase">2nd Term Tot</label>
+                                <input type="number" id="t2Total" class="w-full mt-1 p-2 rounded bg-white border-none font-black text-sm outline-none ring-1 ring-slate-200">
+                            </div>
+                            <div>
+                                <label class="text-[8px] font-black text-blue-800 uppercase">Sch opened</label>
                                 <input type="number" id="globalOpened" class="w-full mt-1 p-2 rounded bg-white border-none font-black text-sm outline-none ring-1 ring-slate-200">
                             </div>
                             <div>
-                                <label class="text-[9px] font-black text-blue-800 uppercase">Times Present</label>
+                                <label class="text-[8px] font-black text-blue-800 uppercase">Present</label>
                                 <input type="number" id="stPresent" class="w-full mt-1 p-2 rounded bg-white border-none font-black text-sm outline-none ring-1 ring-slate-200">
                             </div>
                         </div>
                         <table class="w-full">
                             <thead class="text-[10px] text-slate-400 font-black border-b uppercase">
-                                <tr><th class="text-left py-3">Subject & Teacher</th><th class="text-center w-24">Test (40)</th><th class="text-center w-24">Exam (60)</th></tr>
+                                <tr><th class="text-left py-3">Subject</th><th class="text-center w-24">Test (40)</th><th class="text-center w-24">Exam (60)</th></tr>
                             </thead>
                             <tbody id="scoreRows"></tbody>
                         </table>
-                        <textarea id="remark" class="w-full p-4 mt-6 bg-slate-50 rounded-xl ring-1 ring-slate-100 text-sm h-20" placeholder="Principal's Remark..."></textarea>
+                        <textarea id="remark" class="w-full p-4 mt-6 bg-slate-50 rounded-xl ring-1 ring-slate-100 text-sm h-16" placeholder="Principal's Remark..."></textarea>
                     </div>
                 </div>
             </div>
@@ -134,7 +138,7 @@
 
         <section id="view-diary" class="view-section">
             <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-black">The Diary (Position Ranking)</h1>
+                <h1 class="text-2xl font-black">The Diary</h1>
                 <select id="diaryClassFilter" onchange="renderDiary()" class="p-3 rounded-xl ring-1 ring-slate-200 text-xs font-bold">
                     <option value="">Select Class...</option>
                     <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
@@ -144,7 +148,7 @@
             <div class="bg-white rounded-2xl border shadow-sm overflow-hidden">
                 <table class="w-full text-left text-[11px] font-bold">
                     <thead class="bg-slate-900 text-white">
-                        <tr><th class="p-4">POS</th><th class="p-4">Student Name</th><th class="p-4 text-center">Aggregate</th><th class="p-4 text-center">Average %</th><th class="p-4 text-center">Status</th></tr>
+                        <tr><th class="p-4">POS</th><th class="p-4">Student Name</th><th class="p-4 text-center">Aggregate</th><th class="p-4 text-center">Current %</th><th class="p-4 text-center">Cumulative %</th></tr>
                     </thead>
                     <tbody id="diaryTable" class="divide-y"></tbody>
                 </table>
@@ -162,7 +166,7 @@
                     <button onclick="addCurriculum()" class="col-span-4 bg-blue-600 text-white p-3 rounded-xl font-black text-xs">Save Subject</button>
                 </div>
                 <table class="w-full text-left text-[10px] font-bold">
-                    <thead class="bg-slate-50 border-b"><tr><th class="p-4">Class</th><th class="p-4">Dept</th><th class="p-4">Subject</th><th class="p-4">Teacher</th><th class="p-4 text-right">Action</th></tr></thead>
+                    <thead class="bg-slate-50 border-b"><tr><th class="p-4">Class</th><th class="p-4">Dept</th><th class="p-4">Subject</th><th class="p-4 text-right">Action</th></tr></thead>
                     <tbody id="curriculumTable" class="divide-y"></tbody>
                 </table>
             </div>
@@ -197,19 +201,13 @@
         function renderDirectory() {
             const classFilter = document.getElementById('dirClassFilter').value;
             const search = document.getElementById('dirSearchInput').value.toLowerCase();
-            
-            const filtered = students.filter(s => {
-                const matchesClass = (classFilter === 'ALL' || s.grade_level === classFilter);
-                const matchesSearch = s.full_name.toLowerCase().includes(search);
-                return matchesClass && matchesSearch;
-            });
+            const filtered = students.filter(s => (classFilter === 'ALL' || s.grade_level === classFilter) && s.full_name.toLowerCase().includes(search));
             
             document.getElementById('dirCount').innerText = `Total: ${filtered.length} Students`;
             document.getElementById('directoryTable').innerHTML = filtered.map(s => `
                 <tr class="hover:bg-slate-50">
                     <td class="p-4 text-blue-600">ID-${s.id.substring(0,4)}</td>
-                    <td class="p-4">${s.full_name} <span class="text-blue-500 ml-1">${s.grade_level} ${s.student_group || ''}</span></td>
-                    <td class="p-4"><span class="px-2 py-1 rounded text-[8px] ${s.status === 'Suspended' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">${s.status || 'Active'}</span></td>
+                    <td class="p-4">${s.full_name} <span class="text-blue-500 ml-1 text-[9px]">${s.grade_level}</span></td>
                     <td class="p-4 text-right flex justify-end gap-2">
                         <button onclick="gotoEdit('${s.id}')" class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i data-lucide="edit-3" class="w-3 h-3"></i></button>
                         <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 text-red-600 rounded-lg"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
@@ -228,8 +226,6 @@
                 </div>`).join('');
         }
 
-        function gotoEdit(id) { showView('engine'); openEditor(id); }
-
         function openEditor(id) {
             activeId = id;
             const s = students.find(x => x.id === id);
@@ -238,16 +234,17 @@
             document.getElementById('editMetaLabel').innerText = `${s.grade_level} — ${s.student_group || 'GENERAL'}`;
             document.getElementById('globalOpened').value = s.times_opened || 0;
             document.getElementById('stPresent').value = s.times_present || 0;
-            document.getElementById('prevTermTotal').value = s.previous_term_total || 0;
+            document.getElementById('t1Total').value = s.term1_total || 0;
+            document.getElementById('t2Total').value = s.term2_total || 0;
             document.getElementById('remark').value = s.teacher_remark || '';
             
             const saved = s.subjects || [];
             const match = curriculum.filter(c => c.class_name === s.grade_level && (c.subject_group === 'GENERAL' || c.subject_group === s.student_group));
             document.getElementById('scoreRows').innerHTML = match.map(c => {
                 const sv = saved.find(e => e.name === c.subject_name) || { test: '-', exam: '-' };
-                return `<tr class="border-b border-slate-50">
-                    <td class="py-3"><p class="font-black text-[11px]">${c.subject_name}</p><p class="text-[9px] text-slate-400 italic">${c.assigned_teacher || ''}</p></td>
-                    <td><input type="text" value="${sv.test}" class="st w-16 p-2 rounded bg-slate-50 text-center text-xs" data-sub="${c.subject_name}" data-teacher="${c.assigned_teacher}"></td>
+                return `<tr>
+                    <td class="py-3 font-black text-[11px]">${c.subject_name}</td>
+                    <td><input type="text" value="${sv.test}" class="st w-16 p-2 rounded bg-slate-50 text-center text-xs" data-sub="${c.subject_name}"></td>
                     <td><input type="text" value="${sv.exam}" class="se w-16 p-2 rounded bg-slate-50 text-center text-xs"></td>
                 </tr>`;
             }).join('');
@@ -257,22 +254,15 @@
             const subs = [];
             const tests = document.querySelectorAll('.st');
             const exams = document.querySelectorAll('.se');
-            
-            tests.forEach((t, i) => {
-                subs.push({ 
-                    name: t.getAttribute('data-sub'), 
-                    teacher: t.getAttribute('data-teacher'), 
-                    test: t.value, 
-                    exam: exams[i].value 
-                });
-            });
+            tests.forEach((t, i) => subs.push({ name: t.getAttribute('data-sub'), test: t.value, exam: exams[i].value }));
             
             await _supabase.from('students').update({ 
                 subjects: subs, 
                 teacher_remark: document.getElementById('remark').value, 
                 times_opened: parseInt(document.getElementById('globalOpened').value) || 0, 
                 times_present: parseInt(document.getElementById('stPresent').value) || 0,
-                previous_term_total: parseFloat(document.getElementById('prevTermTotal').value) || 0,
+                term1_total: parseFloat(document.getElementById('t1Total').value) || 0,
+                term2_total: parseFloat(document.getElementById('t2Total').value) || 0,
                 result_status: status 
             }).eq('id', activeId);
             
@@ -287,7 +277,16 @@
                 aggregate += (t + e);
                 if(t + e > 0 || sub.test === '-' || sub.exam === '-') count++;
             });
-            return { aggregate, average: count > 0 ? (aggregate / count).toFixed(2) : 0 };
+            const avg = count > 0 ? (aggregate / count).toFixed(2) : 0;
+            
+            // CUMULATIVE LOGIC
+            const t1 = parseFloat(s.term1_total) || 0;
+            const t2 = parseFloat(s.term2_total) || 0;
+            let cum = avg;
+            if (t1 > 0 && t2 > 0) cum = ((t1 + t2 + parseFloat(avg)) / 3).toFixed(2);
+            else if (t1 > 0) cum = ((t1 + parseFloat(avg)) / 2).toFixed(2);
+
+            return { aggregate, average: avg, cumulative: cum };
         }
 
         function renderBroadsheet() {
@@ -296,18 +295,18 @@
             const classStudents = students.filter(s => s.grade_level === cls);
             const classSubs = curriculum.filter(c => c.class_name === cls);
             
-            let html = `<thead class="bg-slate-50 border-b"><tr><th class="p-2 border text-left">STUDENT NAME</th>`;
+            let html = `<thead><tr><th class="p-2 border">NAME</th>`;
             classSubs.forEach(c => html += `<th class="p-2 border text-[8px]">${c.subject_name}</th>`);
-            html += `<th class="p-2 border bg-blue-50">AGG</th><th class="p-2 border bg-blue-50">%</th></tr></thead><tbody>`;
+            html += `<th class="p-2 border bg-blue-50">AGG</th><th class="p-2 border bg-blue-50">CURR%</th><th class="p-2 border bg-green-50">CUM%</th></tr></thead><tbody>`;
 
             classStudents.forEach(s => {
-                const stats = calculateStats(s);
+                const st = calculateStats(s);
                 html += `<tr><td class="p-2 border text-left">${s.full_name}</td>`;
                 classSubs.forEach(cs => {
                     const score = (s.subjects || []).find(sub => sub.name === cs.subject_name);
                     html += `<td class="p-2 border">${score ? (parseFloat(score.test)||0) + (parseFloat(score.exam)||0) : '-'}</td>`;
                 });
-                html += `<td class="p-2 border bg-blue-50 font-black">${stats.aggregate}</td><td class="p-2 border bg-blue-50">${stats.average}</td></tr>`;
+                html += `<td class="p-2 border bg-blue-50 font-black">${st.aggregate}</td><td class="p-2 border bg-blue-50">${st.average}</td><td class="p-2 border bg-green-50">${st.cumulative}</td></tr>`;
             });
             document.getElementById('bsTable').innerHTML = html + `</tbody>`;
         }
@@ -320,31 +319,30 @@
                 .sort((a, b) => b.stats.aggregate - a.stats.aggregate);
 
             document.getElementById('diaryTable').innerHTML = ranked.map((s, i) => `
-                <tr class="${i < 3 ? 'bg-yellow-50' : ''}">
+                <tr>
                     <td class="p-4 font-black text-blue-600">${i + 1}</td>
                     <td class="p-4">${s.full_name}</td>
                     <td class="p-4 text-center font-black">${s.stats.aggregate}</td>
                     <td class="p-4 text-center">${s.stats.average}%</td>
-                    <td class="p-4 text-center"><span class="px-2 py-1 rounded text-[8px] ${s.result_status === 'Published' ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-400'}">${s.result_status || 'Draft'}</span></td>
+                    <td class="p-4 text-center text-green-600 font-black">${s.stats.cumulative}%</td>
                 </tr>`).join('');
         }
 
         async function addCurriculum() {
-            const class_name = document.getElementById('currClass').value;
-            const subject_group = document.getElementById('currGroup').value;
-            const subject_name = document.getElementById('currSub').value.toUpperCase();
-            const assigned_teacher = document.getElementById('currTeacher').value;
+            const class_name = document.getElementById('currClass').value, subject_group = document.getElementById('currGroup').value;
+            const subject_name = document.getElementById('currSub').value.toUpperCase(), assigned_teacher = document.getElementById('currTeacher').value;
             await _supabase.from('school_curriculum').insert([{ class_name, subject_group, subject_name, assigned_teacher }]);
             init();
         }
 
         function renderCurriculum() {
-            document.getElementById('curriculumTable').innerHTML = curriculum.map(c => `<tr><td class="p-4">${c.class_name}</td><td class="p-4">${c.subject_group}</td><td class="p-4">${c.subject_name}</td><td class="p-4">${c.assigned_teacher || ''}</td><td class="p-4 text-right"><button onclick="deleteCurr('${c.id}')" class="text-red-400"><i data-lucide="x-circle" class="w-4 h-4"></i></button></td></tr>`).join('');
+            document.getElementById('curriculumTable').innerHTML = curriculum.map(c => `<tr><td class="p-4">${c.class_name}</td><td class="p-4">${c.subject_group}</td><td class="p-4">${c.subject_name}</td><td class="p-4 text-right"><button onclick="deleteCurr('${c.id}')" class="text-red-400"><i data-lucide="x-circle" class="w-4 h-4"></i></button></td></tr>`).join('');
             lucide.createIcons();
         }
 
-        async function deleteCurr(id) { if(confirm("Remove subject?")) { await _supabase.from('school_curriculum').delete().eq('id', id); init(); } }
-        async function deleteStudent(id) { if(confirm("Delete student?")) { await _supabase.from('students').delete().eq('id', id); init(); } }
+        async function deleteCurr(id) { if(confirm("Remove?")) { await _supabase.from('school_curriculum').delete().eq('id', id); init(); } }
+        async function deleteStudent(id) { if(confirm("Delete?")) { await _supabase.from('students').delete().eq('id', id); init(); } }
+        function gotoEdit(id) { showView('engine'); openEditor(id); }
         function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
         window.onload = init;
     </script>
