@@ -14,279 +14,238 @@
         .sidebar { width: 260px; background: #0f172a; z-index: 50; transition: all 0.3s; position: fixed; height: 100vh; }
         .sidebar.collapsed { width: 80px; }
         .sidebar.collapsed span, .sidebar.collapsed .logo-text { display: none; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; width: 100%; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; width: 100%; white-space: nowrap; }
         .nav-link:hover, .nav-link.active { background: #2563eb; color: white; }
-        .main-content { margin-left: 260px; transition: all 0.3s; }
+        .main-content { transition: margin-left 0.3s; margin-left: 260px; padding: 2rem; flex: 1; }
         .main-content.expanded { margin-left: 80px; }
         .view-section { display: none; }
         .view-section.active { display: block; }
-        input[type="number"]::-webkit-inner-spin-button { display: none; }
-        .subject-card { border-left: 4px solid #e2e8f0; transition: 0.2s; }
-        .subject-card:focus-within { border-left-color: #2563eb; background: #f8fafc; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-50 min-h-screen flex text-slate-900 uppercase">
 
-    <aside id="sidebar" class="sidebar text-white p-4 flex flex-col">
-        <div class="flex items-center gap-3 px-2 mb-10">
-            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="w-10 h-10 rounded-lg">
-            <div class="logo-text">
-                <h1 class="font-black text-sm tracking-tighter">MUSTARD SEED</h1>
-                <p class="text-[10px] text-blue-400 font-bold uppercase">Master Admin</p>
-            </div>
+    <aside id="sidebar" class="sidebar text-white p-6 flex flex-col shadow-2xl">
+        <div class="flex items-center gap-3 mb-10 pb-6 border-b border-slate-800">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10 min-w-[40px]">
+            <span class="logo-text font-black text-lg text-blue-400">MSS ADMIN</span>
         </div>
-
         <nav class="space-y-2 flex-1">
-            <button onclick="showView('directory')" class="nav-link active" id="link-directory">
-                <i data-lucide="users"></i> <span>Student Directory</span>
-            </button>
-            <button onclick="showView('engine')" class="nav-link" id="link-engine">
-                <i data-lucide="cpu"></i> <span>Result Engine</span>
-            </button>
-            <button onclick="showView('curriculum')" class="nav-link" id="link-curriculum">
-                <i data-lucide="book-open"></i> <span>Curriculum</span>
-            </button>
+            <button onclick="showView('directory')" id="btn-directory" class="nav-link active"><i data-lucide="users"></i> <span>Student List</span></button>
+            <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="edit-3"></i> <span>Score Entry</span></button>
+            <button onclick="showView('curriculum')" id="btn-curriculum" class="nav-link"><i data-lucide="book-open"></i> <span>Teachers & Subjects</span></button>
         </nav>
-
-        <button onclick="handleLogout()" class="nav-link text-red-400 hover:bg-red-500/10 mt-auto">
-            <i data-lucide="log-out"></i> <span>Sign Out</span>
-        </button>
+        <button onclick="toggleSidebar()" class="nav-link text-slate-400 mb-2 border-t border-slate-800 pt-4"><i data-lucide="arrow-left-right"></i> <span>Shrink Menu</span></button>
+        <button onclick="handleLogout()" class="nav-link text-red-400"><i data-lucide="log-out"></i> <span>Logout</span></button>
     </aside>
 
-    <main id="main-content" class="main-content p-8">
-        
+    <main id="mainContent" class="main-content">
         <section id="view-directory" class="view-section active">
             <div class="flex justify-between items-end mb-8">
                 <div>
-                    <h2 class="text-3xl font-black tracking-tight">STUDENT DIRECTORY</h2>
-                    <p class="text-slate-500 font-medium">Manage and monitor all registered students</p>
+                    <h1 class="text-3xl font-black">Student List</h1>
+                    <p id="dirCount" class="text-blue-600 text-xs font-black">Total: 0 Students</p>
+                </div>
+                <div class="flex gap-3">
+                    <select id="dirClassFilter" onchange="renderDirectory()" class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-xs font-bold outline-none">
+                        <option value="ALL">All Classes</option>
+                        <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                        <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                    </select>
+                    <input type="text" id="dirSearchInput" oninput="renderDirectory()" placeholder="Find name..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64 outline-none">
                 </div>
             </div>
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 border-b border-slate-200">
-                        <tr>
-                            <th class="p-4 font-black text-slate-400 uppercase text-[10px]">Student Name</th>
-                            <th class="p-4 font-black text-slate-400 uppercase text-[10px]">Class</th>
-                            <th class="p-4 font-black text-slate-400 uppercase text-[10px]">Status</th>
-                            <th class="p-4"></th>
-                        </tr>
+            <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 border-b text-[10px] font-black text-slate-400">
+                        <tr><th class="p-4">Reg ID</th><th class="p-4">Name, Class & Dept</th><th class="p-4">Status</th><th class="p-4 text-right">Settings</th></tr>
                     </thead>
-                    <tbody id="directoryTable"></tbody>
+                    <tbody id="directoryTable" class="divide-y text-[11px] font-bold"></tbody>
                 </table>
             </div>
         </section>
 
         <section id="view-engine" class="view-section">
-            <div class="grid grid-cols-12 gap-8 h-[calc(100vh-100px)]">
-                <div class="col-span-4 flex flex-col gap-4">
-                    <input type="text" oninput="filterEngine(this.value)" placeholder="Search name..." class="w-full p-4 rounded-2xl bg-white border border-slate-200 font-bold outline-none focus:ring-2 ring-blue-500">
-                    <div id="engineList" class="flex-1 overflow-y-auto space-y-2 pr-2"></div>
+            <div class="grid grid-cols-12 gap-6">
+                <div class="col-span-4 bg-white rounded-2xl border h-[750px] flex flex-col overflow-hidden">
+                    <div class="p-4 bg-slate-50 border-b space-y-2">
+                        <select id="engineClassFilter" onchange="renderEngineList()" class="w-full p-2 rounded bg-white ring-1 ring-slate-200 border-none text-[10px] font-black">
+                            <option value="ALL">All Classes</option>
+                            <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                            <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                        </select>
+                        <input type="text" id="engineSearchInput" oninput="renderEngineList()" placeholder="Find Student..." class="w-full p-3 rounded-lg ring-1 ring-slate-200 text-xs font-black outline-none">
+                    </div>
+                    <div id="engineList" class="overflow-y-auto divide-y"></div>
                 </div>
-                <div id="editorPlaceholder" class="col-span-8 flex flex-col items-center justify-center bg-white rounded-3xl border-2 border-dashed border-slate-200 text-slate-400">
-                    <i data-lucide="mouse-pointer-2" class="w-12 h-12 mb-4 opacity-20"></i>
-                    <p class="font-black uppercase tracking-widest text-xs">Select a student to enter marks</p>
-                </div>
-                <div id="scoreEditor" class="col-span-8 bg-white rounded-3xl shadow-xl border border-slate-200 hidden flex flex-col overflow-hidden">
-                    <div id="editorHeader" class="p-6 bg-slate-900 text-white flex justify-between items-center"></div>
-                    <div id="subjectList" class="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50"></div>
-                    <div class="p-6 border-t border-slate-200 bg-white flex justify-between items-center">
-                        <div class="text-[10px] font-black uppercase text-slate-400">Auto-saving enabled</div>
-                        <button onclick="saveScores()" class="bg-blue-600 text-white px-10 py-3 rounded-xl font-black uppercase text-xs shadow-lg shadow-blue-500/30">Save All Records</button>
+                
+                <div id="editorPanel" class="col-span-8 bg-white rounded-2xl border shadow-xl hidden flex flex-col overflow-hidden">
+                    <div class="p-6 bg-slate-900 text-white flex justify-between items-center">
+                        <div>
+                            <h2 id="editName" class="text-xl font-black">---</h2>
+                            <span id="editMetaLabel" class="text-blue-400 text-[10px] font-black">---</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="saveScores('Draft')" class="bg-slate-700 px-4 py-2 rounded-lg font-black text-[10px]">Save Draft</button>
+                            <button onclick="saveScores('Published')" class="bg-green-600 px-4 py-2 rounded-lg font-black text-[10px] shadow-lg">Publish Result</button>
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 overflow-y-auto">
+                        <div class="grid grid-cols-2 gap-4 mb-6 p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <div>
+                                <label class="text-[9px] font-black text-blue-800 uppercase">Global: Total School Opened</label>
+                                <input type="number" id="globalOpened" class="w-full mt-1 p-2 rounded bg-white border-none font-black text-sm outline-none ring-2 ring-blue-200">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-black text-blue-800 uppercase">Individual: Times Present</label>
+                                <input type="number" id="stPresent" class="w-full mt-1 p-2 rounded bg-white border-none font-black text-sm outline-none ring-1 ring-slate-200">
+                            </div>
+                        </div>
+                        <table class="w-full">
+                            <thead class="text-[10px] text-slate-400 font-black border-b uppercase">
+                                <tr><th class="text-left py-3">Subject & Teacher</th><th class="text-center w-24">Test (40)</th><th class="text-center w-24">Exam (60)</th></tr>
+                            </thead>
+                            <tbody id="scoreRows"></tbody>
+                        </table>
+                        <textarea id="remark" class="w-full p-4 mt-6 bg-slate-50 rounded-xl ring-1 ring-slate-100 text-sm h-20" placeholder="Principal's Remark..."></textarea>
                     </div>
                 </div>
             </div>
         </section>
 
         <section id="view-curriculum" class="view-section">
-             <div class="mb-8">
-                <h2 class="text-3xl font-black tracking-tight uppercase">School Curriculum</h2>
-                <p class="text-slate-500 font-medium">Define subjects for different classes and groups</p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                <select id="currClass" class="p-3 bg-slate-50 rounded-xl font-bold outline-none"><option>JSS 1</option><option>JSS 2</option><option>JSS 3</option><option>SSS 1</option><option>SSS 2</option><option>SSS 3</option></select>
-                <select id="currGroup" class="p-3 bg-slate-50 rounded-xl font-bold outline-none"><option>GENERAL</option><option>SCIENCE</option><option>ART</option></select>
-                <input type="text" id="currSub" placeholder="Subject Name" class="p-3 bg-slate-50 rounded-xl font-bold outline-none uppercase">
-                <button onclick="addCurriculum()" class="bg-blue-600 text-white rounded-xl font-black uppercase text-xs">Add Subject</button>
-            </div>
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 border-b border-slate-200">
-                        <tr><th class="p-4 font-black uppercase text-[10px]">Class</th><th class="p-4 font-black uppercase text-[10px]">Group</th><th class="p-4 font-black uppercase text-[10px]">Subject</th><th class="p-4"></th></tr>
-                    </thead>
-                    <tbody id="curriculumTable"></tbody>
+            <div class="bg-white rounded-2xl border overflow-hidden p-6">
+                <h1 class="text-xl font-black mb-6">Subject Setup</h1>
+                <div class="grid grid-cols-4 gap-4 mb-8">
+                    <select id="currClass" class="p-3 rounded-xl ring-1 ring-slate-200 text-xs font-bold"><option>JSS 1</option><option>JSS 2</option><option>JSS 3</option><option>SSS 1</option><option>SSS 2</option><option>SSS 3</option></select>
+                    <select id="currGroup" class="p-3 rounded-xl ring-1 ring-slate-200 text-xs font-bold"><option value="GENERAL">GENERAL</option><option value="ART">ART</option><option value="SCIENCE">SCIENCE</option></select>
+                    <input type="text" id="currSub" placeholder="Subject Name" class="p-3 rounded-xl ring-1 ring-slate-200 text-xs font-bold">
+                    <input type="text" id="currTeacher" placeholder="Teacher Name" class="p-3 rounded-xl ring-1 ring-slate-200 text-xs font-bold">
+                    <button onclick="addCurriculum()" class="col-span-4 bg-blue-600 text-white p-3 rounded-xl font-black text-xs">Save Subject</button>
+                </div>
+                <table class="w-full text-left text-[10px] font-bold">
+                    <thead class="bg-slate-50 border-b"><tr><th class="p-4">Class</th><th class="p-4">Dept</th><th class="p-4">Subject</th><th class="p-4">Teacher</th><th class="p-4 text-right">Action</th></tr></thead>
+                    <tbody id="curriculumTable" class="divide-y"></tbody>
                 </table>
             </div>
         </section>
-
     </main>
 
     <script>
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
-        
         let students = [], curriculum = [], activeId = null;
 
-        // --- THE NECESSARY LOGIN GATE ---
-        async function checkAdmin() {
-            const { data: { user } } = await _supabase.auth.getUser();
-            
-            // Redirect if not logged in
-            if (!user) {
-                window.location.replace('login.html');
-                return;
-            }
-            
-            // If logged in, initialize the dashboard
-            init();
-        }
-
-        async function init() {
+        async function init() { 
             const { data: st } = await _supabase.from('students').select('*').order('full_name');
             const { data: cu } = await _supabase.from('school_curriculum').select('*');
-            students = st || [];
-            curriculum = cu || [];
-            
-            renderDirectory();
-            renderEngineList(students);
-            renderCurriculum();
+            students = st || []; curriculum = cu || [];
+            renderDirectory(); renderEngineList(); renderCurriculum();
             lucide.createIcons();
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+            document.getElementById('mainContent').classList.toggle('expanded');
         }
 
         function showView(v) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.getElementById(`view-${v}`).classList.add('active');
-            document.getElementById(`link-${v}`).classList.add('active');
-        }
-
-        function renderDirectory() {
-            document.getElementById('directoryTable').innerHTML = students.map(s => `
-                <tr class="border-b border-slate-50 hover:bg-slate-50/50">
-                    <td class="p-4 font-black uppercase text-xs">${s.full_name}</td>
-                    <td class="p-4 font-bold text-blue-600 text-[10px] uppercase">${s.grade_level || '---'}</td>
-                    <td class="p-4"><span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[9px] font-black uppercase">${s.status || 'Active'}</span></td>
-                    <td class="p-4 text-right">
-                        <button onclick="deleteStudent('${s.id}')" class="text-slate-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                    </td>
-                </tr>
-            `).join('');
+            document.getElementById(`btn-${v}`).classList.add('active');
             lucide.createIcons();
         }
 
-        function renderEngineList(list) {
-            document.getElementById('engineList').innerHTML = list.map(s => `
-                <button onclick="openEditor('${s.id}')" class="w-full text-left p-4 rounded-2xl border ${activeId === s.id ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-100 hover:border-blue-200'} transition-all">
-                    <div class="font-black uppercase text-[11px] truncate">${s.full_name}</div>
-                    <div class="text-[9px] font-bold opacity-60 uppercase">${s.grade_level} • ${s.dept || 'GENERAL'}</div>
-                </button>
-            `).join('');
+        function renderDirectory() {
+            const classFilter = document.getElementById('dirClassFilter').value;
+            const search = document.getElementById('dirSearchInput').value.toLowerCase();
+            const filtered = students.filter(s => (classFilter === 'ALL' || s.grade_level === classFilter) && s.full_name.toLowerCase().includes(search));
+            
+            document.getElementById('dirCount').innerText = `Total: ${filtered.length} Students`;
+            document.getElementById('directoryTable').innerHTML = filtered.map(s => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-4 text-blue-600">ID-${s.id.substring(0,4)}</td>
+                    <td class="p-4">${s.full_name} <span class="text-blue-500 ml-1">${s.grade_level} ${s.student_group || ''}</span></td>
+                    <td class="p-4"><span class="px-2 py-1 rounded text-[8px] ${s.status === 'Suspended' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">${s.status || 'Active'}</span></td>
+                    <td class="p-4 text-right flex justify-end gap-2">
+                        <button onclick="gotoEdit('${s.id}')" class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i data-lucide="edit-3" class="w-3 h-3"></i></button>
+                        <button onclick="toggleSuspension('${s.id}', '${s.status}')" class="p-2 bg-amber-50 text-amber-600 rounded-lg"><i data-lucide="shield-alert" class="w-3 h-3"></i></button>
+                        <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 text-red-600 rounded-lg"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                    </td>
+                </tr>`).join('');
+            lucide.createIcons();
         }
 
-        async function openEditor(id) {
+        function renderEngineList() {
+            const cf = document.getElementById('engineClassFilter').value;
+            const search = document.getElementById('engineSearchInput').value.toLowerCase();
+            const filtered = students.filter(s => (cf === 'ALL' || s.grade_level === cf) && s.full_name.toLowerCase().includes(search));
+            document.getElementById('engineList').innerHTML = filtered.map(s => `
+                <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer font-black text-[11px]">
+                    ${s.full_name} <span class="text-slate-400 block text-[9px]">${s.grade_level}</span>
+                </div>`).join('');
+        }
+
+        function gotoEdit(id) { showView('engine'); openEditor(id); }
+
+        function openEditor(id) {
             activeId = id;
-            const student = students.find(s => s.id === id);
-            renderEngineList(students);
+            const s = students.find(x => x.id === id);
+            document.getElementById('editorPanel').classList.remove('hidden');
+            document.getElementById('editName').innerText = s.full_name;
+            document.getElementById('editMetaLabel').innerText = `${s.grade_level} — ${s.student_group || 'GENERAL'}`;
+            document.getElementById('globalOpened').value = s.times_opened || 0;
+            document.getElementById('stPresent').value = s.times_present || 0;
+            document.getElementById('remark').value = s.teacher_remark || '';
             
-            document.getElementById('editorPlaceholder').classList.add('hidden');
-            document.getElementById('scoreEditor').classList.remove('hidden');
-            
-            document.getElementById('editorHeader').innerHTML = `
-                <div>
-                    <h3 class="font-black text-lg uppercase tracking-tight">${student.full_name}</h3>
-                    <p class="text-[10px] font-bold text-blue-300 uppercase">${student.grade_level} — ${student.dept || 'GENERAL'}</p>
-                </div>
-                <div class="flex gap-4">
-                    <div class="text-right">
-                        <p class="text-[8px] uppercase font-black text-slate-400">Attendance</p>
-                        <input type="number" id="att-present" value="${student.times_present || 0}" class="bg-transparent border-b border-white/20 w-12 text-center font-black outline-none">
-                    </div>
-                </div>
-            `;
-
-            const studentGroup = student.dept || 'GENERAL';
-            const relevantSubs = curriculum.filter(c => c.class_name === student.grade_level && (c.subject_group === 'GENERAL' || c.subject_group === studentGroup));
-
-            const scores = student.scores || {};
-            document.getElementById('subjectList').innerHTML = relevantSubs.map(sub => `
-                <div class="subject-card bg-white p-4 rounded-xl flex items-center justify-between shadow-sm">
-                    <span class="font-black text-xs uppercase text-slate-600">${sub.subject_name}</span>
-                    <div class="flex gap-2">
-                        <div class="text-center">
-                            <label class="block text-[8px] font-black text-slate-400 uppercase">Test</label>
-                            <input type="number" data-sub="${sub.subject_name}" data-type="test" value="${scores[sub.subject_name]?.test || ''}" class="score-input w-12 p-2 bg-slate-50 rounded-lg text-center font-black outline-none focus:ring-1 ring-blue-500">
-                        </div>
-                        <div class="text-center">
-                            <label class="block text-[8px] font-black text-slate-400 uppercase">Exam</label>
-                            <input type="number" data-sub="${sub.subject_name}" data-type="exam" value="${scores[sub.subject_name]?.exam || ''}" class="score-input w-12 p-2 bg-slate-50 rounded-lg text-center font-black outline-none focus:ring-1 ring-blue-500">
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            const saved = s.subjects || [];
+            const match = curriculum.filter(c => c.class_name === s.grade_level && (c.subject_group === 'GENERAL' || c.subject_group === s.student_group));
+            document.getElementById('scoreRows').innerHTML = match.map(c => {
+                const sv = saved.find(e => e.name === c.subject_name) || { test: 0, exam: 0 };
+                return `<tr class="border-b border-slate-50">
+                    <td class="py-3"><p class="font-black text-[11px]">${c.subject_name}</p><p class="text-[9px] text-slate-400 italic">${c.assigned_teacher || ''}</p></td>
+                    <td><input type="number" value="${sv.test}" class="st w-16 p-2 rounded bg-slate-50 text-center text-xs" data-sub="${c.subject_name}" data-teacher="${c.assigned_teacher}"></td>
+                    <td><input type="number" value="${sv.exam}" class="se w-16 p-2 rounded bg-slate-50 text-center text-xs"></td>
+                </tr>`;
+            }).join('');
         }
 
-        async function saveScores() {
-            if (!activeId) return;
-            const student = students.find(s => s.id === activeId);
-            const scoreData = {};
+        async function saveScores(status) {
+            const subs = [];
+            const tests = document.querySelectorAll('.st');
+            const exams = document.querySelectorAll('.se');
+            const gOpened = parseInt(document.getElementById('globalOpened').value) || 0;
+            tests.forEach((t, i) => subs.push({ name: t.getAttribute('data-sub'), teacher: t.getAttribute('data-teacher'), test: parseFloat(t.value)||0, exam: parseFloat(exams[i].value)||0 }));
             
-            document.querySelectorAll('.score-input').forEach(input => {
-                const sub = input.dataset.sub;
-                const type = input.dataset.type;
-                if (!scoreData[sub]) scoreData[sub] = {};
-                scoreData[sub][type] = input.value;
-            });
-
-            const attendance = document.getElementById('att-present').value;
-
-            const { error } = await _supabase.from('students').update({ 
-                scores: scoreData, 
-                times_present: attendance 
+            await _supabase.from('students').update({ 
+                subjects: subs, teacher_remark: document.getElementById('remark').value, 
+                times_opened: gOpened, times_present: parseInt(document.getElementById('stPresent').value)||0, 
+                result_status: status 
             }).eq('id', activeId);
-
-            if (!error) {
-                alert("RESULTS SAVED SUCCESSFULLY");
-                init();
-            }
+            
+            await _supabase.from('students').update({ times_opened: gOpened }).neq('id', 'null');
+            alert("Updated!"); init();
         }
+
+        async function toggleSuspension(id, cur) { await _supabase.from('students').update({ status: cur === 'Suspended' ? 'Active' : 'Suspended' }).eq('id', id); init(); }
+        async function deleteStudent(id) { if(confirm("Delete student?")) { await _supabase.from('students').delete().eq('id', id); init(); } }
 
         async function addCurriculum() {
             const class_name = document.getElementById('currClass').value;
             const subject_group = document.getElementById('currGroup').value;
             const subject_name = document.getElementById('currSub').value.toUpperCase();
-            if (!subject_name) return;
-            await _supabase.from('school_curriculum').insert([{ class_name, subject_group, subject_name }]);
+            const assigned_teacher = document.getElementById('currTeacher').value;
+            await _supabase.from('school_curriculum').insert([{ class_name, subject_group, subject_name, assigned_teacher }]);
             init();
         }
 
         function renderCurriculum() {
-            document.getElementById('curriculumTable').innerHTML = curriculum.map(c => `
-                <tr class="border-b border-slate-50">
-                    <td class="p-4 font-black text-xs uppercase">${c.class_name}</td>
-                    <td class="p-4 font-bold text-blue-600 text-[10px] uppercase">${c.subject_group}</td>
-                    <td class="p-4 font-bold text-slate-600 text-xs uppercase">${c.subject_name}</td>
-                    <td class="p-4 text-right">
-                        <button onclick="deleteCurr('${c.id}')" class="text-slate-300 hover:text-red-500"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
-                    </td>
-                </tr>
-            `).join('');
+            document.getElementById('curriculumTable').innerHTML = curriculum.map(c => `<tr><td class="p-4">${c.class_name}</td><td class="p-4">${c.subject_group}</td><td class="p-4">${c.subject_name}</td><td class="p-4">${c.assigned_teacher || ''}</td><td class="p-4 text-right"><button onclick="deleteCurr('${c.id}')" class="text-red-400"><i data-lucide="x-circle" class="w-4 h-4"></i></button></td></tr>`).join('');
             lucide.createIcons();
         }
 
         async function deleteCurr(id) { await _supabase.from('school_curriculum').delete().eq('id', id); init(); }
-        
-        async function deleteStudent(id) { 
-            if(confirm("Confirm deletion?")) { 
-                await _supabase.from('students').delete().eq('id', id); 
-                init(); 
-            } 
-        }
-
-        function handleLogout() { 
-            _supabase.auth.signOut().then(() => window.location.replace('login.html')); 
-        }
-
-        // ENTRY POINT: ALWAYS CHECK ADMIN FIRST
-        window.onload = checkAdmin;
+        function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
+        window.onload = init;
     </script>
 </body>
 </html>
