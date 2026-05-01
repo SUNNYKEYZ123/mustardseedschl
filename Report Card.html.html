@@ -16,35 +16,20 @@
 
         .official-stamp {
             border: 4px solid #1e3a8a;
-            padding: 5px;
-            width: 170px;
-            text-align: center;
-            transform: rotate(-2deg);
-            opacity: 0.8;
-            color: #1e3a8a;
-            background: rgba(30, 58, 138, 0.03);
-            position: relative;
-            z-index: 10;
+            padding: 5px; width: 170px; text-align: center;
+            transform: rotate(-2deg); opacity: 0.85; color: #1e3a8a;
+            background: rgba(30, 58, 138, 0.03); position: relative; z-index: 10;
         }
         .stamp-inner { border: 1.5px solid #1e3a8a; padding: 4px; display: flex; flex-direction: column; align-items: center; }
 
         .signature-zone {
-            position: relative;
-            width: 220px;
-            height: 110px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
+            position: relative; width: 220px; height: 110px;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
         }
 
         .principal-signature-img {
-            position: absolute;
-            bottom: 30px;
-            width: 140px;
-            z-index: 100;
-            pointer-events: none;
-            mix-blend-mode: multiply;
+            position: absolute; bottom: 30px; width: 140px;
+            z-index: 100; pointer-events: none; mix-blend-mode: multiply;
         }
 
         @media print {
@@ -56,12 +41,11 @@
         
         table { border-collapse: collapse; width: 100%; position: relative; z-index: 10; }
         th, td { border: 1.2px solid black !important; padding: 4px; }
-        .bg-gray-input { background-color: #f9fafb; }
     </style>
 </head>
 <body class="py-4 px-4">
 
-    <!-- NAVIGATION (This now correctly calls renderReport) -->
+    <!-- TERM SELECTOR -->
     <div class="max-w-5xl mx-auto mb-4 flex flex-wrap justify-between items-center gap-4 no-print">
         <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-md font-bold text-slate-600">← Back</button>
         <div class="flex bg-white rounded-xl shadow-md p-1 border">
@@ -72,10 +56,9 @@
         <button onclick="window.print()" class="bg-blue-600 text-white px-8 py-2 rounded-xl shadow-lg font-black italic">PRINT REPORT</button>
     </div>
 
-    <div class="max-w-5xl mx-auto bg-white border-2 border-black report-sheet shadow-2xl">
-        
+    <div id="report-content" class="max-w-5xl mx-auto bg-white border-2 border-black report-sheet shadow-2xl">
         <!-- HEADER -->
-        <div class="p-4 border-b-2 border-black flex items-center justify-between text-center">
+        <div class="p-4 border-b-2 border-black flex items-center justify-between text-center bg-white">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="Logo">
             <div class="flex-1 px-4">
                 <h1 class="text-2xl md:text-3xl font-black uppercase text-black">Mustard Seed International Group of Schools</h1>
@@ -87,13 +70,13 @@
 
         <!-- INFO BAR -->
         <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-black text-[10px] uppercase font-black">
-            <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block text-sm handwritten">---</span></div>
+            <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block text-sm handwritten">Loading...</span></div>
             <div class="p-3 border-r-2 border-black">Reg No: <span id="res-id" class="block text-sm handwritten">---</span></div>
             <div class="p-3 border-r-2 border-black">Class: <span id="res-class" class="block text-sm handwritten">---</span></div>
             <div class="p-3">Term: <span id="res-term" class="block text-sm text-blue-700 font-black">1ST TERM</span></div>
         </div>
 
-        <!-- ATTENDANCE SUMMARY -->
+        <!-- ATTENDANCE BAR -->
         <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-[9px] uppercase font-bold text-black text-center bg-slate-50">
             <div class="p-2 border-r-2 border-black">Times School Opened: <span id="daysOpened" class="handwritten text-sm">---</span></div>
             <div class="p-2 border-r-2 border-black">Times Present: <span id="daysPresent" class="handwritten text-sm">---</span></div>
@@ -119,8 +102,8 @@
             </table>
         </div>
 
-        <!-- EVENTS SECTION (From i.jpg) -->
-        <div class="mx-4 mb-2 border-2 border-black">
+        <!-- EVENTS SECTION -->
+        <div class="mx-4 mb-2 border-2 border-black bg-white">
             <div class="bg-slate-100 p-1 text-center border-b-2 border-black uppercase text-[10px] font-black">Events & Psychomotor Assessment</div>
             <table class="w-full text-[9px] text-center uppercase">
                 <tr class="font-black bg-slate-50">
@@ -132,8 +115,8 @@
             </table>
         </div>
 
-        <!-- PHYSICAL DEVELOPMENT TABLE (From user image i.jpg) -->
-        <div class="mx-4 mb-4 border-2 border-black">
+        <!-- PHYSICAL DEVELOPMENT TABLE -->
+        <div class="mx-4 mb-4 border-2 border-black bg-white">
             <div class="bg-slate-100 p-1 text-center border-b-2 border-black uppercase text-[10px] font-black">3. Physical Development, Health & Cleanliness</div>
             <table class="w-full text-[8px] uppercase font-bold">
                 <tr class="text-center bg-slate-50 font-black">
@@ -155,7 +138,7 @@
             </div>
         </div>
 
-        <!-- FOOTER: COMMENTS, STAMP, SIGNATURE -->
+        <!-- FOOTER -->
         <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-black">
             <div class="space-y-4">
                 <div>
@@ -188,79 +171,123 @@
     </div>
 
     <script>
-        const _supabase = supabase.createClient('URL', 'KEY');
+        // REPLACE WITH YOUR ACTUAL KEYS
+        const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'YOUR_SUPABASE_ANON_KEY');
+        
         let currentTerm = 1;
         let studentData = null;
+
+        async function init() {
+            // Get student ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentId = urlParams.get('id');
+
+            if (!studentId) {
+                document.getElementById('res-name').innerText = "ERROR: No ID found";
+                return;
+            }
+
+            // Fetch full student record
+            const { data, error } = await _supabase
+                .from('students')
+                .select('*')
+                .eq('id', studentId) // RESTORED LOGIC: Exact ID match
+                .single();
+
+            if (error || !data) {
+                console.error("Database Error:", error);
+                document.getElementById('res-name').innerText = "Student Not Found";
+            } else {
+                studentData = data;
+                renderReport(); // Run the initial render
+            }
+        }
 
         function changeTerm(term) {
             currentTerm = term;
             document.querySelectorAll('.term-btn').forEach((btn, idx) => {
-                if (idx + 1 === term) {
-                    btn.classList.add('bg-black', 'text-white');
-                } else {
-                    btn.classList.remove('bg-black', 'text-white');
-                }
+                btn.className = (idx + 1 === term) 
+                    ? "term-btn px-4 py-2 rounded-lg font-black text-xs transition bg-black text-white" 
+                    : "term-btn px-4 py-2 rounded-lg font-black text-xs transition";
             });
-            renderReport(); // This line is CRITICAL - it tells the card to reload with new term data
+            renderReport(); // RE-RENDER after term change
         }
 
         function renderReport() {
             if (!studentData) return;
+
             const termKey = `term${currentTerm}`;
             const tData = studentData.term_data?.[termKey] || {};
             const scores = tData.scores || [];
             const admin = tData.admin_inputs || {};
 
-            // Update Labels
+            // 1. Basic Info[cite: 5]
+            document.getElementById('res-name').innerText = studentData.full_name;
+            document.getElementById('res-id').innerText = studentData.id; 
+            document.getElementById('res-class').innerText = studentData.grade_level;
             document.getElementById('res-term').innerText = `${currentTerm}${currentTerm==1?'ST':currentTerm==2?'ND':'RD'} TERM`;
-            
-            // Fix Dynamic Avg Column Header
-            const avgHead = document.getElementById('dynamic-avg-head');
-            if(currentTerm === 1) avgHead.innerText = "1st TM Avg";
-            else if(currentTerm === 2) avgHead.innerText = "1st TM Avg";
-            else avgHead.innerText = "2nd TM Avg";
 
-            // Fill Physical Development Table
+            // 2. Attendance & Labels[cite: 5]
+            document.getElementById('daysOpened').innerText = admin.daysOpened || "---";
+            document.getElementById('daysPresent').innerText = admin.daysPresent || "---";
+            document.getElementById('nextTermBegin').innerText = admin.nextTermDate || "---";
+
+            // 3. Dynamic Header[cite: 5]
+            const avgHead = document.getElementById('dynamic-avg-head');
+            avgHead.innerText = (currentTerm === 3) ? "2nd TM Avg" : "1st TM Avg";
+
+            // 4. Physical Dev[cite: 5]
             document.getElementById('hBeg').innerText = admin.heightBeg || "-";
             document.getElementById('hEnd').innerText = admin.heightEnd || "-";
             document.getElementById('wBeg').innerText = admin.weightBeg || "-";
             document.getElementById('wEnd').innerText = admin.weightEnd || "-";
             document.getElementById('absentDays').innerText = admin.daysAbsent || "-";
             document.getElementById('absenceNature').innerText = admin.absenceNature || "-";
-            document.getElementById('cleanliness').innerText = admin.cleanlinessRating || "Good";
+            document.getElementById('cleanliness').innerText = admin.cleanlinessRating || "---";
 
-            // Fill Event Rows
+            // 5. Events[cite: 5]
             for(let i=1; i<=8; i++) {
                 document.getElementById(`e${i}`).innerText = admin[`event${i}`] || "-";
             }
 
-            // Fill Scores Table
-            const prevTermKey = currentTerm > 1 ? `term${currentTerm - 1}` : null;
-            const prevScores = prevTermKey ? (studentData.term_data?.[prevTermKey]?.scores || []) : [];
+            // 6. Scores Table with Previous Comparison[cite: 5]
+            const prevKey = currentTerm > 1 ? `term${currentTerm - 1}` : null;
+            const prevScores = prevKey ? (studentData.term_data?.[prevKey]?.scores || []) : [];
             
+            let totalMarks = 0;
             const rows = scores.map(sub => {
                 const total = (parseFloat(sub.test)||0) + (parseFloat(sub.exam)||0);
+                totalMarks += total;
                 const prevSub = prevScores.find(p => p.name === sub.name);
-                const prevVal = prevSub ? (parseFloat(prevSub.test)||0) + (parseFloat(prevSub.exam)||0) : '-';
+                const prevTotal = prevSub ? (parseFloat(prevSub.test)||0) + (parseFloat(prevSub.exam)||0) : '-';
+                
                 return `<tr>
                     <td class="text-left">${sub.name}</td>
                     <td class="text-center">${sub.test}</td>
                     <td class="text-center">${sub.exam}</td>
                     <td class="text-center bg-yellow-50">${total}</td>
-                    <td class="text-center text-slate-500 italic">${prevVal}</td>
+                    <td class="text-center text-slate-500 italic">${prevTotal}</td>
                     <td class="text-center">${total >= 70 ? 'A1' : total >= 60 ? 'B2' : 'C6'}</td>
                     <td class="text-left text-[9px]">${total >= 50 ? 'CREDIT' : 'PASS'}</td>
                 </tr>`;
             }).join('');
             document.getElementById('subject-rows').innerHTML = rows;
 
-            // Load Signature[cite: 5]
+            // 7. Average & Comments[cite: 5]
+            const avg = scores.length > 0 ? (totalMarks / scores.length).toFixed(1) : 0;
+            document.getElementById('currentAvg').innerText = avg + "%";
+            document.getElementById('master-comment').innerText = admin.formMasterComment || "Satisfactory.";
+            document.getElementById('principal-comment').innerText = admin.principalComment || (avg >= 50 ? "Good Performance." : "Work Harder.");
+
+            // 8. Signature[cite: 5]
             const sigImg = document.getElementById('principal-sig');
             if (admin.principalSignatureURL) {
                 sigImg.src = admin.principalSignatureURL;
                 sigImg.style.display = "block";
             } else { sigImg.style.display = "none"; }
         }
+
+        window.onload = init;
     </script>
 </body>
 </html>
