@@ -3,18 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Records | Broadsheet & Diary</title>
+    <title>Academic Records | Broadsheet</title>
     <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #000; }
+        
+        /* Table Styles to match image */
+        table { border: 1.5px solid black !important; }
+        th, td { border: 1px solid black !important; padding: 4px 2px; }
+        th { background: #fff; text-transform: uppercase; font-size: 9px; line-height: 1; }
+        
         .sidebar-dark { background: #0f172a; }
-        .table-fixed-first td:first-child, .table-fixed-first th:first-child { position: sticky; left: 0; background: white; z-index: 10; border-right: 2px solid #e2e8f0; }
-        @media print { .no-print { display: none; } .print-only { display: block; } .main-content { margin: 0 !important; padding: 0 !important; } }
+        
+        @media print { 
+            .no-print { display: none !important; } 
+            body { padding: 0; margin: 0; }
+            .main-content { width: 100% !important; margin: 0 !important; padding: 10px !important; }
+            table { width: 100%; font-size: 8px; }
+        }
     </style>
 </head>
 <body class="flex min-h-screen">
@@ -23,97 +33,70 @@
     <aside class="w-64 sidebar-dark text-slate-400 p-6 hidden md:flex flex-col no-print">
         <div class="flex items-center gap-3 mb-10">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10">
-            <span class="text-white font-black tracking-tighter text-xl leading-none">MSS <br><span class="text-blue-500 text-xs tracking-widest uppercase">Records</span></span>
+            <span class="text-white font-black tracking-tighter text-xl uppercase">MSS Admin</span>
         </div>
         
         <nav class="space-y-1 flex-1">
-            <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4 px-3">Main Records</p>
-            <button onclick="switchTab('broadsheet')" id="tab-broadsheet" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm transition">
+            <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-blue-600 text-white font-bold text-sm">
                 <i data-lucide="layout-grid" class="w-4 h-4"></i> Broadsheet
-            </button>
-            <button onclick="switchTab('diary')" id="tab-diary" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 font-bold text-sm transition">
-                <i data-lucide="book-open" class="w-4 h-4"></i> Academic Diary
             </button>
         </nav>
 
         <div class="mt-auto pt-6 border-t border-slate-800 space-y-4">
             <button onclick="window.print()" class="w-full flex items-center justify-center gap-2 bg-slate-800 py-3 rounded-xl text-white font-black text-xs">
-                <i data-lucide="printer" class="w-4 h-4"></i> Print Records
+                <i data-lucide="printer" class="w-4 h-4"></i> Print Broadsheet
             </button>
-            <a href="admin2.html" class="block text-center text-xs font-black text-slate-500 hover:text-white uppercase">← Back to Dashboard</a>
+            <a href="admin2.html" class="block text-center text-xs font-black text-slate-500 hover:text-white uppercase">← Dashboard</a>
         </div>
     </aside>
 
     <!-- MAIN CONTENT AREA -->
-    <main class="flex-1 p-4 md:p-10 overflow-x-hidden">
+    <main class="flex-1 p-4 md:p-8">
         
         <!-- HEADER CONTROL BAR -->
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 no-print">
-            <div>
-                <h1 id="view-title" class="text-3xl font-black italic tracking-tighter uppercase">Class Broadsheet</h1>
-                <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Mustard Seed International School</p>
+        <header class="mb-6 no-print flex flex-wrap gap-4 items-end">
+            <div class="flex-1">
+                <h1 class="text-2xl font-black uppercase text-slate-900">Broadsheet Generator</h1>
+                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Select class and term to view results</p>
             </div>
             
-            <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
-                <div class="flex items-center px-3 text-slate-400"><i data-lucide="filter" class="w-4 h-4"></i></div>
-                <select id="classSelector" onchange="loadData()" class="bg-transparent py-2 pr-8 text-sm font-black uppercase outline-none cursor-pointer">
+            <div class="flex gap-2">
+                <select id="classSelector" onchange="loadData()" class="p-3 rounded-xl border-2 border-slate-200 font-bold text-sm uppercase outline-none">
                     <option value="">Select Class...</option>
                     <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
                     <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
                 </select>
+
+                <select id="termSelector" onchange="loadData()" class="p-3 rounded-xl border-2 border-blue-200 text-blue-700 font-bold text-sm uppercase outline-none">
+                    <option value="1">1st Term</option>
+                    <option value="2">2nd Term</option>
+                    <option value="3">3rd Term (Cumulative)</option>
+                </select>
             </div>
         </header>
 
-        <!-- BROADSHEET VIEW -->
-        <section id="section-broadsheet" class="record-view">
-            <div class="bg-white rounded-[32px] border border-slate-200 shadow-xl overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table id="broadsheetTable" class="w-full text-[11px] font-bold border-collapse table-fixed-first">
-                        <!-- Dynamic Content -->
-                    </table>
-                </div>
+        <!-- OFFICIAL DOCUMENT HEADER (Visible on Print) -->
+        <div class="text-center mb-6">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-16 w-16 mx-auto mb-2">
+            <h1 class="text-3xl font-black uppercase tracking-tight">Mustard Seed Schools</h1>
+            <p class="text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Knowledge, Discipline & Excellence</p>
+            <div class="border-y-2 border-black py-1 inline-block px-10">
+                <p id="docSubTitle" class="text-xs font-black uppercase">Official Academic Broadsheet - --- | 2026/2027</p>
             </div>
-        </section>
+        </div>
 
-        <!-- DIARY VIEW -->
-        <section id="section-diary" class="record-view hidden">
-            <div class="grid grid-cols-1 gap-6">
-                <div class="bg-slate-900 rounded-[32px] p-8 text-white flex flex-col md:flex-row justify-between items-center gap-6 shadow-2xl">
-                    <div class="text-center md:text-left">
-                        <h3 class="text-blue-400 font-black uppercase tracking-[0.3em] text-[10px] mb-2">Class Performance</h3>
-                        <h2 class="text-4xl font-black italic tracking-tighter">Academic Ranking</h2>
-                    </div>
-                    <div id="classStats" class="flex gap-8 text-center">
-                        <!-- Dynamic Stats -->
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 border-b text-[10px] font-black uppercase text-slate-400">
-                            <tr>
-                                <th class="p-6">Position</th>
-                                <th class="p-6">Student Name</th>
-                                <th class="p-6 text-center">Aggregate Score</th>
-                                <th class="p-6 text-center">Average (%)</th>
-                                <th class="p-6 text-center">Outcome</th>
-                            </tr>
-                        </thead>
-                        <tbody id="diaryTableBody" class="divide-y divide-slate-100 italic font-bold">
-                            <!-- Dynamic Content -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
+        <!-- TABLE AREA -->
+        <div class="overflow-x-auto">
+            <table id="broadsheetTable" class="w-full text-center align-middle">
+                <!-- Content Generated by JS -->
+            </table>
+        </div>
     </main>
 
     <script>
-        // SUPABASE CONFIG[cite: 1, 2]
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
         
-        let students = [], curriculum = [], activeTab = 'broadsheet';
+        let students = [], curriculum = [];
 
         async function loadData() {
             const classLevel = document.getElementById('classSelector').value;
@@ -125,79 +108,65 @@
             students = st || [];
             curriculum = cu || [];
             
-            renderRecords();
-        }
-
-        function calculateStats(s) {
-            let total = 0, count = 0;
-            (s.subjects || []).forEach(sub => {
-                const t = parseFloat(sub.test) || 0;
-                const e = parseFloat(sub.exam) || 0;
-                if(t + e > 0) { total += (t + e); count++; }
-            });
-            return { total, avg: count > 0 ? (total / count).toFixed(1) : 0 };
-        }
-
-        function renderRecords() {
-            if(activeTab === 'broadsheet') renderBroadsheet();
-            else renderDiary();
+            document.getElementById('docSubTitle').innerText = `Official Academic Broadsheet - ${classLevel} | 2026/2027`;
+            renderBroadsheet();
             lucide.createIcons();
         }
 
         function renderBroadsheet() {
-            let html = `<thead class="bg-slate-900 text-white uppercase text-[9px] tracking-widest"><tr><th class="p-4 text-left min-w-[200px]">Student Name</th>`;
-            curriculum.forEach(c => html += `<th class="p-4 text-center border-l border-slate-700">${c.subject_name.substring(0,3)}</th>`);
-            html += `<th class="p-4 text-center bg-blue-600">Total</th><th class="p-4 text-center bg-blue-700">AVG</th></tr></thead><tbody class="divide-y divide-slate-100">`;
+            const currentTerm = document.getElementById('termSelector').value;
+            const termKey = `term${currentTerm}`;
 
-            students.forEach(s => {
-                const stats = calculateStats(s);
-                html += `<tr class="hover:bg-slate-50 transition"><td class="p-4 uppercase font-black text-slate-700">${s.full_name}</td>`;
-                curriculum.forEach(c => {
-                    const score = (s.subjects || []).find(sub => sub.name === c.subject_name);
-                    const val = score ? (parseFloat(score.test)||0) + (parseFloat(score.exam)||0) : '-';
-                    html += `<td class="p-4 text-center border-l border-slate-50 ${val < 40 ? 'text-red-500' : 'text-slate-500'}">${val}</td>`;
-                });
-                html += `<td class="p-4 text-center bg-blue-50 text-blue-700 font-black">${stats.total}</td><td class="p-4 text-center bg-blue-50 text-blue-900 font-black">${stats.avg}%</td></tr>`;
+            // Header Row
+            let html = `<thead><tr><th class="w-[180px]">Student Name</th>`;
+            curriculum.forEach(c => {
+                // Short name logic (e.g., MATHEMATICS -> MATH)
+                let shortName = c.subject_name.length > 5 ? c.subject_name.substring(0, 4) : c.subject_name;
+                html += `<th class="w-12">${shortName}</th>`;
             });
+            html += `<th class="bg-slate-100">AGG</th><th class="bg-slate-100">AVG</th><th class="bg-slate-200">CUM %</th></tr></thead><tbody>`;
+
+            // Data Rows
+            students.forEach(s => {
+                const termScores = s.term_data?.[termKey] || [];
+                let rowTotal = 0;
+                let subCount = 0;
+
+                html += `<tr><td class="text-left font-black px-2 uppercase text-[10px]">${s.full_name}</td>`;
+                
+                curriculum.forEach(c => {
+                    const scoreObj = termScores.find(ts => ts.name === c.subject_name);
+                    const score = scoreObj ? (parseFloat(scoreObj.test) || 0) + (parseFloat(scoreObj.exam) || 0) : 0;
+                    
+                    if (score > 0) { rowTotal += score; subCount++; }
+                    html += `<td>${score > 0 ? score : '-'}</td>`;
+                });
+
+                const avg = subCount > 0 ? (rowTotal / subCount).toFixed(1) : '0.0';
+
+                // Cumulative Calculation: (Term 1 + Term 2 + Term 3) / 3
+                const t1Data = s.term_data?.term1 || [];
+                const t2Data = s.term_data?.term2 || [];
+                const t3Data = s.term_data?.term3 || [];
+
+                const getTermAvg = (data) => {
+                    let t = 0, c = 0;
+                    data.forEach(x => { t += (parseFloat(x.test)||0) + (parseFloat(x.exam)||0); c++; });
+                    return c > 0 ? (t / c) : 0;
+                };
+
+                const cumTotal = getTermAvg(t1Data) + getTermAvg(t2Data) + getTermAvg(t3Data);
+                const cumulativePercent = (cumTotal / 3).toFixed(1);
+
+                html += `<td class="font-black bg-slate-50">${rowTotal}</td>`;
+                html += `<td class="font-black bg-slate-50">${avg}</td>`;
+                html += `<td class="font-black bg-slate-100">${cumulativePercent}</td></tr>`;
+            });
+
             document.getElementById('broadsheetTable').innerHTML = html + `</tbody>`;
         }
 
-        function renderDiary() {
-            const ranked = students.map(s => ({ ...s, stats: calculateStats(s) }))
-                                  .sort((a, b) => b.stats.total - a.stats.total);
-
-            document.getElementById('diaryTableBody').innerHTML = ranked.map((s, i) => `
-                <tr class="hover:bg-slate-50 transition ${i < 3 ? 'bg-yellow-50/50' : ''}">
-                    <td class="p-6 font-black text-blue-600 text-xl">#${i + 1}</td>
-                    <td class="p-6">
-                        <div class="font-black text-slate-800 uppercase">${s.full_name}</div>
-                        <div class="text-[9px] text-slate-400 font-black uppercase tracking-widest">${s.student_group || 'GENERAL'}</div>
-                    </td>
-                    <td class="p-6 text-center font-black text-slate-900 text-lg">${s.stats.total}</td>
-                    <td class="p-6 text-center">
-                        <div class="inline-block px-3 py-1 bg-slate-100 rounded-full font-black text-slate-600">${s.stats.avg}%</div>
-                    </td>
-                    <td class="p-6 text-center">
-                        <span class="px-4 py-2 rounded-xl text-[10px] font-black uppercase ${s.stats.avg >= 50 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                            ${s.stats.avg >= 50 ? 'PROMOTED' : 'WEAK'}
-                        </span>
-                    </td>
-                </tr>`).join('');
-        }
-
-        function switchTab(t) {
-            activeTab = t;
-            document.querySelectorAll('.record-view').forEach(v => v.classList.add('hidden'));
-            document.getElementById(`section-${t}`).classList.remove('hidden');
-            
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('bg-blue-600', 'text-white'));
-            document.getElementById(`tab-${t}`).classList.add('bg-blue-600', 'text-white');
-            
-            document.getElementById('view-title').innerText = t === 'broadsheet' ? 'Class Broadsheet' : 'Academic Diary';
-            renderRecords();
-        }
-
-        lucide.createIcons();
+        window.onload = () => lucide.createIcons();
     </script>
 </body>
 </html>
