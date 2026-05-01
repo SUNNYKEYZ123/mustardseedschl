@@ -220,7 +220,7 @@
         function renderDirectory() {
             document.getElementById('directoryTable').innerHTML = students.map(s => `
                 <tr class="hover:bg-slate-50">
-                    <td class="p-4 text-blue-600">ID-${s.id.substring(0,5)}</td>
+                    <td class="p-4 text-blue-600">MS-${s.id.substring(0,5)}</td>
                     <td class="p-4">${s.full_name}</td>
                     <td class="p-4">${s.grade_level || '---'}</td>
                     <td class="p-4"><span class="px-2 py-1 rounded bg-slate-100 text-[9px] font-black">${s.student_group || 'GENERAL'}</span></td>
