@@ -14,6 +14,7 @@
         body { font-family: 'Inter', sans-serif; print-color-adjust: exact; background: #f8fafc; }
         .handwritten { font-family: 'Cedarville Cursive', cursive; color: #1e40af; font-weight: bold; }
 
+        /* THE STAMP AND SIGNATURE OVERLAP */
         .official-stamp {
             border: 4px solid #1e3a8a;
             padding: 5px; width: 170px; text-align: center;
@@ -45,18 +46,19 @@
 </head>
 <body class="py-4 px-4">
 
-    <!-- TERM SELECTOR -->
+    <!-- NAVIGATION & TERM SELECTOR -->
     <div class="max-w-5xl mx-auto mb-4 flex flex-wrap justify-between items-center gap-4 no-print">
         <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-md font-bold text-slate-600">← Back</button>
         <div class="flex bg-white rounded-xl shadow-md p-1 border">
-            <button onclick="changeTerm(1)" id="t1-btn" class="term-btn px-4 py-2 rounded-lg font-black text-xs transition bg-black text-white">1st Term</button>
-            <button onclick="changeTerm(2)" id="t2-btn" class="term-btn px-4 py-2 rounded-lg font-black text-xs transition">2nd Term</button>
-            <button onclick="changeTerm(3)" id="t3-btn" class="term-btn px-4 py-2 rounded-lg font-black text-xs transition">3rd Term</button>
+            <button onclick="changeTerm(1)" id="t1-btn" class="term-btn px-4 py-2 rounded-lg font-black text-xs transition bg-black text-white">1ST TERM</button>
+            <button onclick="changeTerm(2)" id="t2-btn" class="term-btn px-4 py-2 rounded-lg font-black text-xs transition">2ND TERM</button>
+            <button onclick="changeTerm(3)" id="t3-btn" class="term-btn px-4 py-2 rounded-lg font-black text-xs transition">3RD TERM</button>
         </div>
         <button onclick="window.print()" class="bg-blue-600 text-white px-8 py-2 rounded-xl shadow-lg font-black italic">PRINT REPORT</button>
     </div>
 
-    <div id="report-content" class="max-w-5xl mx-auto bg-white border-2 border-black report-sheet shadow-2xl">
+    <div class="max-w-5xl mx-auto bg-white border-2 border-black report-sheet">
+        
         <!-- HEADER -->
         <div class="p-4 border-b-2 border-black flex items-center justify-between text-center bg-white">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="Logo">
@@ -70,21 +72,13 @@
 
         <!-- INFO BAR -->
         <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-black text-[10px] uppercase font-black">
-            <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block text-sm handwritten">Loading...</span></div>
+            <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block text-sm handwritten">---</span></div>
             <div class="p-3 border-r-2 border-black">Reg No: <span id="res-id" class="block text-sm handwritten">---</span></div>
             <div class="p-3 border-r-2 border-black">Class: <span id="res-class" class="block text-sm handwritten">---</span></div>
-            <div class="p-3">Term: <span id="res-term" class="block text-sm text-blue-700 font-black">1ST TERM</span></div>
+            <div class="p-3">Term: <span id="res-term" class="block text-sm text-blue-700 font-black">---</span></div>
         </div>
 
-        <!-- ATTENDANCE BAR -->
-        <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-[9px] uppercase font-bold text-black text-center bg-slate-50">
-            <div class="p-2 border-r-2 border-black">Times School Opened: <span id="daysOpened" class="handwritten text-sm">---</span></div>
-            <div class="p-2 border-r-2 border-black">Times Present: <span id="daysPresent" class="handwritten text-sm">---</span></div>
-            <div class="p-2 border-r-2 border-black">Next Term Begins: <span id="nextTermBegin" class="handwritten text-sm">---</span></div>
-            <div class="p-2">Overall Average: <span id="currentAvg" class="text-blue-700 text-sm font-black">0.0%</span></div>
-        </div>
-
-        <!-- MAIN TABLE -->
+        <!-- SCORES TABLE -->
         <div class="p-4">
             <table>
                 <thead>
@@ -93,7 +87,7 @@
                         <th class="w-16">Test(30)</th>
                         <th class="w-16">Exam(70)</th>
                         <th class="bg-yellow-50 w-20">Total</th>
-                        <th class="w-20" id="dynamic-avg-head">1st TM Avg</th>
+                        <th class="w-20" id="dynamic-avg-head">1ST TM TOTAL</th>
                         <th class="w-14">Grade</th>
                         <th class="text-left">Remarks</th>
                     </tr>
@@ -102,20 +96,7 @@
             </table>
         </div>
 
-        <!-- EVENTS SECTION -->
-        <div class="mx-4 mb-2 border-2 border-black bg-white">
-            <div class="bg-slate-100 p-1 text-center border-b-2 border-black uppercase text-[10px] font-black">Events & Psychomotor Assessment</div>
-            <table class="w-full text-[9px] text-center uppercase">
-                <tr class="font-black bg-slate-50">
-                    <td>Events</td><td>Indoor Games</td><td>Ball Games</td><td>Combative</td><td>Track</td><td>Jumps</td><td>Throw</td><td>Swim</td>
-                </tr>
-                <tr class="h-8 handwritten text-sm">
-                    <td id="e1">-</td><td id="e2">-</td><td id="e3">-</td><td id="e4">-</td><td id="e5">-</td><td id="e6">-</td><td id="e7">-</td><td id="e8">-</td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- PHYSICAL DEVELOPMENT TABLE -->
+        <!-- PHYSICAL DEVELOPMENT (i.jpg) -->
         <div class="mx-4 mb-4 border-2 border-black bg-white">
             <div class="bg-slate-100 p-1 text-center border-b-2 border-black uppercase text-[10px] font-black">3. Physical Development, Health & Cleanliness</div>
             <table class="w-full text-[8px] uppercase font-bold">
@@ -133,7 +114,7 @@
                     <td id="hBeg">-</td><td id="hEnd">-</td><td id="wBeg">-</td><td id="wEnd">-</td><td id="absentDays">-</td><td id="absenceNature">-</td>
                 </tr>
             </table>
-            <div class="p-1 border-t border-black text-[9px] font-bold">
+            <div class="p-1 border-t border-black text-[9px] font-bold uppercase">
                 Cleanliness Rating: <span id="cleanliness" class="handwritten text-sm mx-4">---</span>
             </div>
         </div>
@@ -148,6 +129,9 @@
                 <div>
                     <p class="text-[9px] font-black uppercase text-slate-500">Principal's Comments</p>
                     <p id="principal-comment" class="border-b border-dashed border-black min-h-[30px] handwritten">---</p>
+                </div>
+                <div class="pt-2">
+                    <p class="text-[10px] font-black uppercase">Next term begins: <span id="nextTermDate" class="border-b border-black px-4">---</span></p>
                 </div>
             </div>
 
@@ -171,35 +155,27 @@
     </div>
 
     <script>
-        // REPLACE WITH YOUR ACTUAL KEYS
-        const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'YOUR_SUPABASE_ANON_KEY');
-        
+        const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
         let currentTerm = 1;
         let studentData = null;
 
         async function init() {
-            // Get student ID from URL parameters
+            // FIX: Get ID from URL instead of session
             const urlParams = new URLSearchParams(window.location.search);
             const studentId = urlParams.get('id');
 
             if (!studentId) {
-                document.getElementById('res-name').innerText = "ERROR: No ID found";
+                alert("No Student ID found in URL!");
                 return;
             }
 
-            // Fetch full student record
-            const { data, error } = await _supabase
-                .from('students')
-                .select('*')
-                .eq('id', studentId) // RESTORED LOGIC: Exact ID match
-                .single();
-
-            if (error || !data) {
-                console.error("Database Error:", error);
-                document.getElementById('res-name').innerText = "Student Not Found";
-            } else {
+            const { data, error } = await _supabase.from('students').select('*').eq('id', studentId).single();
+            
+            if (data) {
                 studentData = data;
-                renderReport(); // Run the initial render
+                renderReport();
+            } else {
+                console.error("Error fetching:", error);
             }
         }
 
@@ -210,33 +186,29 @@
                     ? "term-btn px-4 py-2 rounded-lg font-black text-xs transition bg-black text-white" 
                     : "term-btn px-4 py-2 rounded-lg font-black text-xs transition";
             });
-            renderReport(); // RE-RENDER after term change
+            renderReport();
         }
 
         function renderReport() {
             if (!studentData) return;
 
+            // Update Labels
+            document.getElementById('res-name').innerText = studentData.full_name;
+            document.getElementById('res-id').innerText = studentData.id;
+            document.getElementById('res-class').innerText = studentData.grade_level;
+            document.getElementById('res-term').innerText = `${currentTerm}${currentTerm==1?'ST':currentTerm==2?'ND':'RD'} TERM`;
+
+            // Pull Term Specific Data
             const termKey = `term${currentTerm}`;
             const tData = studentData.term_data?.[termKey] || {};
             const scores = tData.scores || [];
             const admin = tData.admin_inputs || {};
 
-            // 1. Basic Info[cite: 5]
-            document.getElementById('res-name').innerText = studentData.full_name;
-            document.getElementById('res-id').innerText = studentData.id; 
-            document.getElementById('res-class').innerText = studentData.grade_level;
-            document.getElementById('res-term').innerText = `${currentTerm}${currentTerm==1?'ST':currentTerm==2?'ND':'RD'} TERM`;
-
-            // 2. Attendance & Labels[cite: 5]
-            document.getElementById('daysOpened').innerText = admin.daysOpened || "---";
-            document.getElementById('daysPresent').innerText = admin.daysPresent || "---";
-            document.getElementById('nextTermBegin').innerText = admin.nextTermDate || "---";
-
-            // 3. Dynamic Header[cite: 5]
+            // Update Dynamic Avg Header
             const avgHead = document.getElementById('dynamic-avg-head');
-            avgHead.innerText = (currentTerm === 3) ? "2nd TM Avg" : "1st TM Avg";
+            avgHead.innerText = (currentTerm === 1) ? "1ST TM TOTAL" : (currentTerm === 2 ? "1ST TM TOTAL" : "2ND TM TOTAL");
 
-            // 4. Physical Dev[cite: 5]
+            // Fill Physical Dev Fields[cite: 5]
             document.getElementById('hBeg').innerText = admin.heightBeg || "-";
             document.getElementById('hEnd').innerText = admin.heightEnd || "-";
             document.getElementById('wBeg').innerText = admin.weightBeg || "-";
@@ -244,42 +216,35 @@
             document.getElementById('absentDays').innerText = admin.daysAbsent || "-";
             document.getElementById('absenceNature').innerText = admin.absenceNature || "-";
             document.getElementById('cleanliness').innerText = admin.cleanlinessRating || "---";
+            document.getElementById('nextTermDate').innerText = admin.nextTermDate || "---";
+            document.getElementById('master-comment').innerText = admin.formMasterComment || "---";
+            document.getElementById('principal-comment').innerText = admin.principalComment || "---";
 
-            // 5. Events[cite: 5]
-            for(let i=1; i<=8; i++) {
-                document.getElementById(`e${i}`).innerText = admin[`event${i}`] || "-";
-            }
+            // Fill Scores Table[cite: 5]
+            const prevTermKey = currentTerm > 1 ? `term${currentTerm - 1}` : null;
+            const prevScores = prevTermKey ? (studentData.term_data?.[prevTermKey]?.scores || []) : [];
 
-            // 6. Scores Table with Previous Comparison[cite: 5]
-            const prevKey = currentTerm > 1 ? `term${currentTerm - 1}` : null;
-            const prevScores = prevKey ? (studentData.term_data?.[prevKey]?.scores || []) : [];
-            
-            let totalMarks = 0;
-            const rows = scores.map(sub => {
-                const total = (parseFloat(sub.test)||0) + (parseFloat(sub.exam)||0);
-                totalMarks += total;
+            const tableBody = document.getElementById('subject-rows');
+            tableBody.innerHTML = scores.map(sub => {
+                const total = (parseFloat(sub.test) || 0) + (parseFloat(sub.exam) || 0);
                 const prevSub = prevScores.find(p => p.name === sub.name);
-                const prevTotal = prevSub ? (parseFloat(prevSub.test)||0) + (parseFloat(prevSub.exam)||0) : '-';
-                
+                const prevTotal = prevSub ? (parseFloat(prevSub.test) || 0) + (parseFloat(prevSub.exam) || 0) : '---';
+
+                let grade = total >= 70 ? "A1" : total >= 60 ? "B2" : total >= 50 ? "C6" : "P7";
+                let remark = total >= 70 ? "EXCELLENT" : total >= 50 ? "CREDIT" : "PASS";
+
                 return `<tr>
-                    <td class="text-left">${sub.name}</td>
+                    <td class="text-left font-black">${sub.name}</td>
                     <td class="text-center">${sub.test}</td>
                     <td class="text-center">${sub.exam}</td>
-                    <td class="text-center bg-yellow-50">${total}</td>
+                    <td class="text-center bg-yellow-50 font-black">${total}</td>
                     <td class="text-center text-slate-500 italic">${prevTotal}</td>
-                    <td class="text-center">${total >= 70 ? 'A1' : total >= 60 ? 'B2' : 'C6'}</td>
-                    <td class="text-left text-[9px]">${total >= 50 ? 'CREDIT' : 'PASS'}</td>
+                    <td class="text-center">${grade}</td>
+                    <td class="text-left text-[9px]">${remark}</td>
                 </tr>`;
             }).join('');
-            document.getElementById('subject-rows').innerHTML = rows;
 
-            // 7. Average & Comments[cite: 5]
-            const avg = scores.length > 0 ? (totalMarks / scores.length).toFixed(1) : 0;
-            document.getElementById('currentAvg').innerText = avg + "%";
-            document.getElementById('master-comment').innerText = admin.formMasterComment || "Satisfactory.";
-            document.getElementById('principal-comment').innerText = admin.principalComment || (avg >= 50 ? "Good Performance." : "Work Harder.");
-
-            // 8. Signature[cite: 5]
+            // LOAD DYNAMIC SIGNATURE[cite: 5]
             const sigImg = document.getElementById('principal-sig');
             if (admin.principalSignatureURL) {
                 sigImg.src = admin.principalSignatureURL;
