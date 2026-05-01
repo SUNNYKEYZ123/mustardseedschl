@@ -11,186 +11,203 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; print-color-adjust: exact; }
         
-        .school-name { 
-            font-family: Arial, Helvetica, sans-serif; 
-            font-weight: 900;
-        }
-
-        /* Watermark Styles */
+        .school-name { font-family: Arial, Helvetica, sans-serif; font-weight: 900; }
         .watermark-container { position: relative; }
         .watermark-bg {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-15deg);
-            opacity: 0.04;
-            width: 400px;
-            pointer-events: none;
-            z-index: 0;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
+            opacity: 0.04; width: 400px; pointer-events: none; z-index: 0;
         }
 
         @media print {
-            @page {
-                size: legal;
-                margin: 0.4in;
-            }
+            @page { size: legal; margin: 0.4in; }
             .no-print { display: none !important; }
-            body { background: white; padding: 0; }
             .report-sheet { border: 2px solid #000; box-shadow: none; width: 100%; margin: 0; }
-            /* Force white background for B&W printers to save ink */
-            .bg-blue-900 { background-color: white !important; color: black !important; border-bottom: 2px solid black !important; }
-            .text-blue-200 { color: black !important; font-weight: bold !important; }
         }
         
-        .grade-a { color: #000; font-weight: 900; }
-        .grade-f { color: #000; font-weight: 900; text-decoration: underline; }
-        table { position: relative; z-index: 10; background: transparent !important; }
+        .grade-a { font-weight: 900; }
+        .grade-f { font-weight: 900; text-decoration: underline; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1.5px solid black !important; padding: 4px; }
     </style>
 </head>
 <body class="bg-slate-100 py-4 px-4">
 
-    <div class="max-w-5xl mx-auto mb-4 flex justify-between items-center no-print">
-        <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-md font-bold text-slate-600 hover:bg-slate-50 transition">← Dashboard</button>
-        <button onclick="window.print()" class="bg-black text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest hover:bg-slate-800 transition">PRINT (LEGAL SIZE)</button>
+    <!-- NAVIGATION & TERM SELECTOR -->
+    <div class="max-w-5xl mx-auto mb-4 flex flex-wrap justify-between items-center gap-4 no-print">
+        <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-md font-bold text-slate-600">← Back</button>
+        
+        <div class="flex bg-white rounded-xl shadow-md p-1 border">
+            <button onclick="changeTerm(1)" id="t1-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition bg-black text-white">1st Term</button>
+            <button onclick="changeTerm(2)" id="t2-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">2nd Term</button>
+            <button onclick="changeTerm(3)" id="t3-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">3rd Term</button>
+        </div>
+
+        <button onclick="window.print()" class="bg-blue-600 text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest">PRINT REPORT</button>
     </div>
 
-    <div class="max-w-5xl mx-auto bg-white border-2 border-black rounded-sm overflow-hidden report-sheet">
+    <div class="max-w-5xl mx-auto bg-white border-2 border-black rounded-sm report-sheet">
         
+        <!-- HEADER -->
         <div class="p-4 border-b-2 border-black flex items-center justify-between text-center">
-            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="School Logo Left">
-            
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="Logo">
             <div class="flex-1 px-4">
-                <h1 class="school-name text-2xl md:text-3xl text-black leading-tight">MUSTARD SEED INTERNATIONAL GROUP OF SCHOOL</h1>
+                <h1 class="school-name text-2xl md:text-3xl text-black leading-tight uppercase">Mustard Seed International Group of Schools</h1>
                 <p class="text-[12px] font-bold text-black uppercase mt-1">Ibokun, Osun State</p>
                 <p class="text-[10px] font-bold tracking-[0.2em] text-slate-600 italic">Motto: ... Christ is Our Corner Stone...</p>
             </div>
-
-            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Coat.jpeg" class="h-20 w-20" alt="School Logo Right">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Coat.jpeg" class="h-20 w-20" alt="Coat of Arms">
         </div>
 
+        <!-- STUDENT INFO -->
         <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-black text-[10px] uppercase font-black">
-            <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block text-sm">LOADING...</span></div>
+            <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block text-sm">---</span></div>
             <div class="p-3 border-r-2 border-black">Reg No: <span id="res-id" class="block text-sm">---</span></div>
             <div class="p-3 border-r-2 border-black">Class: <span id="res-class" class="block text-sm">---</span></div>
-            <div class="p-3">Session: <span class="block text-sm">2025/2026</span></div>
+            <div class="p-3">Term: <span id="res-term" class="block text-sm text-blue-600">1ST TERM</span></div>
         </div>
 
-        <div class="p-4 watermark-container min-h-[400px]">
+        <!-- MAIN SCORES TABLE -->
+        <div class="p-4 watermark-container">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="watermark-bg" alt="watermark">
-            <table class="w-full border-collapse border-2 border-black relative z-10">
+            <table class="relative z-10">
                 <thead>
-                    <tr class="bg-slate-100 text-[10px] uppercase font-black text-black">
-                        <th class="border border-black p-2 text-left w-48">Subject</th>
-                        <th class="border border-black p-2 text-center">Test(30)</th>
-                        <th class="border border-black p-2 text-center">Exam(70)</th>
-                        <th class="border border-black p-2 text-center">Total</th>
-                        <th class="border border-black p-2 text-center">Grade</th>
-                        <th class="border border-black p-2 text-left">Remarks</th>
-                        <th class="border border-black p-2 text-left">Teacher</th>
+                    <tr class="bg-slate-100 text-[9px] uppercase font-black">
+                        <th class="text-left w-48">Subject</th>
+                        <th class="text-center">Test(30)</th>
+                        <th class="text-center">Exam(70)</th>
+                        <th class="text-center bg-yellow-50">Total</th>
+                        <th class="text-center">Prev. Total</th>
+                        <th class="text-center">Grade</th>
+                        <th class="text-left">Remarks</th>
                     </tr>
                 </thead>
-                <tbody id="subject-rows" class="text-[12px] font-bold text-black uppercase">
-                    </tbody>
+                <tbody id="subject-rows" class="text-[11px] font-bold uppercase">
+                    <!-- Data injected here -->
+                </tbody>
             </table>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 pb-4">
-            <div class="border-2 border-black p-3 text-center rounded-lg flex flex-col justify-center">
-                <p class="text-[10px] font-black uppercase tracking-widest">Termly Average</p>
-                <p id="avg-score" class="text-3xl font-black">0.0</p>
+        <!-- CLUBS & ORGANIZATIONS SECTION -->
+        <div class="mx-4 mb-4 border-2 border-black">
+            <div class="bg-slate-100 p-1 text-center border-b-2 border-black">
+                <h3 class="text-[10px] font-black uppercase">6. CLUBS, YOUTH ORGANIZATIONS</h3>
             </div>
-            <div class="border-2 border-black rounded-lg p-3">
-                <h4 class="text-[10px] font-black uppercase border-b border-black mb-2 pb-1">Behavioral Assessment</h4>
-                <div class="grid grid-cols-1 gap-y-1 text-[10px] font-bold">
-                    <p class="flex justify-between border-b border-dotted border-black">Punctuality: <span>Excellent</span></p>
-                    <p class="flex justify-between border-b border-dotted border-black">Neatness: <span>Good</span></p>
-                </div>
-            </div>
-            <div class="border-2 border-black rounded-lg p-3">
-                <h4 class="text-[10px] font-black uppercase border-b border-black mb-2 pb-1">Attendance</h4>
-                <div class="flex justify-around text-center py-1">
-                    <div><p class="text-[8px] uppercase font-black">Days Opened</p><p class="font-black text-base">110</p></div>
-                    <div><p class="text-[8px] uppercase font-black">Days Present</p><p class="font-black text-base">108</p></div>
-                </div>
-            </div>
+            <table class="w-full text-[9px]">
+                <thead>
+                    <tr class="font-black uppercase">
+                        <th class="w-1/4">Organization</th>
+                        <th class="w-1/4">Office Held</th>
+                        <th>Significant Contributions</th>
+                    </tr>
+                </thead>
+                <tbody id="clubs-body">
+                    <tr class="h-6"><td></td><td></td><td></td></tr>
+                    <tr class="h-6"><td></td><td></td><td></td></tr>
+                </tbody>
+            </table>
         </div>
 
-        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-black">
-            <div>
-                <p class="text-[9px] font-black uppercase tracking-widest text-slate-500">Principal's Remark</p>
-                <p id="teacher-comment" class="italic text-black text-sm mt-1 border-b border-dashed border-black pb-1 font-medium">---</p>
-                <div class="mt-4">
-                    <p class="font-black text-[9px] uppercase mb-1">Authenticated By:</p>
-                    <p class="font-bold text-[10px] uppercase border-t border-black pt-1 inline-block">School Registrar</p>
+        <!-- SUMMARY FOOTER -->
+        <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-black">
+            <div class="space-y-4">
+                <div>
+                    <p class="text-[9px] font-black uppercase text-slate-500">Form Master's Comments</p>
+                    <p id="master-comment" class="border-b border-dashed border-black min-h-[20px] text-sm italic">He shows respect for teachers and peers.</p>
+                </div>
+                <div>
+                    <p class="text-[9px] font-black uppercase text-slate-500">Principal's Comments</p>
+                    <p id="principal-comment" class="border-b border-dashed border-black min-h-[20px] text-sm italic">An Average Performance. Work Harder.</p>
+                </div>
+                <div class="pt-2">
+                    <p class="text-[10px] font-black">Next term begins on: <span class="border-b border-black px-4">September 16, 2026</span></p>
                 </div>
             </div>
-            <div class="text-right flex flex-col items-end">
-                <p class="text-[9px] font-black uppercase tracking-widest text-slate-500">Official Stamp & Signature</p>
-                <div class="mt-2 relative">
-                    <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-14 opacity-1 grayscale">
+
+            <div class="flex flex-col items-end justify-between">
+                <div class="text-center">
+                    <p class="text-[9px] font-black uppercase mb-10">School Stamp & Date</p>
+                    <div class="border-2 border-slate-300 p-4 rounded inline-block opacity-40 italic text-xs">
+                        MUSTARD SEED HIGH SCHOOL<br>OFFICIAL STAMP
+                    </div>
                 </div>
-                <p class="font-black text-[12px] uppercase mt-2">School Principal</p>
+                <div class="text-center mt-4">
+                    <div class="w-48 border-t-2 border-black pt-1">
+                        <p class="font-black text-[11px] uppercase">School Principal</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
+        let currentTerm = 1;
+        let studentData = null;
 
-        async function loadDynamicReport() {
+        async function init() {
             const { data: { session } } = await _supabase.auth.getSession();
-            if (!session) { window.location.href = 'login.html'; return; }
+            if (!session) return;
 
-            const { data: st, error } = await _supabase
-                .from('students')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
+            const { data: st } = await _supabase.from('students').select('*').eq('id', session.user.id).single();
+            if (st) {
+                studentData = st;
+                renderReport();
+            }
+        }
 
-            if (error || !st) return;
+        function changeTerm(term) {
+            currentTerm = term;
+            // Update UI buttons
+            [1, 2, 3].forEach(t => {
+                const btn = document.getElementById(`t${t}-btn`);
+                btn.className = t === term ? "px-4 py-2 rounded-lg font-black text-xs uppercase bg-black text-white" : "px-4 py-2 rounded-lg font-black text-xs uppercase";
+            });
+            renderReport();
+        }
 
-            document.getElementById('res-name').innerText = st.full_name || "---";
-            document.getElementById('res-id').innerText = "MS-" + st.id.substring(0, 5).toUpperCase();
-            document.getElementById('res-class').innerText = st.grade_level || "NOT ASSIGNED";
-            document.getElementById('teacher-comment').innerText = st.teacher_remark || "No specific remark recorded.";
+        function renderReport() {
+            if (!studentData) return;
+
+            document.getElementById('res-name').innerText = studentData.full_name;
+            document.getElementById('res-id').innerText = "MS-" + studentData.id.substring(0, 5).toUpperCase();
+            document.getElementById('res-class').innerText = studentData.grade_level;
+            document.getElementById('res-term').innerText = `${currentTerm}${currentTerm==1?'ST':currentTerm==2?'ND':'RD'} TERM`;
+
+            const currentScores = studentData.term_data?.[`term${currentTerm}`] || [];
+            const prevTermKey = currentTerm > 1 ? `term${currentTerm - 1}` : null;
+            const prevScores = prevTermKey ? (studentData.term_data?.[prevTermKey] || []) : [];
 
             const tableBody = document.getElementById('subject-rows');
-            const subjectsData = st.subjects || [];
-            let totalAverage = 0, count = 0;
-
-            if (subjectsData.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="7" class="p-8 text-center font-bold italic uppercase">Results being compiled...</td></tr>`;
-                return;
-            }
-
-            tableBody.innerHTML = subjectsData.map(sub => {
+            
+            tableBody.innerHTML = currentScores.map(sub => {
                 const test = parseFloat(sub.test) || 0;
                 const exam = parseFloat(sub.exam) || 0;
                 const total = test + exam;
-                let grade = "F", remark = "POOR";
+                
+                // Find previous term total for this specific subject
+                const prevSub = prevScores.find(p => p.name === sub.name);
+                const prevTotal = prevSub ? (parseFloat(prevSub.test) || 0) + (parseFloat(prevSub.exam) || 0) : '---';
+
+                let grade = "F9", remark = "POOR";
                 if (total >= 75) { grade = "A1"; remark = "EXCELLENT"; }
-                else if (total >= 70) { grade = "B2"; remark = "VERY GOOD"; }
+                else if (total >= 70) { grade = "B2"; remark = "V. GOOD"; }
                 else if (total >= 60) { grade = "B3"; remark = "GOOD"; }
-                else if (total >= 50) { grade = "C4"; remark = "CREDIT"; }
-                else if (total >= 45) { grade = "D7"; remark = "PASS"; }
-                totalAverage += total; count++;
+                else if (total >= 50) { grade = "C6"; remark = "CREDIT"; }
 
                 return `
-                    <tr class="border-b border-black">
-                        <td class="border border-black p-2 font-black">${sub.name}</td>
-                        <td class="border border-black p-2 text-center">${test}</td>
-                        <td class="border border-black p-2 text-center">${exam}</td>
-                        <td class="border border-black p-2 text-center font-black">${total}</td>
-                        <td class="border border-black p-2 text-center ${total < 45 ? 'grade-f' : 'grade-a'}">${grade}</td>
-                        <td class="border border-black p-2 text-[9px] font-bold">${remark}</td>
-                        <td class="border border-black p-2 text-[9px]">${sub.teacher || '---'}</td>
+                    <tr>
+                        <td class="font-black text-left">${sub.name}</td>
+                        <td class="text-center">${test}</td>
+                        <td class="text-center">${exam}</td>
+                        <td class="text-center bg-slate-50 font-black">${total}</td>
+                        <td class="text-center text-slate-500">${prevTotal}</td>
+                        <td class="text-center ${total < 45 ? 'grade-f' : 'grade-a'}">${grade}</td>
+                        <td class="text-[9px] font-bold">${remark}</td>
                     </tr>`;
             }).join('');
-
-            const finalAvg = count > 0 ? (totalAverage / count).toFixed(1) : "0.0";
-            document.getElementById('avg-score').innerText = finalAvg;
         }
-        window.onload = loadDynamicReport;
+
+        window.onload = init;
     </script>
 </body>
 </html>
