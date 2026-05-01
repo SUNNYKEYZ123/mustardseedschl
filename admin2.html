@@ -12,7 +12,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .sidebar { width: 260px; background: #0f172a; z-index: 50; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; width: 100%; border: none; cursor: pointer; text-align: left; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; width: 100%; text-align: left; }
         .nav-link:hover, .nav-link.active { background: #2563eb; color: white; }
         .view-section { display: none; }
         .view-section.active { display: block; }
@@ -29,8 +29,10 @@
             <button onclick="showView('directory')" id="btn-directory" class="nav-link active"><i data-lucide="users"></i> Students List</button>
             <button onclick="showView('curriculum')" id="btn-curriculum" class="nav-link"><i data-lucide="book-open"></i> Class Subjects</button>
             <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="award"></i> Score Entry Room</button>
-            <!-- UPDATED: Navigates to broadsheet.html -->
-            <button onclick="window.location.href='broadsheet.html'" id="btn-broadsheet" class="nav-link"><i data-lucide="layout-grid"></i> Broadsheet</button>
+            
+            <!-- REPAIRED LINK: Now redirects directly to broadsheet.html -->
+            <a href="broadsheet.html" class="nav-link"><i data-lucide="layout-grid"></i> Broadsheet</a>
+            
             <button onclick="showView('diary')" id="btn-diary" class="nav-link"><i data-lucide="book"></i> Academic Diary</button>
         </nav>
         <button onclick="handleLogout()" class="nav-link text-red-400 hover:bg-red-400/10 mt-auto"><i data-lucide="log-out"></i> Logout</button>
@@ -92,7 +94,7 @@
             </div>
         </section>
 
-        <!-- SCORE ENGINE SECTION -->
+        <!-- ENGINE ROOM SECTION -->
         <section id="view-engine" class="view-section">
             <div class="flex flex-wrap gap-4 mb-6 bg-white p-4 rounded-2xl shadow-sm border">
                 <div class="flex-1 min-w-[200px]">
@@ -143,19 +145,23 @@
                             </thead>
                             <tbody id="scoreRows"></tbody>
                         </table>
+                        <div class="mt-8 pt-6 border-t">
+                            <label class="text-[10px] font-black text-slate-400 uppercase">Teacher's Remark</label>
+                            <textarea id="remark" class="w-full p-4 mt-2 bg-slate-50 rounded-xl border-none ring-1 ring-slate-100 italic outline-none text-sm"></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- DIARY SECTION -->
+        <!-- ACADEMIC DIARY SECTION -->
         <section id="view-diary" class="view-section">
-            <h1 class="text-3xl font-black uppercase">Academic Diary</h1>
+            <h1 class="text-3xl font-black uppercase text-slate-900">Academic Diary</h1>
             <p class="text-slate-400 font-bold text-xs uppercase">Attendance and Event Tracking</p>
         </section>
     </main>
 
-    <!-- GROUP MODAL -->
+    <!-- UPDATE GROUP MODAL -->
     <div id="groupModal" class="fixed inset-0 bg-slate-900/60 hidden z-[100] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
             <h3 class="font-black uppercase text-sm mb-4">Update Student Profile</h3>
@@ -168,7 +174,7 @@
             </select>
             <div class="flex gap-2">
                 <button onclick="closeModal()" class="flex-1 py-3 font-black text-xs uppercase text-slate-400">Cancel</button>
-                <button onclick="updateStudentGroup()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase">Update</button>
+                <button id="saveGroupBtn" onclick="updateStudentGroup()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase">Update</button>
             </div>
         </div>
     </div>
@@ -177,7 +183,7 @@
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
         let students = [], curriculum = [], activeId = null, currentTerm = "1";
 
-        async function init() { loadData(); lucide.createIcons(); }
+        async function init() { loadData(); }
 
         async function loadData() {
             const { data: st } = await _supabase.from('students').select('*').order('full_name');
@@ -190,10 +196,13 @@
         function showView(v) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            
             const targetSection = document.getElementById(`view-${v}`);
             const targetBtn = document.getElementById(`btn-${v}`);
+            
             if(targetSection) targetSection.classList.add('active');
             if(targetBtn) targetBtn.classList.add('active');
+            
             lucide.createIcons();
         }
 
@@ -201,6 +210,11 @@
             currentTerm = t;
             document.getElementById('activeTermTag').innerText = `TERM ${t}`;
             if(activeId) openEditor(activeId);
+        }
+
+        function filterByClass(cls) {
+            const list = cls === "ALL" ? students : students.filter(s => s.grade_level === cls);
+            renderEngineList(list);
         }
 
         function renderDirectory() {
@@ -219,6 +233,34 @@
             lucide.createIcons();
         }
 
+        function openGroupModal(id, name, group) {
+            activeId = id;
+            document.getElementById('modalStudentName').innerText = name;
+            document.getElementById('modalGroupSelect').value = group || 'GENERAL';
+            document.getElementById('groupModal').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('groupModal').classList.add('hidden'); }
+
+        async function updateStudentGroup() {
+            const group = document.getElementById('modalGroupSelect').value;
+            await _supabase.from('students').update({ student_group: group }).eq('id', activeId);
+            closeModal(); loadData();
+        }
+
+        function renderEngineList(l) {
+            document.getElementById('engineList').innerHTML = l.map(s => `
+                <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center group">
+                    <div class="uppercase">
+                        <p class="text-[11px] font-black text-slate-800">${s.full_name}</p>
+                        <p class="text-[9px] font-bold text-slate-400">${s.grade_level} • ${s.student_group || 'GENERAL'}</p>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-blue-500"></i>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
         function openEditor(id) {
             activeId = id;
             const s = students.find(x => x.id === id);
@@ -227,46 +269,62 @@
             document.getElementById('editName').innerText = s.full_name;
             document.getElementById('editClass').innerText = s.grade_level;
             document.getElementById('editGroupTag').innerText = sGroup;
+            document.getElementById('remark').value = s.teacher_remark || '';
             
             const allowed = curriculum.filter(c => c.class_name === s.grade_level && (c.subject_group === 'GENERAL' || c.subject_group === sGroup));
             const termKey = `term${currentTerm}`;
-            const existingScores = s[termKey] || {};
+            const existingScores = s.term_data?.[termKey] || [];
 
             document.getElementById('scoreRows').innerHTML = allowed.map(cs => {
-                const score = existingScores[cs.subject_name] || { test: "", exam: "" };
+                const score = existingScores.find(e => e.name === cs.subject_name) || { test: "-", exam: "-" };
                 return `
                     <tr class="bg-slate-50 border-b border-white">
-                        <td class="p-3"><span class="font-black text-[11px] uppercase block" data-sub="${cs.subject_name}">${cs.subject_name}</span></td>
-                        <td class="p-3"><input type="number" value="${score.test}" class="st w-full p-2 rounded bg-white text-center font-black text-xs outline-none"></td>
-                        <td class="p-3"><input type="number" value="${score.exam}" class="se w-full p-2 rounded bg-white text-center font-black text-xs outline-none"></td>
+                        <td class="p-3">
+                            <span class="font-black text-[11px] uppercase block">${cs.subject_name}</span>
+                            <span class="hidden extra-n-val">${cs.subject_name}</span>
+                        </td>
+                        <td class="p-3"><input type="text" value="${score.test}" placeholder="-" class="st w-full p-2 rounded bg-white text-center font-black text-xs outline-none"></td>
+                        <td class="p-3"><input type="text" value="${score.exam}" placeholder="-" class="se w-full p-2 rounded bg-white text-center font-black text-xs outline-none"></td>
                     </tr>
                 `;
             }).join('');
         }
 
         async function saveScores() {
+            const s = students.find(x => x.id === activeId);
             const termKey = `term${currentTerm}`;
-            const records = {};
+            const termScores = [];
+            
             document.querySelectorAll('#scoreRows tr').forEach(row => {
-                const sub = row.querySelector('[data-sub]').dataset.sub;
-                const t = parseFloat(row.querySelector('.st').value) || 0;
-                const e = parseFloat(row.querySelector('.se').value) || 0;
-                records[sub] = { test: t, exam: e, total: t + e };
+                const name = row.querySelector('.extra-n-val').innerText;
+                const testRaw = row.querySelector('.st').value;
+                const examRaw = row.querySelector('.se').value;
+                
+                termScores.push({
+                    name: name,
+                    test: testRaw === "-" || testRaw === "" ? 0 : parseFloat(testRaw),
+                    exam: examRaw === "-" || examRaw === "" ? 0 : parseFloat(examRaw)
+                });
             });
 
-            const updateData = {}; updateData[termKey] = records;
-            const { error } = await _supabase.from('students').update(updateData).eq('id', activeId);
-            if(!error) { alert("Scores Saved!"); loadData(); }
+            if(!s.term_data) s.term_data = {};
+            s.term_data[termKey] = termScores;
+
+            const { error } = await _supabase.from('students').update({ 
+                term_data: s.term_data,
+                teacher_remark: document.getElementById('remark').value 
+            }).eq('id', activeId);
+
+            if(!error) { alert("Term Scores Saved Successfully!"); loadData(); }
         }
 
         async function addCurriculum() {
-            const payload = {
-                class_name: document.getElementById('currClass').value,
-                subject_group: document.getElementById('currGroup').value,
-                subject_name: document.getElementById('currSub').value.toUpperCase(),
-                assigned_teacher: document.getElementById('currTeacher').value
-            };
-            await _supabase.from('school_curriculum').insert([payload]);
+            const class_name = document.getElementById('currClass').value;
+            const subject_group = document.getElementById('currGroup').value;
+            const subject_name = document.getElementById('currSub').value.toUpperCase();
+            const assigned_teacher = document.getElementById('currTeacher').value;
+            if(!subject_name) return;
+            await _supabase.from('school_curriculum').insert([{ class_name, subject_group, subject_name, assigned_teacher }]);
             loadData();
         }
 
@@ -283,12 +341,8 @@
             lucide.createIcons();
         }
 
-        function openGroupModal(id, name, grp) { activeId = id; document.getElementById('modalStudentName').innerText = name; document.getElementById('modalGroupSelect').value = grp || 'GENERAL'; document.getElementById('groupModal').classList.remove('hidden'); }
-        function closeModal() { document.getElementById('groupModal').classList.add('hidden'); }
-        async function updateStudentGroup() { await _supabase.from('students').update({ student_group: document.getElementById('modalGroupSelect').value }).eq('id', activeId); closeModal(); loadData(); }
-        async function deleteStudent(id) { if(confirm("Delete student?")) { await _supabase.from('students').delete().eq('id', id); loadData(); } }
         async function deleteCurr(id) { await _supabase.from('school_curriculum').delete().eq('id', id); loadData(); }
-        function renderEngineList(l) { document.getElementById('engineList').innerHTML = l.map(s => `<div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center group"><div class="uppercase"><p class="text-[11px] font-black">${s.full_name}</p><p class="text-[9px] font-bold text-slate-400">${s.grade_level}</p></div><i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-blue-500"></i></div>`).join(''); lucide.createIcons(); }
+        async function deleteStudent(id) { if(confirm("Permanently delete?")) { await _supabase.from('students').delete().eq('id', id); loadData(); } }
         function filterEngine(v) { renderEngineList(students.filter(s => s.full_name.toLowerCase().includes(v.toLowerCase()))); }
         function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
         window.onload = init;
