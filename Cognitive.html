@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score & Assessment Entry | MSS Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 p-6">
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border">
+        <!-- Header -->
+        <div class="bg-blue-900 p-6 text-white flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">Student Assessment Portal</h1>
+                <p class="text-blue-200 text-sm">Update comments, attendance, and behavioral records</p>
+            </div>
+            <button onclick="window.location.href='admin2.html'" class="bg-blue-800 px-4 py-2 rounded-lg hover:bg-blue-700 transition">Return to Dashboard</button>
+        </div>
+
+        <div class="p-8 space-y-6">
+            <!-- Step 1: Select Student & Term -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-500 mb-1">Select Student</label>
+                    <select id="student-select" class="w-full p-3 bg-slate-100 border rounded-xl font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="">Loading students...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-500 mb-1">Select Term</label>
+                    <select id="term-select" class="w-full p-3 bg-slate-100 border rounded-xl font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="term1">1st Term</option>
+                        <option value="term2">2nd Term</option>
+                        <option value="term3">3rd Term</option>
+                    </select>
+                </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <!-- Step 2: Assessment Inputs -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Behavioral Section -->
+                <div class="space-y-4">
+                    <h3 class="font-black text-blue-900 uppercase text-xs tracking-widest">Behavioral Assessment</h3>
+                    <div>
+                        <label class="text-sm font-bold">Cleanliness</label>
+                        <input type="text" id="cleanliness" placeholder="e.g. Excellent / Good" class="w-full p-2 border-b-2 border-slate-200 focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="text-sm font-bold">Manual Activities</label>
+                        <input type="text" id="activities" placeholder="e.g. Cooperative" class="w-full p-2 border-b-2 border-slate-200 focus:border-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <!-- Attendance Section -->
+                <div class="space-y-4">
+                    <h3 class="font-black text-blue-900 uppercase text-xs tracking-widest">Attendance & Date</h3>
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="text-sm font-bold">Days Present</label>
+                            <input type="number" id="daysPresent" class="w-full p-2 border-b-2 border-slate-200 focus:border-blue-500 outline-none">
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-sm font-bold">Days Absent</label>
+                            <input type="number" id="daysAbsent" class="w-full p-2 border-b-2 border-slate-200 focus:border-blue-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-sm font-bold text-red-600">Next Term Begins</label>
+                        <input type="text" id="nextTermBegin" placeholder="September 15, 2026" class="w-full p-2 border-b-2 border-slate-200 focus:border-blue-500 outline-none font-bold">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Comments Section -->
+            <div class="space-y-4">
+                <h3 class="font-black text-blue-900 uppercase text-xs tracking-widest">Official Remarks</h3>
+                <div>
+                    <label class="text-sm font-bold">Form Master's Comment</label>
+                    <textarea id="formMasterComment" rows="2" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+                <div>
+                    <label class="text-sm font-bold">Principal's Comment</label>
+                    <textarea id="principalComment" rows="2" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="pt-4">
+                <button onclick="saveAssessment()" id="save-btn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-200 transition">Save Student Records</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
+
+        async function loadStudents() {
+            const { data, error } = await _supabase.from('students').select('id, full_name').order('full_name');
+            if (data) {
+                const select = document.getElementById('student-select');
+                select.innerHTML = '<option value="">-- Choose a Student --</option>' + 
+                    data.map(s => `<option value="${s.id}">${s.full_name}</option>`).join('');
+            }
+        }
+
+        async function saveAssessment() {
+            const studentId = document.getElementById('student-select').value;
+            const term = document.getElementById('term-select').value;
+            if (!studentId) return alert("Please select a student!");
+
+            const btn = document.getElementById('save-btn');
+            btn.innerText = "Saving...";
+            btn.disabled = true;
+
+            // Get current student data to preserve other terms
+            const { data: student } = await _supabase.from('students').select('admin_inputs').eq('id', studentId).single();
+            
+            const updatedAdminInputs = {
+                ...(student?.admin_inputs || {}),
+                [term]: {
+                    cleanliness: document.getElementById('cleanliness').value,
+                    activities: document.getElementById('activities').value,
+                    daysPresent: document.getElementById('daysPresent').value,
+                    daysAbsent: document.getElementById('daysAbsent').value,
+                    nextTermBegin: document.getElementById('nextTermBegin').value,
+                    formMasterComment: document.getElementById('formMasterComment').value,
+                    principalComment: document.getElementById('principalComment').value
+                }
+            };
+
+            const { error } = await _supabase.from('students').update({ admin_inputs: updatedAdminInputs }).eq('id', studentId);
+
+            if (!error) {
+                alert("Records updated successfully for " + term);
+                btn.innerText = "Save Student Records";
+                btn.disabled = false;
+            } else {
+                alert("Error saving: " + error.message);
+            }
+        }
+
+        window.onload = loadStudents;
+    </script>
+</body>
+</html>
