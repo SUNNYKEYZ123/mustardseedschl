@@ -9,10 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap');
-
         body { font-family: 'Inter', sans-serif; print-color-adjust: exact; }
-        .handwritten { font-family: 'Cedarville Cursive', cursive; color: #1e40af; }
         
         .school-name { font-family: Arial, Helvetica, sans-serif; font-weight: 900; }
         .watermark-container { position: relative; }
@@ -27,17 +24,10 @@
             .report-sheet { border: 2px solid #000; box-shadow: none; width: 100%; margin: 0; }
         }
         
-        table { border-collapse: collapse; width: 100%; position: relative; z-index: 10; }
+        .grade-a { font-weight: 900; }
+        .grade-f { font-weight: 900; text-decoration: underline; }
+        table { border-collapse: collapse; width: 100%; }
         th, td { border: 1.5px solid black !important; padding: 4px; }
-
-        .signature-zone {
-            position: relative; width: 200px; height: 80px;
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-        }
-        .principal-signature-img {
-            position: absolute; bottom: 20px; width: 120px;
-            z-index: 100; mix-blend-mode: multiply;
-        }
     </style>
 </head>
 <body class="bg-slate-100 py-4 px-4">
@@ -52,7 +42,7 @@
             <button onclick="changeTerm(3)" id="t3-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">3rd Term</button>
         </div>
 
-        <button onclick="window.print()" class="bg-blue-600 text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest uppercase">Print My Report</button>
+        <button onclick="window.print()" class="bg-blue-600 text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest">PRINT REPORT</button>
     </div>
 
     <div class="max-w-5xl mx-auto bg-white border-2 border-black rounded-sm report-sheet">
@@ -63,25 +53,17 @@
             <div class="flex-1 px-4">
                 <h1 class="school-name text-2xl md:text-3xl text-black leading-tight uppercase">Mustard Seed International Group of Schools</h1>
                 <p class="text-[12px] font-bold text-black uppercase mt-1">Ibokun, Osun State</p>
-                <p class="text-[10px] font-bold tracking-[0.2em] text-slate-600 italic">... Christ is Our Corner Stone ...</p>
+                <p class="text-[10px] font-bold tracking-[0.2em] text-slate-600 italic">Motto: ... Christ is Our Corner Stone...</p>
             </div>
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Coat.jpeg" class="h-20 w-20" alt="Coat of Arms">
         </div>
 
-        <!-- STUDENT INFO BAR -->
+        <!-- STUDENT INFO -->
         <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-black text-[10px] uppercase font-black">
-            <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block text-sm handwritten">Loading...</span></div>
-            <div class="p-3 border-r-2 border-black">Reg No: <span id="res-id" class="block text-sm handwritten">---</span></div>
-            <div class="p-3 border-r-2 border-black">Class: <span id="res-class" class="block text-sm handwritten">---</span></div>
-            <div class="p-3">Term: <span id="res-term" class="block text-sm text-blue-600">---</span></div>
-        </div>
-
-        <!-- ATTENDANCE & PERFORMANCE SUMMARY -->
-        <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-[9px] uppercase font-bold text-black text-center bg-slate-50">
-            <div class="p-2 border-r-2 border-black">Times School Opened: <span id="daysOpened" class="block text-sm font-black">---</span></div>
-            <div class="p-2 border-r-2 border-black">Times Present: <span id="daysPresent" class="block text-sm font-black">---</span></div>
-            <div class="p-2 border-r-2 border-black">Times Absent: <span id="absentDays" class="block text-sm font-black">---</span></div>
-            <div class="p-2">Overall Average: <span id="currentAvg" class="block text-sm font-black text-blue-700">0.0%</span></div>
+            <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block text-sm">---</span></div>
+            <div class="p-3 border-r-2 border-black">Reg No: <span id="res-id" class="block text-sm">---</span></div>
+            <div class="p-3 border-r-2 border-black">Class: <span id="res-class" class="block text-sm">---</span></div>
+            <div class="p-3">Term: <span id="res-term" class="block text-sm text-blue-600">1ST TERM</span></div>
         </div>
 
         <!-- MAIN SCORES TABLE -->
@@ -94,72 +76,61 @@
                         <th class="text-center">Test(30)</th>
                         <th class="text-center">Exam(70)</th>
                         <th class="text-center bg-yellow-50">Total</th>
-                        <th class="text-center" id="prev-head">Prev. Total</th>
+                        <th class="text-center">Prev. Total</th>
                         <th class="text-center">Grade</th>
                         <th class="text-left">Remarks</th>
                     </tr>
                 </thead>
-                <tbody id="subject-rows" class="text-[11px] font-bold uppercase"></tbody>
+                <tbody id="subject-rows" class="text-[11px] font-bold uppercase">
+                    <!-- Data injected here -->
+                </tbody>
             </table>
         </div>
 
-        <!-- PSYCHOMOTOR & PHYSICAL DEV -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 mb-4">
-            <div class="border-2 border-black">
-                <div class="bg-slate-100 p-1 text-center border-b-2 border-black uppercase text-[10px] font-black">Physical Development</div>
-                <table class="w-full text-[9px] uppercase font-bold text-center">
-                    <tr>
-                        <td class="border-r border-black">Height (Beg)</td><td id="hBeg" class="handwritten text-sm">-</td>
-                        <td class="border-r border-black">Weight (Beg)</td><td id="wBeg" class="handwritten text-sm">-</td>
-                    </tr>
-                    <tr>
-                        <td class="border-r border-black">Height (End)</td><td id="hEnd" class="handwritten text-sm">-</td>
-                        <td class="border-r border-black">Weight (End)</td><td id="wEnd" class="handwritten text-sm">-</td>
-                    </tr>
-                </table>
+        <!-- CLUBS & ORGANIZATIONS SECTION -->
+        <div class="mx-4 mb-4 border-2 border-black">
+            <div class="bg-slate-100 p-1 text-center border-b-2 border-black">
+                <h3 class="text-[10px] font-black uppercase">6. CLUBS, YOUTH ORGANIZATIONS</h3>
             </div>
-            <div class="border-2 border-black">
-                <div class="bg-slate-100 p-1 text-center border-b-2 border-black uppercase text-[10px] font-black">Psychomotor Skills</div>
-                <table class="w-full text-[9px] uppercase font-bold text-center">
-                    <tr>
-                        <td class="border-r border-black">Handwriting</td><td id="psy1" class="handwritten text-sm">-</td>
-                        <td class="border-r border-black">Sports</td><td id="psy2" class="handwritten text-sm">-</td>
+            <table class="w-full text-[9px]">
+                <thead>
+                    <tr class="font-black uppercase">
+                        <th class="w-1/4">Organization</th>
+                        <th class="w-1/4">Office Held</th>
+                        <th>Significant Contributions</th>
                     </tr>
-                    <tr>
-                        <td class="border-r border-black">Creativity</td><td id="psy3" class="handwritten text-sm">-</td>
-                        <td class="border-r border-black">Cleanliness</td><td id="cleanliness" class="handwritten text-sm">-</td>
-                    </tr>
-                </table>
-            </div>
+                </thead>
+                <tbody id="clubs-body">
+                    <tr class="h-6"><td></td><td></td><td></td></tr>
+                    <tr class="h-6"><td></td><td></td><td></td></tr>
+                </tbody>
+            </table>
         </div>
 
-        <!-- FOOTER -->
+        <!-- SUMMARY FOOTER -->
         <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-black">
             <div class="space-y-4">
                 <div>
                     <p class="text-[9px] font-black uppercase text-slate-500">Form Master's Comments</p>
-                    <p id="master-comment" class="border-b border-dashed border-black min-h-[25px] text-sm handwritten">---</p>
+                    <p id="master-comment" class="border-b border-dashed border-black min-h-[20px] text-sm italic">He shows respect for teachers and peers.</p>
                 </div>
                 <div>
                     <p class="text-[9px] font-black uppercase text-slate-500">Principal's Comments</p>
-                    <p id="principal-comment" class="border-b border-dashed border-black min-h-[25px] text-sm handwritten">---</p>
+                    <p id="principal-comment" class="border-b border-dashed border-black min-h-[20px] text-sm italic">An Average Performance. Work Harder.</p>
                 </div>
                 <div class="pt-2">
-                    <p class="text-[10px] font-black uppercase">Next term begins: <span id="nextTermDate" class="border-b border-black px-4 font-bold">---</span></p>
+                    <p class="text-[10px] font-black">Next term begins on: <span class="border-b border-black px-4">September 16, 2026</span></p>
                 </div>
             </div>
 
             <div class="flex flex-col items-end justify-between">
-                <div class="text-center flex flex-col items-center">
-                    <p class="text-[9px] font-black uppercase mb-4">Official Stamp & Signature</p>
-                    <div class="signature-zone">
-                        <div class="border-2 border-slate-300 p-4 rounded opacity-30 italic text-[10px] w-40">
-                            MUSTARD SEED SCHOOLS<br>OFFICIAL STAMP
-                        </div>
-                        <img id="principal-sig" src="" class="principal-signature-img" style="display:none;">
+                <div class="text-center">
+                    <p class="text-[9px] font-black uppercase mb-10">School Stamp & Date</p>
+                    <div class="border-2 border-slate-300 p-4 rounded inline-block opacity-40 italic text-xs">
+                        MUSTARD SEED HIGH SCHOOL<br>OFFICIAL STAMP
                     </div>
                 </div>
-                <div class="text-center mt-2">
+                <div class="text-center mt-4">
                     <div class="w-48 border-t-2 border-black pt-1">
                         <p class="font-black text-[11px] uppercase">School Principal</p>
                     </div>
@@ -175,10 +146,7 @@
 
         async function init() {
             const { data: { session } } = await _supabase.auth.getSession();
-            if (!session) {
-                alert("Please log in to view your report!");
-                return;
-            }
+            if (!session) return;
 
             const { data: st } = await _supabase.from('students').select('*').eq('id', session.user.id).single();
             if (st) {
@@ -189,9 +157,10 @@
 
         function changeTerm(term) {
             currentTerm = term;
+            // Update UI buttons
             [1, 2, 3].forEach(t => {
                 const btn = document.getElementById(`t${t}-btn`);
-                btn.className = t === term ? "px-4 py-2 rounded-lg font-black text-xs uppercase transition bg-black text-white" : "px-4 py-2 rounded-lg font-black text-xs uppercase transition";
+                btn.className = t === term ? "px-4 py-2 rounded-lg font-black text-xs uppercase bg-black text-white" : "px-4 py-2 rounded-lg font-black text-xs uppercase";
             });
             renderReport();
         }
@@ -199,78 +168,43 @@
         function renderReport() {
             if (!studentData) return;
 
-            // Student Info[cite: 5]
             document.getElementById('res-name').innerText = studentData.full_name;
-            document.getElementById('res-id').innerText = studentData.id; // Corrected: Uses exact ID length[cite: 5]
+            document.getElementById('res-id').innerText = "MS-" + studentData.id.substring(0, 5).toUpperCase();
             document.getElementById('res-class').innerText = studentData.grade_level;
             document.getElementById('res-term').innerText = `${currentTerm}${currentTerm==1?'ST':currentTerm==2?'ND':'RD'} TERM`;
 
-            // Pull term data[cite: 5]
-            const termKey = `term${currentTerm}`;
-            const tData = studentData.term_data?.[termKey] || {};
-            const scores = tData.scores || [];
-            const admin = tData.admin_inputs || {};
-
-            // Attendance & Admin[cite: 5]
-            document.getElementById('daysOpened').innerText = admin.daysOpened || "-";
-            document.getElementById('daysPresent').innerText = admin.daysPresent || "-";
-            document.getElementById('absentDays').innerText = admin.daysAbsent || "-";
-            document.getElementById('nextTermDate').innerText = admin.nextTermDate || "---";
-
-            // Physical & Psychomotor[cite: 5]
-            document.getElementById('hBeg').innerText = admin.heightBeg || "-";
-            document.getElementById('hEnd').innerText = admin.heightEnd || "-";
-            document.getElementById('wBeg').innerText = admin.weightBeg || "-";
-            document.getElementById('wEnd').innerText = admin.weightEnd || "-";
-            document.getElementById('psy1').innerText = admin.handwritingRating || "-";
-            document.getElementById('psy2').innerText = admin.sportsRating || "-";
-            document.getElementById('psy3').innerText = admin.creativityRating || "-";
-            document.getElementById('cleanliness').innerText = admin.cleanlinessRating || "-";
-
-            // Scores Table Comparison[cite: 5]
+            const currentScores = studentData.term_data?.[`term${currentTerm}`] || [];
             const prevTermKey = currentTerm > 1 ? `term${currentTerm - 1}` : null;
-            const prevScores = prevTermKey ? (studentData.term_data?.[prevTermKey]?.scores || []) : [];
-            document.getElementById('prev-head').innerText = currentTerm === 1 ? "---" : `Term ${currentTerm-1} Total`;
+            const prevScores = prevTermKey ? (studentData.term_data?.[prevTermKey] || []) : [];
 
-            let totalMarks = 0;
             const tableBody = document.getElementById('subject-rows');
-            tableBody.innerHTML = scores.map(sub => {
+            
+            tableBody.innerHTML = currentScores.map(sub => {
                 const test = parseFloat(sub.test) || 0;
                 const exam = parseFloat(sub.exam) || 0;
                 const total = test + exam;
-                totalMarks += total;
-
+                
+                // Find previous term total for this specific subject
                 const prevSub = prevScores.find(p => p.name === sub.name);
                 const prevTotal = prevSub ? (parseFloat(prevSub.test) || 0) + (parseFloat(prevSub.exam) || 0) : '---';
 
-                let grade = total >= 75 ? "A1" : total >= 65 ? "B2" : total >= 50 ? "C6" : "P7";
-                let remark = total >= 50 ? "PASS" : "FAIL";
+                let grade = "F9", remark = "POOR";
+                if (total >= 75) { grade = "A1"; remark = "EXCELLENT"; }
+                else if (total >= 70) { grade = "B2"; remark = "V. GOOD"; }
+                else if (total >= 60) { grade = "B3"; remark = "GOOD"; }
+                else if (total >= 50) { grade = "C6"; remark = "CREDIT"; }
 
-                return `<tr>
-                    <td class="text-left font-black">${sub.name}</td>
-                    <td class="text-center">${test}</td>
-                    <td class="text-center">${exam}</td>
-                    <td class="text-center bg-yellow-50 font-black">${total}</td>
-                    <td class="text-center text-slate-500 italic">${prevTotal}</td>
-                    <td class="text-center">${grade}</td>
-                    <td class="text-left text-[9px]">${remark}</td>
-                </tr>`;
+                return `
+                    <tr>
+                        <td class="font-black text-left">${sub.name}</td>
+                        <td class="text-center">${test}</td>
+                        <td class="text-center">${exam}</td>
+                        <td class="text-center bg-slate-50 font-black">${total}</td>
+                        <td class="text-center text-slate-500">${prevTotal}</td>
+                        <td class="text-center ${total < 45 ? 'grade-f' : 'grade-a'}">${grade}</td>
+                        <td class="text-[9px] font-bold">${remark}</td>
+                    </tr>`;
             }).join('');
-
-            // Average & Comments[cite: 5]
-            const avg = scores.length > 0 ? (totalMarks / scores.length).toFixed(1) : 0;
-            document.getElementById('currentAvg').innerText = avg + "%";
-            document.getElementById('master-comment').innerText = admin.formMasterComment || "---";
-            document.getElementById('principal-comment').innerText = admin.principalComment || "---";
-
-            // Signature[cite: 5]
-            const sigImg = document.getElementById('principal-sig');
-            if (admin.principalSignatureURL) {
-                sigImg.src = admin.principalSignatureURL;
-                sigImg.style.display = "block";
-            } else {
-                sigImg.style.display = "none";
-            }
         }
 
         window.onload = init;
