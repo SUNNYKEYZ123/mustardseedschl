@@ -4,89 +4,98 @@
     <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Report Sheet | MSS</title>
+    <title>Comprehensive Report Sheet | MSS</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Cedarville+Cursive&display=swap');
 
-        body { font-family: 'Inter', sans-serif; print-color-adjust: exact; background: #f8fafc; }
-        .handwritten { font-family: 'Cedarville Cursive', cursive; color: #1e40af; font-weight: bold; }
-
-        .official-stamp {
-            border: 4px solid #1e3a8a;
-            padding: 5px; width: 170px; text-align: center;
-            transform: rotate(-2deg); opacity: 0.85; color: #1e3a8a;
-            background: rgba(30, 58, 138, 0.03); position: relative; z-index: 10;
-        }
-        .stamp-inner { border: 1.5px solid #1e3a8a; padding: 4px; display: flex; flex-direction: column; align-items: center; }
-
-        .signature-zone {
-            position: relative; width: 220px; height: 110px;
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-        }
-
-        .principal-signature-img {
-            position: absolute; bottom: 30px; width: 140px;
-            z-index: 100; pointer-events: none; mix-blend-mode: multiply;
+        body { font-family: 'Inter', sans-serif; print-color-adjust: exact; }
+        .handwritten { font-family: 'Cedarville Cursive', cursive; color: #1e40af; }
+        
+        .school-name { font-family: Arial, Helvetica, sans-serif; font-weight: 900; }
+        .watermark-container { position: relative; }
+        .watermark-bg {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
+            opacity: 0.04; width: 400px; pointer-events: none; z-index: 0;
         }
 
         @media print {
-            @page { size: legal; margin: 0.3in; }
+            @page { size: legal; margin: 0.4in; }
             .no-print { display: none !important; }
-            body { background: white; padding: 0; }
             .report-sheet { border: 2px solid #000; box-shadow: none; width: 100%; margin: 0; }
         }
         
         table { border-collapse: collapse; width: 100%; position: relative; z-index: 10; }
-        th, td { border: 1.2px solid black !important; padding: 4px; }
+        th, td { border: 1.5px solid black !important; padding: 4px; }
+
+        .signature-zone {
+            position: relative; width: 200px; height: 80px;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+        }
+        .principal-signature-img {
+            position: absolute; bottom: 20px; width: 120px;
+            z-index: 100; mix-blend-mode: multiply;
+        }
     </style>
 </head>
-<body class="py-4 px-4">
+<body class="bg-slate-100 py-4 px-4">
 
-    <!-- STUDENT TERM SELECTOR -->
+    <!-- NAVIGATION & TERM SELECTOR -->
     <div class="max-w-5xl mx-auto mb-4 flex flex-wrap justify-between items-center gap-4 no-print">
         <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-md font-bold text-slate-600">← Back</button>
-        <div class="flex bg-white rounded-xl shadow-md p-1 border text-black">
-            <button onclick="changeTerm(1)" id="t1-btn" class="term-btn px-4 py-2 rounded-lg font-black text-xs transition bg-black text-white">1ST TERM</button>
-            <button onclick="changeTerm(2)" id="t2-btn" class="term-btn px-4 py-2 rounded-lg font-black text-xs transition">2ND TERM</button>
-            <button onclick="changeTerm(3)" id="t3-btn" class="term-btn px-4 py-2 rounded-lg font-black text-xs transition">3RD TERM</button>
+        
+        <div class="flex bg-white rounded-xl shadow-md p-1 border">
+            <button onclick="changeTerm(1)" id="t1-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition bg-black text-white">1st Term</button>
+            <button onclick="changeTerm(2)" id="t2-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">2nd Term</button>
+            <button onclick="changeTerm(3)" id="t3-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">3rd Term</button>
         </div>
-        <button onclick="window.print()" class="bg-blue-600 text-white px-8 py-2 rounded-xl shadow-lg font-black italic">PRINT MY RESULT</button>
+
+        <button onclick="window.print()" class="bg-blue-600 text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest uppercase">Print My Report</button>
     </div>
 
-    <div id="report-content" class="max-w-5xl mx-auto bg-white border-2 border-black report-sheet">
+    <div class="max-w-5xl mx-auto bg-white border-2 border-black rounded-sm report-sheet">
+        
         <!-- HEADER -->
-        <div class="p-4 border-b-2 border-black flex items-center justify-between text-center bg-white">
+        <div class="p-4 border-b-2 border-black flex items-center justify-between text-center">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="Logo">
             <div class="flex-1 px-4">
-                <h1 class="text-2xl md:text-3xl font-black uppercase text-black">Mustard Seed International Group of Schools</h1>
-                <p class="text-[12px] font-bold text-black uppercase">Ibokun, Osun State</p>
-                <p class="text-[10px] font-bold italic text-slate-600">... Christ is Our Corner Stone ...</p>
+                <h1 class="school-name text-2xl md:text-3xl text-black leading-tight uppercase">Mustard Seed International Group of Schools</h1>
+                <p class="text-[12px] font-bold text-black uppercase mt-1">Ibokun, Osun State</p>
+                <p class="text-[10px] font-bold tracking-[0.2em] text-slate-600 italic">... Christ is Our Corner Stone ...</p>
             </div>
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Coat.jpeg" class="h-20 w-20" alt="Coat of Arms">
         </div>
 
-        <!-- INFO BAR -->
+        <!-- STUDENT INFO BAR -->
         <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-black text-[10px] uppercase font-black">
-            <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block text-sm handwritten uppercase">Loading...</span></div>
+            <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block text-sm handwritten">Loading...</span></div>
             <div class="p-3 border-r-2 border-black">Reg No: <span id="res-id" class="block text-sm handwritten">---</span></div>
             <div class="p-3 border-r-2 border-black">Class: <span id="res-class" class="block text-sm handwritten">---</span></div>
-            <div class="p-3">Term: <span id="res-term" class="block text-sm text-blue-700 font-black">---</span></div>
+            <div class="p-3">Term: <span id="res-term" class="block text-sm text-blue-600">---</span></div>
         </div>
 
-        <!-- TABLE -->
-        <div class="p-4">
-            <table>
+        <!-- ATTENDANCE & PERFORMANCE SUMMARY -->
+        <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-[9px] uppercase font-bold text-black text-center bg-slate-50">
+            <div class="p-2 border-r-2 border-black">Times School Opened: <span id="daysOpened" class="block text-sm font-black">---</span></div>
+            <div class="p-2 border-r-2 border-black">Times Present: <span id="daysPresent" class="block text-sm font-black">---</span></div>
+            <div class="p-2 border-r-2 border-black">Times Absent: <span id="absentDays" class="block text-sm font-black">---</span></div>
+            <div class="p-2">Overall Average: <span id="currentAvg" class="block text-sm font-black text-blue-700">0.0%</span></div>
+        </div>
+
+        <!-- MAIN SCORES TABLE -->
+        <div class="p-4 watermark-container">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="watermark-bg" alt="watermark">
+            <table class="relative z-10">
                 <thead>
-                    <tr class="bg-slate-100 text-[9px] uppercase font-black text-center">
+                    <tr class="bg-slate-100 text-[9px] uppercase font-black">
                         <th class="text-left w-48">Subject</th>
-                        <th class="w-16">Test(30)</th>
-                        <th class="w-16">Exam(70)</th>
-                        <th class="bg-yellow-50 w-20">Total</th>
-                        <th class="w-20" id="dynamic-avg-head">PREV TOTAL</th>
-                        <th class="w-14">Grade</th>
+                        <th class="text-center">Test(30)</th>
+                        <th class="text-center">Exam(70)</th>
+                        <th class="text-center bg-yellow-50">Total</th>
+                        <th class="text-center" id="prev-head">Prev. Total</th>
+                        <th class="text-center">Grade</th>
                         <th class="text-left">Remarks</th>
                     </tr>
                 </thead>
@@ -94,48 +103,65 @@
             </table>
         </div>
 
-        <!-- PHYSICAL DEV -->
-        <div class="mx-4 mb-4 border-2 border-black bg-white">
-            <div class="bg-slate-100 p-1 text-center border-b-2 border-black uppercase text-[10px] font-black">Physical Development & Health</div>
-            <table class="w-full text-[8px] uppercase font-bold text-center">
-                <tr class="bg-slate-50 font-black">
-                    <td class="border-r border-black">Days Opened</td>
-                    <td class="border-r border-black">Days Present</td>
-                    <td class="border-r border-black">Days Absent</td>
-                    <td>Cleanliness</td>
-                </tr>
-                <tr class="h-8 handwritten text-sm">
-                    <td id="daysOpened" class="border-r border-black">-</td>
-                    <td id="daysPresent" class="border-r border-black">-</td>
-                    <td id="absentDays" class="border-r border-black">-</td>
-                    <td id="cleanliness">-</td>
-                </tr>
-            </table>
+        <!-- PSYCHOMOTOR & PHYSICAL DEV -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 mb-4">
+            <div class="border-2 border-black">
+                <div class="bg-slate-100 p-1 text-center border-b-2 border-black uppercase text-[10px] font-black">Physical Development</div>
+                <table class="w-full text-[9px] uppercase font-bold text-center">
+                    <tr>
+                        <td class="border-r border-black">Height (Beg)</td><td id="hBeg" class="handwritten text-sm">-</td>
+                        <td class="border-r border-black">Weight (Beg)</td><td id="wBeg" class="handwritten text-sm">-</td>
+                    </tr>
+                    <tr>
+                        <td class="border-r border-black">Height (End)</td><td id="hEnd" class="handwritten text-sm">-</td>
+                        <td class="border-r border-black">Weight (End)</td><td id="wEnd" class="handwritten text-sm">-</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="border-2 border-black">
+                <div class="bg-slate-100 p-1 text-center border-b-2 border-black uppercase text-[10px] font-black">Psychomotor Skills</div>
+                <table class="w-full text-[9px] uppercase font-bold text-center">
+                    <tr>
+                        <td class="border-r border-black">Handwriting</td><td id="psy1" class="handwritten text-sm">-</td>
+                        <td class="border-r border-black">Sports</td><td id="psy2" class="handwritten text-sm">-</td>
+                    </tr>
+                    <tr>
+                        <td class="border-r border-black">Creativity</td><td id="psy3" class="handwritten text-sm">-</td>
+                        <td class="border-r border-black">Cleanliness</td><td id="cleanliness" class="handwritten text-sm">-</td>
+                    </tr>
+                </table>
+            </div>
         </div>
 
         <!-- FOOTER -->
         <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-black">
             <div class="space-y-4">
                 <div>
+                    <p class="text-[9px] font-black uppercase text-slate-500">Form Master's Comments</p>
+                    <p id="master-comment" class="border-b border-dashed border-black min-h-[25px] text-sm handwritten">---</p>
+                </div>
+                <div>
                     <p class="text-[9px] font-black uppercase text-slate-500">Principal's Comments</p>
-                    <p id="principal-comment" class="border-b border-dashed border-black min-h-[30px] handwritten">---</p>
+                    <p id="principal-comment" class="border-b border-dashed border-black min-h-[25px] text-sm handwritten">---</p>
                 </div>
                 <div class="pt-2">
-                    <p class="text-[10px] font-black uppercase">Next term begins: <span id="nextTermDate" class="border-b border-black px-4">---</span></p>
+                    <p class="text-[10px] font-black uppercase">Next term begins: <span id="nextTermDate" class="border-b border-black px-4 font-bold">---</span></p>
                 </div>
             </div>
 
-            <div class="flex items-center justify-end">
-                <div class="signature-zone">
-                    <div class="official-stamp">
-                        <div class="stamp-inner">
-                            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-8 w-8 grayscale opacity-60" alt="Logo">
-                            <span class="text-[8px] font-black mt-1">MUSTARD SEED SCHOOLS</span>
+            <div class="flex flex-col items-end justify-between">
+                <div class="text-center flex flex-col items-center">
+                    <p class="text-[9px] font-black uppercase mb-4">Official Stamp & Signature</p>
+                    <div class="signature-zone">
+                        <div class="border-2 border-slate-300 p-4 rounded opacity-30 italic text-[10px] w-40">
+                            MUSTARD SEED SCHOOLS<br>OFFICIAL STAMP
                         </div>
+                        <img id="principal-sig" src="" class="principal-signature-img" style="display:none;">
                     </div>
-                    <img id="principal-sig" src="" class="principal-signature-img" alt="">
-                    <div class="w-full text-center mt-2 border-t-2 border-black">
-                        <p class="font-black text-[10px] uppercase mt-1">School Principal</p>
+                </div>
+                <div class="text-center mt-2">
+                    <div class="w-48 border-t-2 border-black pt-1">
+                        <p class="font-black text-[11px] uppercase">School Principal</p>
                     </div>
                 </div>
             </div>
@@ -148,33 +174,24 @@
         let studentData = null;
 
         async function init() {
-            // RESTORED: Logic from "Report Card.html (1)_3.html"
             const { data: { session } } = await _supabase.auth.getSession();
             if (!session) {
-                alert("Please log in to view your result!");
+                alert("Please log in to view your report!");
                 return;
             }
 
-            const { data: st, error } = await _supabase
-                .from('students')
-                .select('*')
-                .eq('id', session.user.id) // Automatically use the logged-in student's ID
-                .single();
-
+            const { data: st } = await _supabase.from('students').select('*').eq('id', session.user.id).single();
             if (st) {
                 studentData = st;
                 renderReport();
-            } else {
-                document.getElementById('res-name').innerText = "Data Not Found";
             }
         }
 
         function changeTerm(term) {
             currentTerm = term;
-            document.querySelectorAll('.term-btn').forEach((btn, idx) => {
-                btn.className = (idx + 1 === term) 
-                    ? "term-btn px-4 py-2 rounded-lg font-black text-xs transition bg-black text-white" 
-                    : "term-btn px-4 py-2 rounded-lg font-black text-xs transition";
+            [1, 2, 3].forEach(t => {
+                const btn = document.getElementById(`t${t}-btn`);
+                btn.className = t === term ? "px-4 py-2 rounded-lg font-black text-xs uppercase transition bg-black text-white" : "px-4 py-2 rounded-lg font-black text-xs uppercase transition";
             });
             renderReport();
         }
@@ -182,25 +199,47 @@
         function renderReport() {
             if (!studentData) return;
 
-            // Header Info
+            // Student Info[cite: 5]
             document.getElementById('res-name').innerText = studentData.full_name;
-            document.getElementById('res-id').innerText = studentData.id;
+            document.getElementById('res-id').innerText = studentData.id; // Corrected: Uses exact ID length[cite: 5]
             document.getElementById('res-class').innerText = studentData.grade_level;
             document.getElementById('res-term').innerText = `${currentTerm}${currentTerm==1?'ST':currentTerm==2?'ND':'RD'} TERM`;
 
+            // Pull term data[cite: 5]
             const termKey = `term${currentTerm}`;
             const tData = studentData.term_data?.[termKey] || {};
             const scores = tData.scores || [];
             const admin = tData.admin_inputs || {};
 
-            // Scores Table[cite: 4]
+            // Attendance & Admin[cite: 5]
+            document.getElementById('daysOpened').innerText = admin.daysOpened || "-";
+            document.getElementById('daysPresent').innerText = admin.daysPresent || "-";
+            document.getElementById('absentDays').innerText = admin.daysAbsent || "-";
+            document.getElementById('nextTermDate').innerText = admin.nextTermDate || "---";
+
+            // Physical & Psychomotor[cite: 5]
+            document.getElementById('hBeg').innerText = admin.heightBeg || "-";
+            document.getElementById('hEnd').innerText = admin.heightEnd || "-";
+            document.getElementById('wBeg').innerText = admin.weightBeg || "-";
+            document.getElementById('wEnd').innerText = admin.weightEnd || "-";
+            document.getElementById('psy1').innerText = admin.handwritingRating || "-";
+            document.getElementById('psy2').innerText = admin.sportsRating || "-";
+            document.getElementById('psy3').innerText = admin.creativityRating || "-";
+            document.getElementById('cleanliness').innerText = admin.cleanlinessRating || "-";
+
+            // Scores Table Comparison[cite: 5]
             const prevTermKey = currentTerm > 1 ? `term${currentTerm - 1}` : null;
             const prevScores = prevTermKey ? (studentData.term_data?.[prevTermKey]?.scores || []) : [];
+            document.getElementById('prev-head').innerText = currentTerm === 1 ? "---" : `Term ${currentTerm-1} Total`;
 
-            document.getElementById('subject-rows').innerHTML = scores.map(sub => {
+            let totalMarks = 0;
+            const tableBody = document.getElementById('subject-rows');
+            tableBody.innerHTML = scores.map(sub => {
                 const test = parseFloat(sub.test) || 0;
                 const exam = parseFloat(sub.exam) || 0;
                 const total = test + exam;
+                totalMarks += total;
+
                 const prevSub = prevScores.find(p => p.name === sub.name);
                 const prevTotal = prevSub ? (parseFloat(prevSub.test) || 0) + (parseFloat(prevSub.exam) || 0) : '---';
 
@@ -218,20 +257,20 @@
                 </tr>`;
             }).join('');
 
-            // Student specific details[cite: 4]
-            document.getElementById('daysOpened').innerText = admin.daysOpened || "-";
-            document.getElementById('daysPresent').innerText = admin.daysPresent || "-";
-            document.getElementById('absentDays').innerText = admin.daysAbsent || "-";
-            document.getElementById('cleanliness').innerText = admin.cleanlinessRating || "---";
-            document.getElementById('nextTermDate').innerText = admin.nextTermDate || "---";
+            // Average & Comments[cite: 5]
+            const avg = scores.length > 0 ? (totalMarks / scores.length).toFixed(1) : 0;
+            document.getElementById('currentAvg').innerText = avg + "%";
+            document.getElementById('master-comment').innerText = admin.formMasterComment || "---";
             document.getElementById('principal-comment').innerText = admin.principalComment || "---";
 
-            // Principal's Signature[cite: 4]
+            // Signature[cite: 5]
             const sigImg = document.getElementById('principal-sig');
             if (admin.principalSignatureURL) {
                 sigImg.src = admin.principalSignatureURL;
                 sigImg.style.display = "block";
-            } else { sigImg.style.display = "none"; }
+            } else {
+                sigImg.style.display = "none";
+            }
         }
 
         window.onload = init;
