@@ -10,38 +10,25 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; print-color-adjust: exact; }
-        
         .school-name { font-family: Arial, Helvetica, sans-serif; font-weight: 900; }
         .watermark-container { position: relative; }
         .watermark-bg {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
             opacity: 0.04; width: 400px; pointer-events: none; z-index: 0;
         }
-
         .stamp-box {
-            border: 2.5px solid #000080;
-            padding: 8px;
-            width: 160px;
-            text-align: center;
-            position: relative;
-            display: inline-block;
+            border: 2.5px solid #000080; padding: 8px; width: 160px;
+            text-align: center; position: relative; display: inline-block;
         }
         .principal-signature {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 140px;
-            z-index: 30;
-            mix-blend-mode: multiply;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 140px; z-index: 30; mix-blend-mode: multiply;
         }
-
         @media print {
             @page { size: legal; margin: 0.4in; }
             .no-print { display: none !important; }
             .report-sheet { border: 2px solid #000; box-shadow: none; width: 100%; margin: 0; }
         }
-        
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1.5px solid black !important; padding: 4px; }
         .bold-data { font-weight: 900; text-transform: uppercase; font-size: 14px; }
@@ -51,18 +38,16 @@
 
     <div class="max-w-5xl mx-auto mb-4 flex flex-wrap justify-between items-center gap-4 no-print">
         <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-md font-bold text-slate-600">← Back</button>
-        
         <div class="flex bg-white rounded-xl shadow-md p-1 border">
             <button onclick="changeTerm(1)" id="t1-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition bg-black text-white">1st Term</button>
             <button onclick="changeTerm(2)" id="t2-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">2nd Term</button>
             <button onclick="changeTerm(3)" id="t3-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">3rd Term</button>
         </div>
-
         <button onclick="window.print()" class="bg-blue-600 text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest">PRINT REPORT</button>
     </div>
 
     <div class="max-w-5xl mx-auto bg-white border-2 border-black rounded-sm report-sheet">
-        
+        <!-- HEADER -->
         <div class="p-4 border-b-2 border-black flex items-center justify-between text-center">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="Logo">
             <div class="flex-1 px-4">
@@ -73,6 +58,7 @@
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Coat.jpeg" class="h-20 w-20" alt="Coat of Arms">
         </div>
 
+        <!-- STUDENT INFO -->
         <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-black text-[10px] uppercase font-black">
             <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block bold-data">---</span></div>
             <div class="p-3 border-r-2 border-black">Reg No: <span id="res-id" class="block bold-data text-blue-800">---</span></div>
@@ -80,6 +66,7 @@
             <div class="p-3">Term: <span id="res-term" class="block bold-data text-red-600">---</span></div>
         </div>
 
+        <!-- SCORES TABLE -->
         <div class="p-4 watermark-container">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="watermark-bg" alt="watermark">
             <table class="relative z-10">
@@ -100,6 +87,7 @@
             </table>
         </div>
 
+        <!-- ASSESSMENT & ATTENDANCE -->
         <div class="mx-4 mb-4 grid grid-cols-2 gap-4">
             <div class="border-2 border-black">
                 <div class="bg-slate-100 p-1 text-center border-b-2 border-black">
@@ -121,6 +109,7 @@
             </div>
         </div>
 
+        <!-- FOOTER -->
         <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-black">
             <div class="space-y-4">
                 <div>
@@ -174,6 +163,16 @@
             renderReport();
         }
 
+        function getGrade(score) {
+            const s = Math.round(score);
+            if (s >= 70) return "A";
+            if (s >= 60) return "B";
+            if (s >= 50) return "C";
+            if (s >= 45) return "D";
+            if (s >= 40) return "E";
+            return "F";
+        }
+
         function renderReport() {
             if (!studentData) return;
 
@@ -202,7 +201,7 @@
             const t3_all = studentData.term_data?.['term3'] || [];
 
             document.getElementById('subject-rows').innerHTML = currentScores.map(sub => {
-                const total = (parseFloat(sub.test) || 0) + (parseFloat(sub.exam) || 0);
+                const currentTotal = (parseFloat(sub.test) || 0) + (parseFloat(sub.exam) || 0);
                 
                 const s1 = t1_all.find(x => x.name === sub.name);
                 const v1 = s1 ? (parseFloat(s1.test) || 0) + (parseFloat(s1.exam) || 0) : 0;
@@ -218,18 +217,22 @@
                 else if (currentTerm === 2) cum = (v1 + v2) / 2;
                 else if (currentTerm === 3) cum = (v1 + v2 + v3) / 3;
 
-                const grade = total >= 75 ? "A1" : total >= 70 ? "B2" : total >= 60 ? "B3" : total >= 50 ? "C6" : "F9";
-                const remark = total >= 75 ? "EXCELLENT" : total >= 60 ? "GOOD" : total >= 50 ? "CREDIT" : "POOR";
+                // Column Visibility Logic
+                const t1_display = currentTerm >= 1 ? v1 : '---';
+                const t2_display = currentTerm >= 2 ? v2 : '---';
+
+                const grade = getGrade(cum);
+                const remark = cum >= 70 ? "EXCELLENT" : cum >= 60 ? "VERY GOOD" : cum >= 50 ? "CREDIT" : "POOR";
 
                 return `<tr>
                     <td class="font-black text-left">${sub.name}</td>
                     <td class="text-center">${sub.test || 0}</td>
                     <td class="text-center">${sub.exam || 0}</td>
-                    <td class="text-center bg-yellow-50 font-black">${total}</td>
-                    <td class="text-center">${v1 || '---'}</td>
-                    <td class="text-center">${v2 || '---'}</td>
-                    <td class="text-center bg-blue-50 font-black">${cum.toFixed(1)}</td>
-                    <td class="text-center">${grade}</td>
+                    <td class="text-center bg-yellow-50 font-black">${currentTotal}</td>
+                    <td class="text-center">${t1_display}</td>
+                    <td class="text-center">${t2_display}</td>
+                    <td class="text-center bg-blue-50 font-black">${Math.round(cum)}</td>
+                    <td class="text-center font-black">${grade}</td>
                     <td class="text-[9px] font-bold">${remark}</td>
                 </tr>`;
             }).join('') || `<tr><td colspan="9" class="text-center py-4">NO DATA FOUND</td></tr>`;
