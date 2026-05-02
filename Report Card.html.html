@@ -10,15 +10,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; print-color-adjust: exact; }
-        
         .school-name { font-family: Arial, Helvetica, sans-serif; font-weight: 900; }
         .watermark-container { position: relative; }
         .watermark-bg {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg);
             opacity: 0.04; width: 400px; pointer-events: none; z-index: 0;
         }
-
-        /* Improved Official Stamp & Signature logic[cite: 5, 6] */
         .stamp-box {
             border: 2.5px solid #000080;
             padding: 8px;
@@ -28,21 +25,14 @@
             display: inline-block;
         }
         .principal-signature {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 140px;
-            z-index: 30;
-            mix-blend-mode: multiply;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 140px; z-index: 30; mix-blend-mode: multiply;
         }
-
         @media print {
             @page { size: legal; margin: 0.4in; }
             .no-print { display: none !important; }
             .report-sheet { border: 2px solid #000; box-shadow: none; width: 100%; margin: 0; }
         }
-        
         table { border-collapse: collapse; width: 100%; }
         th, td { border: 1.5px solid black !important; padding: 4px; }
         .bold-data { font-weight: 900; text-transform: uppercase; font-size: 14px; }
@@ -50,22 +40,18 @@
 </head>
 <body class="bg-slate-100 py-4 px-4">
 
-    <!-- NAVIGATION & TERM SELECTOR[cite: 6] -->
     <div class="max-w-5xl mx-auto mb-4 flex flex-wrap justify-between items-center gap-4 no-print">
         <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-md font-bold text-slate-600">← Back</button>
-        
         <div class="flex bg-white rounded-xl shadow-md p-1 border">
             <button onclick="changeTerm(1)" id="t1-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition bg-black text-white">1st Term</button>
             <button onclick="changeTerm(2)" id="t2-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">2nd Term</button>
             <button onclick="changeTerm(3)" id="t3-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">3rd Term</button>
         </div>
-
         <button onclick="window.print()" class="bg-blue-600 text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest">PRINT REPORT</button>
     </div>
 
     <div class="max-w-5xl mx-auto bg-white border-2 border-black rounded-sm report-sheet">
-        
-        <!-- HEADER[cite: 6] -->
+        <!-- HEADER -->
         <div class="p-4 border-b-2 border-black flex items-center justify-between text-center">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="Logo">
             <div class="flex-1 px-4">
@@ -76,7 +62,7 @@
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Coat.jpeg" class="h-20 w-20" alt="Coat of Arms">
         </div>
 
-        <!-- STUDENT INFO[cite: 5, 6] -->
+        <!-- STUDENT INFO -->
         <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-black text-[10px] uppercase font-black">
             <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block bold-data">---</span></div>
             <div class="p-3 border-r-2 border-black">Reg No: <span id="res-id" class="block bold-data text-blue-800">---</span></div>
@@ -84,7 +70,7 @@
             <div class="p-3">Term: <span id="res-term" class="block bold-data text-red-600">---</span></div>
         </div>
 
-        <!-- MAIN SCORES TABLE[cite: 5, 6] -->
+        <!-- UPDATED SCORES TABLE -->
         <div class="p-4 watermark-container">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="watermark-bg" alt="watermark">
             <table class="relative z-10">
@@ -94,16 +80,17 @@
                         <th class="text-center">Test(30)</th>
                         <th class="text-center">Exam(70)</th>
                         <th class="text-center bg-yellow-50">Total</th>
-                        <th class="text-center">Prev. Total</th>
+                        <th class="text-center">1ST TM</th>
+                        <th class="text-center">2ND TM</th>
+                        <th class="text-center bg-blue-50">CUM</th>
                         <th class="text-center">Grade</th>
-                        <th class="text-left">Remarks</th>
                     </tr>
                 </thead>
                 <tbody id="subject-rows" class="text-[11px] font-bold uppercase"></tbody>
             </table>
         </div>
 
-        <!-- ASSESSMENT SECTION[cite: 5] -->
+        <!-- FOOTER SECTIONS REMAIN SAME -->
         <div class="mx-4 mb-4 grid grid-cols-2 gap-4">
             <div class="border-2 border-black">
                 <div class="bg-slate-100 p-1 text-center border-b-2 border-black">
@@ -125,7 +112,6 @@
             </div>
         </div>
 
-        <!-- SUMMARY FOOTER[cite: 5, 6] -->
         <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-black">
             <div class="space-y-4">
                 <div>
@@ -136,24 +122,11 @@
                     <p class="text-[9px] font-black uppercase text-black">Principal's Comments</p>
                     <p id="principal-comment" class="border-b border-black min-h-[20px] text-sm italic font-bold">---</p>
                 </div>
-                <div class="pt-2">
-                    <p class="text-[10px] font-black uppercase">Next term begins on: <span id="res-next-date" class="border-b-2 border-black px-4 text-blue-900">____________________</span></p>
-                </div>
             </div>
-
             <div class="flex flex-col items-end justify-between">
-                <div class="text-center">
-                    <p class="text-[9px] font-black uppercase mb-4">Official Stamp & Seal</p>
-                    <div class="stamp-box">
-                        <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="opacity-10 grayscale w-12 mx-auto">
-                        <img id="res-sig" src="" class="principal-signature" style="display:none;">
-                        <p class="text-[7px] font-black text-blue-900 mt-1">MUSTARD SEED SCHOOLS OFFICIAL</p>
-                    </div>
-                </div>
-                <div class="text-center mt-4">
-                    <div class="w-48 border-t-2 border-black pt-1">
-                        <p class="font-black text-[11px] uppercase">School Principal</p>
-                    </div>
+                <div class="stamp-box">
+                    <img id="res-sig" src="" class="principal-signature" style="display:none;">
+                    <p class="text-[7px] font-black text-blue-900">OFFICIAL STAMP</p>
                 </div>
             </div>
         </div>
@@ -173,66 +146,52 @@
 
         function changeTerm(term) {
             currentTerm = term;
-            [1, 2, 3].forEach(t => {
-                document.getElementById(`t${t}-btn`).className = t === term ? "px-4 py-2 rounded-lg font-black text-xs uppercase bg-black text-white" : "px-4 py-2 rounded-lg font-black text-xs uppercase";
-            });
             renderReport();
         }
 
         function renderReport() {
             if (!studentData) return;
-
             document.getElementById('res-name').innerText = studentData.full_name;
             document.getElementById('res-id').innerText = "MS-" + studentData.id.substring(0, 5).toUpperCase();
             document.getElementById('res-class').innerText = studentData.grade_level;
-            document.getElementById('res-term').innerText = `${currentTerm}${currentTerm==1?'ST':currentTerm==2?'ND':'RD'} TERM`;
+            document.getElementById('res-term').innerText = `${currentTerm} TERM`;
 
-            const termKey = `term${currentTerm}`;
-            const scores = studentData.term_data?.[termKey] || [];
-            const admin = studentData.admin_inputs?.[termKey] || {};
+            const scores = studentData.term_data?.[`term${currentTerm}`] || [];
+            const t1_Scores = studentData.term_data?.['term1'] || [];
+            const t2_Scores = studentData.term_data?.['term2'] || [];
+            const t3_Scores = studentData.term_data?.['term3'] || [];
 
-            // Dynamic Values[cite: 5]
-            document.getElementById('res-clean').innerText = admin.cleanliness || "---";
-            document.getElementById('res-activities').innerText = admin.activities || "---";
-            document.getElementById('res-present').innerText = admin.daysPresent || "---";
-            document.getElementById('res-absent').innerText = admin.daysAbsent || "---";
-            document.getElementById('res-next-date').innerText = admin.nextTermBegin || "____________________";
-            document.getElementById('master-comment').innerText = admin.formMasterComment || "---";
-            document.getElementById('principal-comment').innerText = admin.principalComment || "---";
-            
-            if (admin.signatureUrl) {
-                const sig = document.getElementById('res-sig');
-                sig.src = admin.signatureUrl;
-                sig.style.display = "block";
-            }
+            document.getElementById('subject-rows').innerHTML = scores.map(sub => {
+                const currentTotal = (parseFloat(sub.test) || 0) + (parseFloat(sub.exam) || 0);
+                
+                // 1ST TM Calculation
+                const s1 = t1_Scores.find(s => s.name === sub.name);
+                const t1_val = s1 ? (parseFloat(s1.test) || 0) + (parseFloat(s1.exam) || 0) : 0;
 
-            // Math/English Priority Sorting[cite: 5]
-            const sorted = [...scores].sort((a,b) => {
-                const p = {"MATHEMATICS":1, "ENGLISH LANGUAGE":2};
-                return (p[a.name.toUpperCase()] || 99) - (p[b.name.toUpperCase()] || 99);
-            });
+                // 2ND TM Calculation (1st + 2nd)
+                const s2 = t2_Scores.find(s => s.name === sub.name);
+                const t2_raw = s2 ? (parseFloat(s2.test) || 0) + (parseFloat(s2.exam) || 0) : 0;
+                const t2_val = t1_val + t2_raw;
 
-            const prevScores = currentTerm > 1 ? (studentData.term_data?.[`term${currentTerm-1}`] || []) : [];
-            
-            document.getElementById('subject-rows').innerHTML = sorted.map(sub => {
-                const total = (parseFloat(sub.test) || 0) + (parseFloat(sub.exam) || 0);
-                const ps = prevScores.find(p => p.name === sub.name);
-                const pt = ps ? (parseFloat(ps.test) || 0) + (parseFloat(ps.exam) || 0) : '---';
-                const grade = total >= 75 ? "A1" : total >= 70 ? "B2" : total >= 60 ? "B3" : total >= 50 ? "C6" : "F9";
-                const remark = total >= 75 ? "EXCELLENT" : total >= 60 ? "GOOD" : total >= 50 ? "CREDIT" : "POOR";
+                // CUM Calculation (Sum of all 3 / 3)
+                const s3 = t3_Scores.find(s => s.name === sub.name);
+                const t3_raw = s3 ? (parseFloat(s3.test) || 0) + (parseFloat(s3.exam) || 0) : 0;
+                const cum_val = ((t1_val + t2_raw + t3_raw) / 3).toFixed(1);
+
+                const grade = currentTotal >= 70 ? "A1" : currentTotal >= 60 ? "B2" : currentTotal >= 50 ? "C6" : "F9";
 
                 return `<tr>
-                    <td class="font-black text-left">${sub.name}</td>
+                    <td class="font-black">${sub.name}</td>
                     <td class="text-center">${sub.test || 0}</td>
                     <td class="text-center">${sub.exam || 0}</td>
-                    <td class="text-center bg-slate-50 font-black">${total}</td>
-                    <td class="text-center text-slate-500">${pt}</td>
-                    <td class="text-center ${total < 45 ? 'underline' : ''}">${grade}</td>
-                    <td class="text-[9px] font-bold">${remark}</td>
+                    <td class="text-center bg-yellow-50 font-black">${currentTotal}</td>
+                    <td class="text-center">${t1_val || '---'}</td>
+                    <td class="text-center">${currentTerm >= 2 ? t2_val : '---'}</td>
+                    <td class="text-center bg-blue-50 font-black">${currentTerm == 3 ? cum_val : '---'}</td>
+                    <td class="text-center">${grade}</td>
                 </tr>`;
-            }).join('') || `<tr><td colspan="7" class="text-center py-4">NO DATA FOUND</td></tr>`;
+            }).join('');
         }
-
         window.onload = init;
     </script>
 </body>
