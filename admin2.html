@@ -9,194 +9,253 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .sidebar { width: 260px; background: #0f172a; z-index: 50; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: 0.2s; font-weight: 700; font-size: 13px; width: 100%; text-align: left; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: all 0.2s ease-in-out; font-weight: 700; font-size: 13px; width: 100%; text-align: left; }
         .nav-link:hover, .nav-link.active { background: #2563eb; color: white; }
         .view-section { display: none; }
         .view-section.active { display: block; }
+        /* Professional custom scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex text-slate-900">
+<body class="bg-slate-50 min-h-screen flex text-slate-900 antialiased">
 
     <aside class="sidebar text-white p-6 fixed h-screen flex flex-col shadow-2xl">
         <div class="flex items-center gap-3 mb-10 pb-6 border-b border-slate-800">
-            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10">
+            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10" alt="MSS Logo">
             <span class="font-black text-lg tracking-tighter uppercase text-blue-400">MSS ADMIN</span>
         </div>
+        
         <nav class="space-y-2 flex-1">
-            <button onclick="showView('directory')" id="btn-directory" class="nav-link active"><i data-lucide="users"></i> Students List</button>
-            <button onclick="showView('curriculum')" id="btn-curriculum" class="nav-link"><i data-lucide="book-open"></i> Class Subjects</button>
-            <button onclick="showView('engine')" id="btn-engine" class="nav-link"><i data-lucide="award"></i> Score Entry Room</button>
+            <button onclick="showView('directory')" id="btn-directory" class="nav-link active">
+                <i data-lucide="users" class="w-4 h-4"></i> Students List
+            </button>
+            <button onclick="showView('curriculum')" id="btn-curriculum" class="nav-link">
+                <i data-lucide="book-open" class="w-4 h-4"></i> Class Subjects
+            </button>
+            <button onclick="showView('engine')" id="btn-engine" class="nav-link">
+                <i data-lucide="award" class="w-4 h-4"></i> Score Entry Room
+            </button>
+            <button onclick="showView('diary')" id="btn-diary" class="nav-link">
+                <i data-lucide="book" class="w-4 h-4"></i> Academic Diary
+            </button>
+            <a href="broadsheet.html" class="nav-link">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i> Broadsheet View
+            </a>
             
-            <!-- REPAIRED LINK: Now redirects directly to broadsheet.html -->
-            <a href="broadsheet.html" class="nav-link"><i data-lucide="layout-grid"></i> Broadsheet</a>
-            <!-- Add this to your navigation menu or dashboard buttons -->
-            <button onclick="showView('diary')" id="btn-diary" class="nav-link"><i data-lucide="book"></i> Academic Diary</button>
-      <a href="Cognitive.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold shadow-md hover:bg-blue-700 transition">
-    📝Cognitive
-</a>
-                    <button onclick="showView('diary')" id="btn-diary" class="nav-link"><i data-lucide="book"></i> Academic Diary</button>
-      <a href="publish.html" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold shadow-md hover:bg-blue-700 transition">
-    📝Cognitive
-</a>
+            <div class="pt-4 mt-4 border-t border-slate-800 space-y-2">
+                <a href="Cognitive.html" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-md transition">
+                    <i data-lucide="brain" class="w-3.5 h-3.5"></i> Cognitive Evaluation
+                </a>
+                <a href="publish.html" class="flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-md transition">
+                    <i data-lucide="send" class="w-3.5 h-3.5"></i> Publish Portal
+                </a>
+            </div>
         </nav>
-        <button onclick="handleLogout()" class="nav-link text-red-400 hover:bg-red-400/10 mt-auto"><i data-lucide="log-out"></i> Logout</button>
+        
+        <button onclick="handleLogout()" class="nav-link text-red-400 hover:bg-red-400/10 mt-auto">
+            <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+        </button>
     </aside>
 
     <main class="flex-1 ml-[260px] p-8">
         
-        <!-- DIRECTORY SECTION -->
         <section id="view-directory" class="view-section active">
             <div class="flex justify-between items-end mb-8">
                 <div>
-                    <h1 class="text-3xl font-black uppercase text-slate-900">Directory</h1>
-                    <p class="text-slate-400 text-xs font-bold uppercase">Assign Art/Science Groups & IDs</p>
+                    <h1 class="text-3xl font-black uppercase text-slate-900 tracking-tight">Directory</h1>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Assign Academic Groups & Identification Records</p>
                 </div>
-                <input type="text" oninput="filterDirectory(this.value)" placeholder="Search Name or ID..." class="px-4 py-2 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64 uppercase">
+                <div class="relative">
+                    <input type="text" oninput="filterDirectory(this.value)" placeholder="Search Name or ID..." class="px-4 py-2.5 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64 uppercase tracking-wide focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
             </div>
-            <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-slate-50 border-b text-[10px] uppercase font-black text-slate-400">
-                        <tr><th class="p-4">Reg ID</th><th class="p-4">Full Name</th><th class="p-4">Class</th><th class="p-4">Group</th><th class="p-4 text-right">Action</th></tr>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 border-b border-slate-100 text-[10px] uppercase font-black text-slate-400 tracking-wider">
+                        <tr>
+                            <th class="p-4">Reg ID</th>
+                            <th class="p-4">Full Name</th>
+                            <th class="p-4">Class Level</th>
+                            <th class="p-4">Assigned Group</th>
+                            <th class="p-4 text-right">Administrative Actions</th>
+                        </tr>
                     </thead>
-                    <tbody id="directoryTable" class="divide-y divide-slate-50 uppercase text-[11px] font-bold"></tbody>
+                    <tbody id="directoryTable" class="divide-y divide-slate-100 uppercase text-[11px] font-bold text-slate-700"></tbody>
                 </table>
             </div>
         </section>
 
-        <!-- CURRICULUM SECTION -->
         <section id="view-curriculum" class="view-section">
             <div class="mb-8">
-                <h1 class="text-3xl font-black uppercase text-slate-900">Curriculum</h1>
-                <p class="text-slate-400 text-xs font-bold uppercase">Manage Class Subjects & Teachers</p>
+                <h1 class="text-3xl font-black uppercase text-slate-900 tracking-tight">Curriculum Control</h1>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Manage Institutional Subjects & Instated Educators</p>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border h-fit">
-                    <h3 class="font-black text-xs uppercase mb-4 text-blue-600">New Group Subject</h3>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-fit">
+                    <h3 class="font-black text-xs uppercase mb-4 text-blue-600 tracking-wider">Configure New Course Subject</h3>
                     <div class="space-y-4">
-                        <select id="currClass" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
-                            <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
-                            <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
-                        </select>
-                        <select id="currGroup" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
-                            <option value="GENERAL">GENERAL (Everyone)</option>
-                            <option value="ART">ART ONLY</option>
-                            <option value="SCIENCE">SCIENCE ONLY</option>
-                        </select>
-                        <input type="text" id="currSub" placeholder="Subject Name" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm uppercase">
-                        <input type="text" id="currTeacher" placeholder="Teacher Name" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
-                        <button onclick="addCurriculum()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black uppercase text-xs">Save Subject</button>
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Target Class</label>
+                            <select id="currClass" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
+                                <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Subject Group Categorization</label>
+                            <select id="currGroup" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="GENERAL">GENERAL (Everyone)</option>
+                                <option value="ART">ART ONLY</option>
+                                <option value="SCIENCE">SCIENCE ONLY</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Subject Name</label>
+                            <input type="text" id="currSub" placeholder="E.G. DATA PROCESSING" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm uppercase focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Assigned Teacher Name</label>
+                            <input type="text" id="currTeacher" placeholder="E.G. ABE SUNDAY PETER" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <button onclick="addCurriculum()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 rounded-xl font-black uppercase text-xs tracking-wider shadow-sm transition">Save Course Configuration</button>
                     </div>
                 </div>
-                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50 border-b text-[10px] uppercase font-black text-slate-400">
-                            <tr><th class="p-4">Class</th><th class="p-4">Group</th><th class="p-4">Subject</th><th class="p-4">Teacher</th><th class="p-4"></th></tr>
+                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 border-b border-slate-100 text-[10px] uppercase font-black text-slate-400 tracking-wider">
+                            <tr>
+                                <th class="p-4">Class</th>
+                                <th class="p-4">Group Category</th>
+                                <th class="p-4">Configured Subject</th>
+                                <th class="p-4">Instructor</th>
+                                <th class="p-4 text-right">Action</th>
+                            </tr>
                         </thead>
-                        <tbody id="curriculumTable" class="text-[10px] font-bold divide-y uppercase"></tbody>
+                        <tbody id="curriculumTable" class="text-[10px] font-bold divide-y divide-slate-100 uppercase text-slate-700"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- ENGINE ROOM SECTION -->
         <section id="view-engine" class="view-section">
-            <div class="flex flex-wrap gap-4 mb-6 bg-white p-4 rounded-2xl shadow-sm border">
+            <div class="flex flex-wrap gap-4 mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
                 <div class="flex-1 min-w-[200px]">
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Filter Class</label>
-                    <select id="engineClassFilter" onchange="filterByClass(this.value)" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
-                        <option value="ALL">All Classes</option>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">Filter Allocation By Class</label>
+                    <select id="engineClassFilter" onchange="filterByClass(this.value)" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="ALL">All Enrolled Classes</option>
                         <option>JSS 1</option><option>JSS 2</option><option>JSS 3</option>
                         <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
                     </select>
                 </div>
                 <div class="flex-1 min-w-[200px]">
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Select Term</label>
-                    <select id="engineTermFilter" onchange="setTerm(this.value)" class="w-full p-3 rounded-xl bg-blue-50 border-none ring-1 ring-blue-200 font-bold text-sm text-blue-700">
-                        <option value="1">1st Term</option>
-                        <option value="2">2nd Term</option>
-                        <option value="3">3rd Term</option>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">Target Assessment Term</label>
+                    <select id="engineTermFilter" onchange="setTerm(this.value)" class="w-full p-3 rounded-xl bg-blue-50 border-none ring-1 ring-blue-200 font-bold text-sm text-blue-700 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="1">First Academic Term</option>
+                        <option value="2">Second Academic Term</option>
+                        <option value="3">Third Academic Term</option>
                     </select>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-4 bg-white rounded-2xl border h-[750px] flex flex-col overflow-hidden">
-                    <div class="p-4 bg-slate-50 border-b">
-                        <input type="text" id="engineSearch" oninput="filterEngine(this.value)" placeholder="Search Student..." class="w-full p-3 rounded-lg border-none ring-1 ring-slate-200 text-xs font-black uppercase">
+                <div class="lg:col-span-4 bg-white rounded-2xl border border-slate-100 h-[750px] flex flex-col overflow-hidden shadow-sm">
+                    <div class="p-4 bg-slate-50 border-b border-slate-100">
+                        <input type="text" id="engineSearch" oninput="filterEngine(this.value)" placeholder="Search Student Records..." class="w-full p-3 rounded-xl border-none ring-1 ring-slate-200 text-xs font-black uppercase outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
-                    <div id="engineList" class="overflow-y-auto divide-y"></div>
+                    <div id="engineList" class="overflow-y-auto divide-y divide-slate-50 flex-1"></div>
                 </div>
                 
-                <div id="editorPanel" class="lg:col-span-8 bg-white rounded-2xl border shadow-xl hidden flex flex-col overflow-hidden">
-                    <div class="p-6 bg-blue-900 text-white flex justify-between items-center">
+                <div id="editorPanel" class="lg:col-span-8 bg-white rounded-2xl border border-slate-100 shadow-xl hidden flex flex-col overflow-hidden h-[750px]">
+                    <div class="p-6 bg-slate-900 text-white flex justify-between items-center border-b border-slate-800">
                         <div>
-                            <h2 id="editName" class="text-xl font-black uppercase leading-tight">---</h2>
-                            <div class="flex gap-2 items-center mt-1">
-                                <span id="editClass" class="text-blue-300 text-[10px] font-black uppercase tracking-widest">---</span>
-                                <span id="editGroupTag" class="bg-blue-700 px-2 py-0.5 rounded text-[9px] font-black">---</span>
-                                <span id="activeTermTag" class="bg-amber-500 px-2 py-0.5 rounded text-[9px] font-black">TERM 1</span>
+                            <h2 id="editName" class="text-xl font-black uppercase leading-tight tracking-tight">---</h2>
+                            <div class="flex gap-2 items-center mt-1.5">
+                                <span id="editClass" class="text-blue-400 text-[10px] font-black uppercase tracking-widest">---</span>
+                                <span id="editGroupTag" class="bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-[9px] font-black text-slate-300">---</span>
+                                <span id="activeTermTag" class="bg-amber-500 px-2 py-0.5 rounded text-[9px] font-black text-slate-950">TERM 1</span>
                             </div>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="saveScores()" class="bg-green-500 px-6 py-2 rounded-lg font-black text-[9px] uppercase">Save Scores</button>
+                        <div>
+                            <button onclick="saveScores()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider shadow-lg transition">Save Academic Record</button>
                         </div>
                     </div>
 
                     <div class="p-6 flex-1 overflow-y-auto">
-                        <table class="w-full">
-                            <thead class="text-[10px] text-slate-400 font-black uppercase border-b">
-                                <tr><th class="text-left py-3">Subject & Teacher</th><th class="text-center w-24">Test (30)</th><th class="text-center w-24">Exam (70)</th></tr>
+                        <table class="w-full border-collapse">
+                            <thead class="text-[10px] text-slate-400 font-black uppercase border-b border-slate-100 tracking-wider">
+                                <tr>
+                                    <th class="text-left py-3">Subject Modules & Assigned Instructors</th>
+                                    <th class="text-center w-28">Continuous Ass. (30)</th>
+                                    <th class="text-center w-28">Examination (70)</th>
+                                </tr>
                             </thead>
-                            <tbody id="scoreRows"></tbody>
+                            <tbody id="scoreRows" class="divide-y divide-slate-100"></tbody>
                         </table>
-                        <div class="mt-8 pt-6 border-t">
-                            <label class="text-[10px] font-black text-slate-400 uppercase">Teacher's Remark</label>
-                            <textarea id="remark" class="w-full p-4 mt-2 bg-slate-50 rounded-xl border-none ring-1 ring-slate-100 italic outline-none text-sm"></textarea>
+                        <div class="mt-8 pt-6 border-t border-slate-100">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Formative Evaluator & Teacher Remarks</label>
+                            <textarea id="remark" class="w-full p-4 bg-slate-50 rounded-xl border-none ring-1 ring-slate-200 italic outline-none text-sm font-medium focus:ring-2 focus:ring-blue-500 min-h-[100px] transition"></textarea>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- ACADEMIC DIARY SECTION -->
         <section id="view-diary" class="view-section">
-            <h1 class="text-3xl font-black uppercase text-slate-900">Academic Diary</h1>
-            <p class="text-slate-400 font-bold text-xs uppercase">Attendance and Event Tracking</p>
+            <div class="mb-8">
+                <h1 class="text-3xl font-black uppercase text-slate-900 tracking-tight">Academic Diary</h1>
+                <p class="text-slate-400 font-bold text-xs uppercase tracking-wider">Attendance Parameters and Structural Institutional Events</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl border border-slate-100 text-center shadow-sm">
+                <p class="text-slate-400 font-bold text-sm uppercase italic">Diary tracking modules initializing for subsequent database sync operations.</p>
+            </div>
         </section>
     </main>
 
-    <!-- UPDATE GROUP MODAL -->
-    <div id="groupModal" class="fixed inset-0 bg-slate-900/60 hidden z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 class="font-black uppercase text-sm mb-4">Update Student Profile</h3>
-            <p id="modalStudentName" class="text-xs font-bold text-slate-500 mb-4 uppercase"></p>
-            <label class="text-[9px] font-black text-slate-400 uppercase">Academic Group</label>
-            <select id="modalGroupSelect" class="w-full p-3 rounded-xl bg-slate-50 ring-1 ring-slate-200 border-none font-bold mb-6">
-                <option value="GENERAL">GENERAL</option>
-                <option value="ART">ART STUDENT</option>
-                <option value="SCIENCE">SCIENCE STUDENT</option>
-            </select>
-            <div class="flex gap-2">
-                <button onclick="closeModal()" class="flex-1 py-3 font-black text-xs uppercase text-slate-400">Cancel</button>
-                <button id="saveGroupBtn" onclick="updateStudentGroup()" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-black text-xs uppercase">Update</button>
+    <div id="groupModal" class="fixed inset-0 bg-slate-900/60 hidden z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-100 transform transition-all animate-in fade-in zoom-in-95 duration-200">
+            <h3 class="font-black uppercase text-sm mb-1 text-slate-900">Modify Student Meta-Group</h3>
+            <p id="modalStudentName" class="text-xs font-bold text-slate-400 mb-5 uppercase tracking-wide"></p>
+            
+            <div class="mb-6">
+                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Academic Allocation Group</label>
+                <select id="modalGroupSelect" class="w-full p-3 rounded-xl bg-slate-50 ring-1 ring-slate-200 border-none font-bold text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="GENERAL">GENERAL CURRICULUM</option>
+                    <option value="ART">ART CONCENTRATION</option>
+                    <option value="SCIENCE">SCIENCE CONCENTRATION</option>
+                </select>
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="flex-1 py-3 font-black text-xs uppercase text-slate-400 hover:text-slate-600 transition">Discard</button>
+                <button id="saveGroupBtn" onclick="updateStudentGroup()" class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs uppercase tracking-wider shadow-sm transition">Commit Sync</button>
             </div>
         </div>
     </div>
 
     <script>
-        const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
+        // Supabase Instantiation Layer Block
+        const SUPABASE_PROJECT_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
+        const SUPABASE_ANON_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
+        
+        const _supabase = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_TOKEN);
         let students = [], curriculum = [], activeId = null, currentTerm = "1";
 
-        async function init() { loadData(); }
+        async function init() { await loadData(); }
 
         async function loadData() {
             const { data: st } = await _supabase.from('students').select('*').order('full_name');
             const { data: cu } = await _supabase.from('school_curriculum').select('*').order('class_name');
-            students = st || []; curriculum = cu || [];
-            renderDirectory(); renderCurriculum(); renderEngineList(students);
+            students = st || []; 
+            curriculum = cu || [];
+            renderDirectory(); 
+            renderCurriculum(); 
+            renderEngineList(students);
             lucide.createIcons();
         }
 
@@ -226,14 +285,14 @@
 
         function renderDirectory() {
             document.getElementById('directoryTable').innerHTML = students.map(s => `
-                <tr class="hover:bg-slate-50">
-                    <td class="p-4 text-blue-600">MS-${s.id.substring(0,5)}</td>
-                    <td class="p-4">${s.full_name}</td>
-                    <td class="p-4">${s.grade_level || '---'}</td>
-                    <td class="p-4"><span class="px-2 py-1 rounded bg-slate-100 text-[9px] font-black">${s.student_group || 'GENERAL'}</span></td>
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="p-4 font-mono text-blue-600 font-bold">MS-${s.id.substring(0,5)}</td>
+                    <td class="p-4 tracking-wide font-semibold text-slate-800">${s.full_name}</td>
+                    <td class="p-4 text-slate-500">${s.grade_level || '---'}</td>
+                    <td class="p-4"><span class="px-2 py-1 rounded-md bg-slate-100 text-[9px] font-black tracking-wider text-slate-600">${s.student_group || 'GENERAL'}</span></td>
                     <td class="p-4 text-right flex justify-end gap-2">
-                        <button onclick="openGroupModal('${s.id}', '${s.full_name}', '${s.student_group}')" class="p-2 bg-blue-50 rounded-lg text-blue-600"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                        <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 rounded-lg text-red-600"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <button onclick="openGroupModal('${s.id}', '${s.full_name}', '${s.student_group}')" class="p-2 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-600 transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                        <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </td>
                 </tr>
             `).join('');
@@ -252,17 +311,18 @@
         async function updateStudentGroup() {
             const group = document.getElementById('modalGroupSelect').value;
             await _supabase.from('students').update({ student_group: group }).eq('id', activeId);
-            closeModal(); loadData();
+            closeModal(); 
+            await loadData();
         }
 
         function renderEngineList(l) {
             document.getElementById('engineList').innerHTML = l.map(s => `
-                <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50 cursor-pointer flex justify-between items-center group">
+                <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50/50 cursor-pointer flex justify-between items-center group transition-colors duration-150">
                     <div class="uppercase">
-                        <p class="text-[11px] font-black text-slate-800">${s.full_name}</p>
-                        <p class="text-[9px] font-bold text-slate-400">${s.grade_level} • ${s.student_group || 'GENERAL'}</p>
+                        <p class="text-[11px] font-black text-slate-800 tracking-wide">${s.full_name}</p>
+                        <p class="text-[9px] font-bold text-slate-400 mt-0.5">${s.grade_level} • ${s.student_group || 'GENERAL'}</p>
                     </div>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-blue-500"></i>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-blue-500 transform group-hover:translate-x-0.5 transition-all"></i>
                 </div>
             `).join('');
             lucide.createIcons();
@@ -285,33 +345,44 @@
             document.getElementById('scoreRows').innerHTML = allowed.map(cs => {
                 const score = existingScores.find(e => e.name === cs.subject_name) || { test: "-", exam: "-" };
                 return `
-                    <tr class="bg-slate-50 border-b border-white">
-                        <td class="p-3">
-                            <span class="font-black text-[11px] uppercase block">${cs.subject_name}</span>
-                            <span class="hidden extra-n-val">${cs.subject_name}</span>
+                    <tr class="bg-slate-50/50 border-b border-white hover:bg-slate-50 transition-colors">
+                        <td class="p-4">
+                            <span class="font-black text-[11px] uppercase block text-slate-800 tracking-wide">${cs.subject_name}</span>
+                            <span class="text-[9px] text-slate-400 font-medium block mt-0.5">${cs.assigned_teacher || 'No Instructor Assigned'}</span>
                         </td>
-                        <td class="p-3"><input type="text" value="${score.test}" placeholder="-" class="st w-full p-2 rounded bg-white text-center font-black text-xs outline-none"></td>
-                        <td class="p-3"><input type="text" value="${score.exam}" placeholder="-" class="se w-full p-2 rounded bg-white text-center font-black text-xs outline-none"></td>
+                        <td class="p-3">
+                            <input type="text" data-subject="${cs.subject_name}" value="${score.test}" placeholder="-" class="st w-full p-2.5 rounded-lg bg-white border border-slate-200 text-center font-black text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all">
+                        </td>
+                        <td class="p-3">
+                            <input type="text" data-subject="${cs.subject_name}" value="${score.exam}" placeholder="-" class="se w-full p-2.5 rounded-lg bg-white border border-slate-200 text-center font-black text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all">
+                        </td>
                     </tr>
                 `;
             }).join('');
         }
 
         async function saveScores() {
+            if (!activeId) return;
             const s = students.find(x => x.id === activeId);
             const termKey = `term${currentTerm}`;
             const termScores = [];
             
+            // Fixed the innerText DOM row element tracking bug using explicit dataset queries
             document.querySelectorAll('#scoreRows tr').forEach(row => {
-                const name = row.querySelector('.extra-n-val').innerText;
-                const testRaw = row.querySelector('.st').value;
-                const examRaw = row.querySelector('.se').value;
+                const testInput = row.querySelector('.st');
+                const examInput = row.querySelector('.se');
                 
-                termScores.push({
-                    name: name,
-                    test: testRaw === "-" || testRaw === "" ? 0 : parseFloat(testRaw),
-                    exam: examRaw === "-" || examRaw === "" ? 0 : parseFloat(examRaw)
-                });
+                if (testInput && examInput) {
+                    const subjectName = testInput.getAttribute('data-subject');
+                    const testRaw = testInput.value;
+                    const examRaw = examInput.value;
+                    
+                    termScores.push({
+                        name: subjectName,
+                        test: testRaw === "-" || testRaw === "" ? 0 : parseFloat(testRaw),
+                        exam: examRaw === "-" || examRaw === "" ? 0 : parseFloat(examRaw)
+                    });
+                }
             });
 
             if(!s.term_data) s.term_data = {};
@@ -322,7 +393,12 @@
                 teacher_remark: document.getElementById('remark').value 
             }).eq('id', activeId);
 
-            if(!error) { alert("Term Scores Saved Successfully!"); loadData(); }
+            if(!error) { 
+                alert("Term Assessment Synchronized Successfully!"); 
+                await loadData(); 
+            } else {
+                alert("Database Synchronization Error: " + error.message);
+            }
         }
 
         async function addCurriculum() {
@@ -331,27 +407,68 @@
             const subject_name = document.getElementById('currSub').value.toUpperCase();
             const assigned_teacher = document.getElementById('currTeacher').value;
             if(!subject_name) return;
+            
             await _supabase.from('school_curriculum').insert([{ class_name, subject_group, subject_name, assigned_teacher }]);
-            loadData();
+            document.getElementById('currSub').value = "";
+            document.getElementById('currTeacher').value = "";
+            await loadData();
         }
 
         function renderCurriculum() {
             document.getElementById('curriculumTable').innerHTML = curriculum.map(c => `
-                <tr class="hover:bg-slate-50">
-                    <td class="p-4 font-black">${c.class_name}</td>
-                    <td class="p-4 text-blue-600">${c.subject_group}</td>
-                    <td class="p-4">${c.subject_name}</td>
-                    <td class="p-4 text-slate-400 italic">${c.assigned_teacher || '---'}</td>
-                    <td class="p-4 text-right"><button onclick="deleteCurr('${c.id}')" class="text-red-400"><i data-lucide="x-circle" class="w-4 h-4"></i></button></td>
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-4 font-black text-slate-800">${c.class_name}</td>
+                    <td class="p-4 text-blue-600 font-bold tracking-wide">${c.subject_group}</td>
+                    <td class="p-4 tracking-wide font-medium">${c.subject_name}</td>
+                    <td class="p-4 text-slate-400 italic font-medium">${c.assigned_teacher || '---'}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="deleteCurr('${c.id}')" class="text-slate-300 hover:text-red-500 transition-colors"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
+                    </td>
                 </tr>
             `).join('');
             lucide.createIcons();
         }
 
-        async function deleteCurr(id) { await _supabase.from('school_curriculum').delete().eq('id', id); loadData(); }
-        async function deleteStudent(id) { if(confirm("Permanently delete?")) { await _supabase.from('students').delete().eq('id', id); loadData(); } }
+        async function deleteCurr(id) { 
+            await _supabase.from('school_curriculum').delete().eq('id', id); 
+            await loadData(); 
+        }
+        
+        async function deleteStudent(id) { 
+            if(confirm("Are you absolutely certain you want to permanently delete this student record? This structural operation cannot be undone.")) { 
+                await _supabase.from('students').delete().eq('id', id); 
+                await loadData(); 
+            } 
+        }
+        
         function filterEngine(v) { renderEngineList(students.filter(s => s.full_name.toLowerCase().includes(v.toLowerCase()))); }
-        function handleLogout() { _supabase.auth.signOut().then(() => window.location.replace('login.html')); }
+        function filterDirectory(v) {
+            const filtered = students.filter(s => 
+                s.full_name.toLowerCase().includes(v.toLowerCase()) || 
+                s.id.toLowerCase().includes(v.toLowerCase())
+            );
+            renderDirectoryFiltered(filtered);
+        }
+
+        function renderDirectoryFiltered(list) {
+            document.getElementById('directoryTable').innerHTML = list.map(s => `
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="p-4 font-mono text-blue-600 font-bold">MS-${s.id.substring(0,5)}</td>
+                    <td class="p-4 tracking-wide font-semibold text-slate-800">${s.full_name}</td>
+                    <td class="p-4 text-slate-500">${s.grade_level || '---'}</td>
+                    <td class="p-4"><span class="px-2 py-1 rounded-md bg-slate-100 text-[9px] font-black tracking-wider text-slate-600">${s.student_group || 'GENERAL'}</span></td>
+                    <td class="p-4 text-right flex justify-end gap-2">
+                        <button onclick="openGroupModal('${s.id}', '${s.full_name}', '${s.student_group}')" class="p-2 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-600 transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                        <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function handleLogout() { 
+            _supabase.auth.signOut().then(() => window.location.replace('login.html')); 
+        }
         window.onload = init;
     </script>
 </body>
