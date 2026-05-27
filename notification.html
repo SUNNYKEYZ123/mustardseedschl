@@ -5,46 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local Admission Feed | Mustard Seed</title>
-    
-    <meta name="theme-color" content="#0f172a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link class="no-print" rel="apple-touch-icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png">
-
-    <link class="no-print" rel="manifest" href='data:application/manifest+json,{
-        "name": "Mustard Seed Admission Desk",
-        "short_name": "MSS Live",
-        "start_url": ".",
-        "display": "standalone",
-        "background_color": "#0f172a",
-        "theme_color": "#0f172a",
-        "orientation": "portrait-primary",
-        "icons": [
-            {
-                "src": "https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png",
-                "sizes": "512x512",
-                "type": "image/png",
-                "purpose": "any maskable"
-            }
-        ]
-    }'>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        @media print {
-            body { background: white; padding: 0; }
-            .no-print { display: none !important; }
-            .print-card { border: none !important; box-shadow: none !important; margin: 0 !important; width: 100% !important; }
-        }
     </style>
 </head>
 <body class="bg-slate-900 min-h-screen text-slate-100 p-3 sm:p-6 antialiased flex flex-col items-center">
 
-    <header class="w-full max-w-4xl bg-slate-800/80 border border-slate-700/60 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl mb-6 no-print">
+    <header class="w-full max-w-4xl bg-slate-800/80 border border-slate-700/60 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl mb-6">
         <div class="flex items-center gap-3">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-9 w-9" alt="Logo">
             <div>
@@ -53,46 +24,48 @@
             </div>
         </div>
         
-        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
-            <button id="pwaInstallBtn" class="hidden text-[10px] bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black uppercase tracking-wider px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-1.5 transition-all">
-                <i data-lucide="download-cloud" class="w-3.5 h-3.5"></i> Install App
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <!-- TEST BELL BUTTON -->
+            <button onclick="playNotificationSound(0.8)" class="text-[10px] bg-slate-700 hover:bg-slate-600 border border-slate-600 font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all">
+                <i data-lucide="bell" class="w-3.5 h-3.5 text-amber-400"></i> Test Sound
             </button>
-            <div id="networkStatusBadge" class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest">
-                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> Online
+
+            <div id="audioStatusIndicator" class="text-[10px] bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl flex items-center gap-1.5 cursor-pointer select-none font-bold" onclick="activateAudioPermissions()">
+                <i data-lucide="volume-x" class="w-3.5 h-3.5"></i> Tap to Arm Audio Monitor
             </div>
-            <div id="audioStatusIndicator" class="text-[10px] bg-slate-700 text-slate-300 font-bold px-3 py-1.5 rounded-xl border border-slate-600 flex items-center gap-1.5 cursor-pointer select-none" onclick="activateAudioPermissions()">
-                <i data-lucide="volume-2" class="w-3.5 h-3.5 text-blue-400"></i> Arm Audio Monitor
+
+            <div id="networkStatusBadge" class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest">
+                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> Connecting...
             </div>
         </div>
     </header>
 
     <main class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6 items-start flex-1 w-full">
-        
-        <div class="md:col-span-1 bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 flex flex-col max-h-[80vh] no-print">
+        <!-- LOG SUMMARY SIDEBAR -->
+        <div class="md:col-span-1 bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 flex flex-col max-h-[80vh]">
             <h3 class="text-xs font-black uppercase text-slate-400 tracking-wider mb-3 flex items-center justify-between">
                 <span>Recent Log Summary</span>
                 <span id="logCounterBadge" class="bg-slate-700 text-slate-300 px-2 py-0.5 rounded-md text-[10px]">0</span>
             </h3>
             <div id="offlineHistoryList" class="space-y-2 overflow-y-auto pr-1 flex-1 text-xs font-semibold max-h-[50vh] md:max-h-none">
-                <p class="text-slate-500 italic text-center py-4">No locally cached records found.</p>
+                <p class="text-slate-500 italic text-center py-4">Loading admissions history...</p>
             </div>
         </div>
 
+        <!-- MAIN BIODATA VIEWER -->
         <div class="md:col-span-2 w-full">
-            
-            <div id="emptyDisplayPlaceholder" class="text-center p-12 bg-slate-800/40 rounded-3xl border-2 border-dashed border-slate-700 w-full no-print">
+            <div id="emptyDisplayPlaceholder" class="text-center p-12 bg-slate-800/40 rounded-3xl border-2 border-dashed border-slate-700 w-full">
                 <div class="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center text-slate-500 mx-auto mb-4 border border-slate-700">
                     <i data-lucide="radio" class="w-6 h-6 animate-pulse text-blue-500"></i>
                 </div>
-                <h3 class="text-sm font-bold text-slate-300">Awaiting Registration Data</h3>
-                <p class="text-xs text-slate-500 mt-1">Select an item from the log panel on the left or wait for a student to submit their online profile form.</p>
+                <h3 class="text-sm font-bold text-slate-300">Awaiting Live Admissions</h3>
+                <p class="text-xs text-slate-500 mt-1">When a student submits their form, the desk will chime instantly and load their card here.</p>
             </div>
 
-            <div id="admissionDocumentContainer" class="w-full bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 hidden print-card relative">
-                
-                <div class="absolute top-6 right-6 flex items-center gap-2 no-print">
+            <div id="admissionDocumentContainer" class="w-full bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 hidden relative">
+                <div class="absolute top-6 right-6 flex items-center gap-2">
                     <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wide px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
-                        <i data-lucide="printer" class="w-3.5 h-3.5"></i> Save PDF
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print File
                     </button>
                     <button onclick="clearCurrentScreenView()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs uppercase tracking-wide px-3 py-2.5 rounded-xl transition-all">
                         Dismiss
@@ -116,9 +89,7 @@
 
                 <div class="space-y-6 text-xs">
                     <div>
-                        <h4 class="text-[11px] font-black uppercase text-blue-900 tracking-wider mb-2 flex items-center gap-2 border-b pb-1 border-slate-200">
-                            <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-blue-600"></i> I. Institutional Placement
-                        </h4>
+                        <h4 class="text-[11px] font-black uppercase text-blue-900 tracking-wider mb-2 flex items-center gap-2 border-b pb-1 border-slate-200">I. Institutional Placement</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-600 font-medium">
                             <div class="bg-slate-50 p-2.5 rounded-xl border">Assigned Grade/Class: <span class="text-slate-950 font-black uppercase block mt-0.5 text-sm" id="docClass">---</span></div>
                             <div class="bg-slate-50 p-2.5 rounded-xl border">Concentration Track: <span class="text-blue-700 font-black uppercase block mt-0.5 text-sm" id="docTrack">---</span></div>
@@ -126,11 +97,9 @@
                     </div>
 
                     <div>
-                        <h4 class="text-[11px] font-black uppercase text-blue-900 tracking-wider mb-2 flex items-center gap-2 border-b pb-1 border-slate-200">
-                            <i data-lucide="user" class="w-3.5 h-3.5 text-blue-600"></i> II. Personal Information Details
-                        </h4>
+                        <h4 class="text-[11px] font-black uppercase text-blue-900 tracking-wider mb-2 flex items-center gap-2 border-b pb-1 border-slate-200">II. Personal Information Details</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-slate-600 font-medium">
-                            <div class="sm:col-span-3 bg-slate-50 p-2.5 rounded-xl border">Full Legal Name of Student: <span class="text-slate-950 font-black uppercase block mt-0.5 text-sm tracking-wide" id="docFullName">---</span></div>
+                            <div class="sm:col-span-3 bg-slate-50 p-2.5 rounded-xl border">Full Legal Name: <span class="text-slate-950 font-black uppercase block mt-0.5 text-sm tracking-wide" id="docFullName">---</span></div>
                             <div class="bg-slate-50 p-2.5 rounded-xl border">Date of Birth: <span class="text-slate-950 font-black block mt-1" id="docDob">---</span></div>
                             <div class="bg-slate-50 p-2.5 rounded-xl border">Gender / Sex: <span class="text-slate-950 font-black uppercase block mt-1" id="docGender">---</span></div>
                             <div class="bg-slate-50 p-2.5 rounded-xl border">Nationality: <span class="text-slate-950 font-black uppercase block mt-1" id="docNationality">---</span></div>
@@ -138,93 +107,71 @@
                     </div>
 
                     <div>
-                        <h4 class="text-[11px] font-black uppercase text-blue-900 tracking-wider mb-2 flex items-center gap-2 border-b pb-1 border-slate-200">
-                            <i data-lucide="users" class="w-3.5 h-3.5 text-blue-600"></i> III. Parent & Contact Coordinates
-                        </h4>
+                        <h4 class="text-[11px] font-black uppercase text-blue-900 tracking-wider mb-2 flex items-center gap-2 border-b pb-1 border-slate-200">III. Parent & Contact Coordinates</h4>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-600 font-medium">
                             <div class="sm:col-span-2 bg-slate-50 p-2.5 rounded-xl border">Parent / Guardian Legal Fullname: <span class="text-slate-950 font-black uppercase block mt-0.5 text-sm" id="docParentName">---</span></div>
                             <div class="bg-slate-50 p-2.5 rounded-xl border">Primary Contact Phone: <span class="text-blue-700 font-black block mt-0.5 text-sm" id="docParentPhone">---</span></div>
                             <div class="bg-slate-50 p-2.5 rounded-xl border">Student Phone: <span class="text-slate-950 font-black block mt-0.5 text-sm" id="docStudentPhone">---</span></div>
-                            <div class="sm:col-span-2 bg-slate-50 p-2.5 rounded-xl border">Residential Permanent Home Address: <span class="text-slate-950 font-bold uppercase block mt-0.5 leading-relaxed" id="docAddress">---</span></div>
+                            <div class="sm:col-span-2 bg-slate-50 p-2.5 rounded-xl border">Residential Home Address: <span class="text-slate-950 font-bold uppercase block mt-0.5 leading-relaxed" id="docAddress">---</span></div>
                         </div>
                     </div>
                 </div>
-
-                <div class="mt-8 pt-6 border-t border-dashed border-slate-200 flex justify-between items-end text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                    <div>Mustard Seed School Portal Engine</div>
-                    <div class="border-t border-slate-400 pt-1.5 w-36 text-center text-slate-800 font-black">Registrar Signature</div>
-                </div>
-
             </div>
         </div>
     </main>
 
     <script>
+        // REFRESHED HUB CODES
         const SUPABASE_PROJECT_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
         const SUPABASE_ANON_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
         
         let _supabase;
         let audioPermissionArmed = false;
         let localAdmissionsLog = [];
-        let deferredAppPrompt = null;
 
         function initApp() {
             lucide.createIcons();
-            
-            // 1. Setup online / offline safety monitors
-            window.addEventListener('online', updateNetworkStatusIndicator);
-            window.addEventListener('offline', updateNetworkStatusIndicator);
-            updateNetworkStatusIndicator();
-
-            // 2. Hydrate logs from hardware disk memory
             loadLocalHistoryCache();
 
-            // 3. Handle PWA installation engines
-            setupPWAEngine();
-
-            // 4. Connect DB endpoint safely
             try {
+                // Instantiating the client setup
                 _supabase = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_TOKEN);
+                
+                // Fetch existing records immediately to verify link works
+                fetchLatestDataRecords();
+                // Engage the real-time live connection loop
                 connectRealtimePipeline();
-            } catch(e) { console.error("Database connection deferred offline."); }
-        }
-
-        // MONITORS SYSTEM NETWORK CHANNELS IN REAL TIME & SYNCS RECENT ITEMS
-        async function updateNetworkStatusIndicator() {
-            const badge = document.getElementById('networkStatusBadge');
-            if (navigator.onLine) {
-                badge.className = "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest";
-                badge.innerHTML = `<span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span> Online`;
-                if(_supabase) {
-                    const { data } = await _supabase.from('students').select('*').order('created_at', { ascending: false }).limit(20);
-                    if(data) data.reverse().forEach(record => saveRecordToLocalMemory(record, false));
-                }
-            } else {
-                badge.className = "bg-rose-500/10 border border-rose-500/30 text-rose-400 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest";
-                badge.innerHTML = `<span class="w-2 h-2 bg-rose-400 rounded-full"></span> Offline Mode`;
+            } catch(e) {
+                document.getElementById('networkStatusBadge').innerText = "Connection Failed";
             }
         }
 
-        // HANDLES COLD SYSTEM ONBOARDING FOR HOME SCREEN INSTALLATION
-        function setupPWAEngine() {
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredAppPrompt = e;
-                document.getElementById('pwaInstallBtn')?.classList.remove('hidden');
-            });
+        async function fetchLatestDataRecords() {
+            try {
+                const { data, error } = await _supabase.from('students').select('*').order('created_at', { ascending: false }).limit(25);
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    // Seed local memory array backwards so order tracks correctly
+                    const reverseData = [...data].reverse();
+                    reverseData.forEach(record => saveRecordToLocalMemory(record, false));
+                    
+                    document.getElementById('networkStatusBadge').className = "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest";
+                    document.getElementById('networkStatusBadge').innerHTML = `<span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span> Live Link Connected`;
+                }
+            } catch (err) {
+                console.error("Fetch error:", err);
+            }
+        }
 
-            document.getElementById('pwaInstallBtn')?.addEventListener('click', async () => {
-                if (!deferredAppPrompt) return;
-                deferredAppPrompt.prompt();
-                const { outcome } = await deferredAppPrompt.userChoice;
-                if (outcome === 'accepted') document.getElementById('pwaInstallBtn').classList.add('hidden');
-                deferredAppPrompt = null;
-            });
-
-            if ('serviceWorker' in navigator) {
-                const swCode = 'self.addEventListener("fetch", function(e){});';
-                const blob = new Blob([swCode], {type: 'text/javascript'});
-                navigator.serviceWorker.register(URL.createObjectURL(blob), { scope: './' }).catch(()=>{});
+        function playNotificationSound(volumeLevel = 0.7) {
+            try {
+                // Using a globally reliable, high-purity notification chime track URL
+                const audioObj = new Audio('https://signalsmith-audio.co.uk/images/blog/room-reverb/dry.wav');
+                audioObj.volume = volumeLevel;
+                audioObj.play().catch(e => console.log("Browser blocked immediate audio play until click context logged."));
+            } catch(e) {
+                console.error("Audio hardware initialization failure: ", e);
             }
         }
 
@@ -232,21 +179,23 @@
             audioPermissionArmed = true;
             const badge = document.getElementById('audioStatusIndicator');
             badge.className = "text-[10px] bg-blue-600 text-white font-bold px-3 py-1.5 rounded-xl border border-blue-500 flex items-center gap-1.5 select-none";
-            badge.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5"></i> Audio Monitor Online`;
+            badge.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5 animate-bounce"></i> Audio Monitor Active`;
             lucide.createIcons();
             
-            const testSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-600.wav');
-            testSound.volume = 0.2;
-            testSound.play().catch(() => {});
+            // Fire a quick confirmation ring directly into headphones/speakers
+            playNotificationSound(0.3);
         }
 
         function connectRealtimePipeline() {
             _supabase
-                .channel('local-file-pipeline')
+                .channel('realtime-admission-hook')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'students' }, (payload) => {
+                    console.log("New submission captured via database engine stream:", payload.new);
                     saveRecordToLocalMemory(payload.new, true);
                 })
-                .subscribe();
+                .subscribe((status) => {
+                    console.log("Realtime stream sub status logged:", status);
+                });
         }
 
         function saveRecordToLocalMemory(student, shouldTriggerAlert) {
@@ -260,11 +209,7 @@
 
             if (shouldTriggerAlert) {
                 if (audioPermissionArmed) {
-                    try {
-                        const bellChime = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-600.wav');
-                        bellChime.volume = 0.7;
-                        bellChime.play();
-                    } catch (e) {}
+                    playNotificationSound(0.8);
                 }
                 populateDocumentView(student.id);
             }
@@ -289,7 +234,7 @@
 
             container.innerHTML = localAdmissionsLog.map(s => `
                 <div onclick="populateDocumentView('${s.id}')" class="bg-slate-800 hover:bg-slate-700/80 p-3 rounded-xl border border-slate-700/40 cursor-pointer transition-all truncate active:scale-[0.98]">
-                    <div class="font-bold text-slate-200 truncate">${s.full_name}</div>
+                    <div class="font-bold text-slate-200 truncate">${s.full_name || 'Anonymous Student'}</div>
                     <div class="text-[10px] text-slate-400 mt-0.5 flex justify-between">
                         <span>${s.grade_level || 'General'}</span>
                         <span class="text-blue-400 font-mono">MS-${s.id.substring(0,4).toUpperCase()}</span>
