@@ -48,7 +48,7 @@
                     <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10" alt="MSS Logo">
                     <h1 class="text-xl sm:text-2xl font-extrabold uppercase text-slate-900 tracking-tight">Session Promotion Control</h1>
                 </div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Automated Class Migration & Attendance Reset Engine</p>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Automated Class Migration & Session-Aware Retention Engine</p>
             </div>
             <a href="admin2 up.html" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-xs">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
@@ -74,17 +74,17 @@
             </button>
         </div>
 
-        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-8 flex flex-col md:flex-row gap-5 items-start">
-            <div class="p-3 bg-amber-500 text-white rounded-xl shadow-md shrink-0">
-                <i data-lucide="shield-alert" class="w-6 h-6"></i>
+        <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-6 mb-8 flex flex-col md:flex-row gap-5 items-start">
+            <div class="p-3 bg-indigo-600 text-white rounded-xl shadow-md shrink-0">
+                <i data-lucide="history" class="w-6 h-6"></i>
             </div>
             <div>
-                <h3 class="font-extrabold text-sm text-amber-950 uppercase tracking-wide mb-1">Database Modification Disclaimer</h3>
-                <p class="text-amber-800 text-xs font-medium leading-relaxed max-w-3xl">
-                    Executing batch upgrades will advance your filtered target classes forward by one session level. This operation permanently **erases active report card arrays, marks records, and resets attendance parameter indicators (`daysPresent`, `daysAbsent`)** inside your student fields to prevent data conflicts next term.
+                <h3 class="font-extrabold text-sm text-indigo-950 uppercase tracking-wide mb-1">Session Isolation Safeguard Active</h3>
+                <p class="text-indigo-800 text-xs font-medium leading-relaxed max-w-3xl">
+                    Executing migrations preserves all historic report card scores arrays. The engine will prompt you for the incoming session identity parameter (e.g., <code class="font-mono bg-indigo-100 px-1 rounded text-indigo-900 font-bold">2026_2027</code>). It initializes clean parameters for the new session without affecting or wiping older results.
                 </p>
                 <div class="mt-4">
-                    <button onclick="executeBatchPromotion()" id="btn-execute" disabled class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md transition disabled:opacity-40 disabled:cursor-not-allowed">
+                    <button onclick="executeBatchPromotion()" id="btn-execute" disabled class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md transition disabled:opacity-40 disabled:cursor-not-allowed">
                         Commit Batch Upgrades on Filtered List
                     </button>
                 </div>
@@ -217,7 +217,10 @@
                     newClass: targetClass || currentClass,
                     action: actionNeeded,
                     groupAction: groupChange,
-                    currentGroup: student.student_group || 'GENERAL'
+                    currentGroup: student.student_group || 'GENERAL',
+                    // Retain existing historic dictionary states
+                    existingTermData: student.term_data || {},
+                    existingAdminInputs: student.admin_inputs || {}
                 });
             });
 
@@ -280,20 +283,32 @@
             const targetClass = promotionMatrix[currentClass];
             if(!targetClass) { alert("This student is already at the maximum graduation archive tier."); return; }
 
-            const conf = confirm(`Promote individual student ${executionMapQueue[index].name} to ${targetClass}?\nThis resets their attendance counters and marks scores arrays for the upcoming session.`);
+            const targetSession = prompt("Enter the upcoming Target Session identity string format (e.g. 2026_2027):");
+            if(!targetSession || targetSession.trim() === "") { alert("Operation cancelled. Valid Session format required."); return; }
+            const sessionKey = targetSession.trim();
+
+            const conf = confirm(`Promote individual student ${executionMapQueue[index].name} to ${targetClass} for Session ${sessionKey.replace('_', '/') فوتبال}?`);
             if(!conf) return;
+
+            // Deep clone historic states to avoid side mutations
+            let updatedTermData = JSON.parse(JSON.stringify(executionMapQueue[index].existingTermData));
+            let updatedAdminInputs = JSON.parse(JSON.stringify(executionMapQueue[index].existingAdminInputs));
+
+            // Initialize clean slots for the incoming session if not already existing
+            if(!updatedTermData[sessionKey]) updatedTermData[sessionKey] = { term1: [], term2: [], term3: [] };
+            if(!updatedAdminInputs[sessionKey]) updatedAdminInputs[sessionKey] = { term1: {}, term2: {}, term3: {} };
 
             let payload = {
                 grade_level: targetClass,
-                term_data: {},
+                term_data: updatedTermData,
                 teacher_remark: "",
-                admin_inputs: {} 
+                admin_inputs: updatedAdminInputs 
             };
             if(currentClass === "JSS 3") payload.student_group = "GENERAL";
 
             const { error } = await _supabase.from('students').update(payload).eq('id', studentId);
             if(!error) {
-                alert("Student Record Promoted & Reset Successfully.");
+                alert("Student Record Promoted successfully without dropping history.");
                 await generatePromotionPreview();
             } else {
                 alert("Update Error: " + error.message);
@@ -306,14 +321,24 @@
             const targetClass = demotionMatrix[currentClass];
             if(!targetClass) { alert("This student cannot be demoted lower than JSS 1."); return; }
 
-            const conf = confirm(`DEMOTE individual student ${executionMapQueue[index].name} backward to ${targetClass}?\nThis resets their attendance parameters and marks records.`);
+            const targetSession = prompt("Enter the target Session identity string format for demotion destination (e.g. 2025_2026):");
+            if(!targetSession || targetSession.trim() === "") { alert("Operation cancelled."); return; }
+            const sessionKey = targetSession.trim();
+
+            const conf = confirm(`DEMOTE individual student ${executionMapQueue[index].name} backward to ${targetClass}?`);
             if(!conf) return;
+
+            let updatedTermData = JSON.parse(JSON.stringify(executionMapQueue[index].existingTermData));
+            let updatedAdminInputs = JSON.parse(JSON.stringify(executionMapQueue[index].existingAdminInputs));
+
+            if(!updatedTermData[sessionKey]) updatedTermData[sessionKey] = { term1: [], term2: [], term3: [] };
+            if(!updatedAdminInputs[sessionKey]) updatedAdminInputs[sessionKey] = { term1: {}, term2: {}, term3: {} };
 
             let payload = {
                 grade_level: targetClass,
-                term_data: {},
+                term_data: updatedTermData,
                 teacher_remark: "",
-                admin_inputs: {} 
+                admin_inputs: updatedAdminInputs 
             };
 
             const { error } = await _supabase.from('students').update(payload).eq('id', studentId);
@@ -328,8 +353,15 @@
         // STEP 2: Process batch updates for every element matching active configuration
         async function executeBatchPromotion() {
             if(executionMapQueue.length === 0) return;
+
+            const targetSession = prompt("Type the exact identity string of the INCOMING Academic Session (e.g., 2026_2027):");
+            if(!targetSession || targetSession.trim() === "") {
+                alert("Execution Aborted: Academic target session key is strictly required.");
+                return;
+            }
+            const sessionKey = targetSession.trim();
             
-            const doubleCheck = confirm("CRITICAL CORE ADMINISTRATIVE BATCH OPERATION:\n\nAre you completely certain you want to advance all selected students inside the filter queue?\n\nThis will instantly wipe term score dictionaries and attendance tallies inside the registry database!");
+            const doubleCheck = confirm(`CRITICAL BATCH PROGRESSION ACTION:\n\nAre you completely certain you want to advance all selected students to the next class for session ${sessionKey.replace('_','/')}? Historic data logs will be safely preserved.`);
             if(!doubleCheck) return;
 
             document.getElementById('btn-preview').disabled = true;
@@ -346,11 +378,19 @@
 
                 document.getElementById('cnt-queue').innerText = `${processedCount + 1} / ${totalQueueItems}`;
 
+                // Extract history maps directly from queue items
+                let updatedTermData = JSON.parse(JSON.stringify(task.existingTermData));
+                let updatedAdminInputs = JSON.parse(JSON.stringify(task.existingAdminInputs));
+
+                // Initialize empty brackets cleanly for the upcoming session context
+                if(!updatedTermData[sessionKey]) updatedTermData[sessionKey] = { term1: [], term2: [], term3: [] };
+                if(!updatedAdminInputs[sessionKey]) updatedAdminInputs[sessionKey] = { term1: {}, term2: {}, term3: {} };
+
                 let updatePayload = {
                     grade_level: task.newClass,
-                    term_data: {}, 
+                    term_data: updatedTermData, 
                     teacher_remark: "",
-                    admin_inputs: {} 
+                    admin_inputs: updatedAdminInputs 
                 };
 
                 if(task.groupAction === "RESET TO GENERAL") {
@@ -369,7 +409,7 @@
             document.getElementById('status-tag').innerText = "Batch Sync Completed";
             document.getElementById('status-tag').className = "bg-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider";
             
-            alert(`Success! Session batch upgrades committed.\nProcessed parameters clean-out configurations for ${processedCount} records.`);
+            alert(`Success! Session batch upgrades committed safely without dropping data metrics.\nProcessed allocations for ${processedCount} records.`);
             
             await generatePromotionPreview();
             document.getElementById('btn-preview').disabled = false;
