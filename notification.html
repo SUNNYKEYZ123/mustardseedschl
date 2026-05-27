@@ -25,17 +25,13 @@
         </div>
         
         <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <!-- TEST BELL BUTTON -->
-            <button onclick="playNotificationSound(0.8)" class="text-[10px] bg-slate-700 hover:bg-slate-600 border border-slate-600 font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all">
-                <i data-lucide="bell" class="w-3.5 h-3.5 text-amber-400"></i> Test Sound
+            <!-- SYSTEM VOICE TEST BUTTON -->
+            <button onclick="testSystemVoice()" class="text-[10px] bg-slate-700 hover:bg-slate-600 border border-slate-600 font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all">
+                <i data-lucide="volume-2" class="text-amber-400 w-3.5 h-3.5"></i> Test Voice Alert
             </button>
 
-            <div id="audioStatusIndicator" class="text-[10px] bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl flex items-center gap-1.5 cursor-pointer select-none font-bold" onclick="activateAudioPermissions()">
-                <i data-lucide="volume-x" class="w-3.5 h-3.5"></i> Tap to Arm Audio Monitor
-            </div>
-
             <div id="networkStatusBadge" class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest">
-                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> Connecting...
+                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> Live Link Connected
             </div>
         </div>
     </header>
@@ -59,7 +55,7 @@
                     <i data-lucide="radio" class="w-6 h-6 animate-pulse text-blue-500"></i>
                 </div>
                 <h3 class="text-sm font-bold text-slate-300">Awaiting Live Admissions</h3>
-                <p class="text-xs text-slate-500 mt-1">When a student submits their form, the desk will chime instantly and load their card here.</p>
+                <p class="text-xs text-slate-500 mt-1">When a student submits their form, the desk will announce it out loud and load their card here.</p>
             </div>
 
             <div id="admissionDocumentContainer" class="w-full bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 hidden relative">
@@ -121,12 +117,10 @@
     </main>
 
     <script>
-        // REFRESHED HUB CODES
         const SUPABASE_PROJECT_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
         const SUPABASE_ANON_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
         
         let _supabase;
-        let audioPermissionArmed = false;
         let localAdmissionsLog = [];
 
         function initApp() {
@@ -134,68 +128,47 @@
             loadLocalHistoryCache();
 
             try {
-                // Instantiating the client setup
                 _supabase = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_TOKEN);
-                
-                // Fetch existing records immediately to verify link works
                 fetchLatestDataRecords();
-                // Engage the real-time live connection loop
                 connectRealtimePipeline();
             } catch(e) {
-                document.getElementById('networkStatusBadge').innerText = "Connection Failed";
+                document.getElementById('networkStatusBadge').innerText = "Connection Error";
             }
         }
 
         async function fetchLatestDataRecords() {
             try {
                 const { data, error } = await _supabase.from('students').select('*').order('created_at', { ascending: false }).limit(25);
-                if (error) throw error;
-                
-                if (data && data.length > 0) {
-                    // Seed local memory array backwards so order tracks correctly
+                if (!error && data) {
                     const reverseData = [...data].reverse();
                     reverseData.forEach(record => saveRecordToLocalMemory(record, false));
-                    
-                    document.getElementById('networkStatusBadge').className = "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest";
-                    document.getElementById('networkStatusBadge').innerHTML = `<span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span> Live Link Connected`;
                 }
-            } catch (err) {
-                console.error("Fetch error:", err);
+            } catch (err) { console.error(err); }
+        }
+
+        // BUILT-IN SYSTEM VOICE ALERT (No internet URLs required)
+        function triggerVoiceNotification(messageText) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop any current speech
+                const utterance = new SpeechSynthesisUtterance(messageText);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
             }
         }
 
-        function playNotificationSound(volumeLevel = 0.7) {
-            try {
-                // Using a globally reliable, high-purity notification chime track URL
-                const audioObj = new Audio('https://signalsmith-audio.co.uk/images/blog/room-reverb/dry.wav');
-                audioObj.volume = volumeLevel;
-                audioObj.play().catch(e => console.log("Browser blocked immediate audio play until click context logged."));
-            } catch(e) {
-                console.error("Audio hardware initialization failure: ", e);
-            }
-        }
-
-        function activateAudioPermissions() {
-            audioPermissionArmed = true;
-            const badge = document.getElementById('audioStatusIndicator');
-            badge.className = "text-[10px] bg-blue-600 text-white font-bold px-3 py-1.5 rounded-xl border border-blue-500 flex items-center gap-1.5 select-none";
-            badge.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5 animate-bounce"></i> Audio Monitor Active`;
-            lucide.createIcons();
-            
-            // Fire a quick confirmation ring directly into headphones/speakers
-            playNotificationSound(0.3);
+        function testSystemVoice() {
+            triggerVoiceNotification("Attention! Voice alert monitor is operational.");
+            alert("Notification Banner Test: If you can see this, banners are active!");
         }
 
         function connectRealtimePipeline() {
             _supabase
                 .channel('realtime-admission-hook')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'students' }, (payload) => {
-                    console.log("New submission captured via database engine stream:", payload.new);
                     saveRecordToLocalMemory(payload.new, true);
                 })
-                .subscribe((status) => {
-                    console.log("Realtime stream sub status logged:", status);
-                });
+                .subscribe();
         }
 
         function saveRecordToLocalMemory(student, shouldTriggerAlert) {
@@ -208,9 +181,13 @@
             renderHistoryLogPanel();
 
             if (shouldTriggerAlert) {
-                if (audioPermissionArmed) {
-                    playNotificationSound(0.8);
-                }
+                // Speak out loud who just registered!
+                const studentName = student.full_name || "A new student";
+                triggerVoiceNotification(`Attention! ${studentName} has just registered.`);
+                
+                // Show a standard pop-up window notification banner
+                alert(`🔔 New Admission Alert!\nName: ${studentName}\nClass: ${student.grade_level || 'Not Specified'}`);
+                
                 populateDocumentView(student.id);
             }
         }
