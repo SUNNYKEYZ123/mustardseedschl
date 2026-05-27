@@ -25,6 +25,7 @@
             width: 140px; z-index: 30; mix-blend-mode: multiply;
         }
         @media print {
+            /* Keep print layouts clean and hide control elements */
             @page { size: legal; margin: 0.4in; }
             .no-print { display: none !important; }
             .report-sheet { border: 2px solid #000; box-shadow: none; width: 100%; margin: 0; }
@@ -38,16 +39,22 @@
 
     <div class="max-w-5xl mx-auto mb-4 flex flex-wrap justify-between items-center gap-4 no-print">
         <button onclick="window.history.back()" class="bg-white px-6 py-2 rounded-xl shadow-md font-bold text-slate-600">← Back</button>
-        <div class="flex bg-white rounded-xl shadow-md p-1 border">
-            <button onclick="changeTerm(1)" id="t1-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition bg-black text-white">1st Term</button>
-            <button onclick="changeTerm(2)" id="t2-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">2nd Term</button>
-            <button onclick="changeTerm(3)" id="t3-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">3rd Term</button>
+        
+        <div class="flex items-center gap-3">
+            <select id="res-session-select" onchange="changeSession(this.value)" class="bg-white px-4 py-2 rounded-xl shadow-md font-black text-xs text-purple-700 uppercase outline-none border border-slate-200 focus:ring-2 focus:ring-purple-400">
+                </select>
+
+            <div class="flex bg-white rounded-xl shadow-md p-1 border">
+                <button onclick="changeTerm(1)" id="t1-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition bg-black text-white">1st Term</button>
+                <button onclick="changeTerm(2)" id="t2-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">2nd Term</button>
+                <button onclick="changeTerm(3)" id="t3-btn" class="px-4 py-2 rounded-lg font-black text-xs uppercase transition">3rd Term</button>
+            </div>
         </div>
+
         <button onclick="window.print()" class="bg-blue-600 text-white px-8 py-2 rounded-xl shadow-lg font-black italic tracking-widest">PRINT REPORT</button>
     </div>
 
     <div class="max-w-5xl mx-auto bg-white border-2 border-black rounded-sm report-sheet">
-        <!-- HEADER -->
         <div class="p-4 border-b-2 border-black flex items-center justify-between text-center">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-20 w-20" alt="Logo">
             <div class="flex-1 px-4">
@@ -58,15 +65,13 @@
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Coat.jpeg" class="h-20 w-20" alt="Coat of Arms">
         </div>
 
-        <!-- STUDENT INFO -->
         <div class="grid grid-cols-2 md:grid-cols-4 border-b-2 border-black text-black text-[10px] uppercase font-black">
             <div class="p-3 border-r-2 border-black">Name: <span id="res-name" class="block bold-data">---</span></div>
             <div class="p-3 border-r-2 border-black">Reg No: <span id="res-id" class="block bold-data text-blue-800">---</span></div>
-            <div class="p-3 border-r-2 border-black">Class: <span id="res-class" class="block bold-data">---</span></div>
+            <div class="p-3 border-r-2 border-black">Class & Session: <span id="res-class" class="block bold-data">---</span></div>
             <div class="p-3">Term: <span id="res-term" class="block bold-data text-red-600">---</span></div>
         </div>
 
-        <!-- SCORES TABLE -->
         <div class="p-4 watermark-container">
             <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="watermark-bg" alt="watermark">
             <table class="relative z-10">
@@ -87,7 +92,6 @@
             </table>
         </div>
 
-        <!-- ASSESSMENT & ATTENDANCE -->
         <div class="mx-4 mb-4 grid grid-cols-2 gap-4">
             <div class="border-2 border-black">
                 <div class="bg-slate-100 p-1 text-center border-b-2 border-black">
@@ -109,7 +113,6 @@
             </div>
         </div>
 
-        <!-- FOOTER -->
         <div class="p-4 grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-black">
             <div class="space-y-4">
                 <div>
@@ -146,9 +149,33 @@
     <script>
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
         let currentTerm = 1;
+        let currentSession = "";
         let studentData = null;
 
+        // Populate active years cleanly inside top selectors
+        function populateSessionSelector() {
+            const selectEl = document.getElementById('res-session-select');
+            const currentYear = new Date().getFullYear();
+            let optionsHTML = '';
+            
+            for(let y = 2024; y <= currentYear + 3; y++) {
+                let val = `${y}_${y+1}`;
+                let label = `${y}/${y+1}`;
+                optionsHTML += `<option value="${val}">Session: ${label}</option>`;
+            }
+            selectEl.innerHTML = optionsHTML;
+
+            // Set default frame context anchor to 2025_2026 bracket configuration
+            let fallbackDefault = `${currentYear - 1}_${currentYear}`;
+            if (!selectEl.querySelector(`option[value="${fallbackDefault}"]`)) {
+                fallbackDefault = `${currentYear}_${currentYear + 1}`;
+            }
+            selectEl.value = fallbackDefault;
+            currentSession = fallbackDefault;
+        }
+
         async function init() {
+            populateSessionSelector();
             const { data: { session } } = await _supabase.auth.getSession();
             if (!session) return;
             const { data: st } = await _supabase.from('students').select('*').eq('id', session.user.id).single();
@@ -160,6 +187,11 @@
             [1, 2, 3].forEach(t => {
                 document.getElementById(`t${t}-btn`).className = t === term ? "px-4 py-2 rounded-lg font-black text-xs uppercase bg-black text-white" : "px-4 py-2 rounded-lg font-black text-xs uppercase";
             });
+            renderReport();
+        }
+
+        function changeSession(sessionVal) {
+            currentSession = sessionVal;
             renderReport();
         }
 
@@ -178,10 +210,16 @@
 
             document.getElementById('res-name').innerText = studentData.full_name;
             document.getElementById('res-id').innerText = "MS-" + studentData.id.substring(0, 5).toUpperCase();
-            document.getElementById('res-class').innerText = studentData.grade_level;
+            
+            // Appends session tags on the sub-header label smoothly
+            const visualSessionName = currentSession.replace('_', '/');
+            document.getElementById('res-class').innerText = `${studentData.grade_level} (${visualSessionName})`;
             document.getElementById('res-term').innerText = `${currentTerm}${currentTerm==1?'ST':currentTerm==2?'ND':'RD'} TERM`;
 
-            const admin = studentData.admin_inputs?.[`term${currentTerm}`] || {};
+            // Session isolation block parsing structures for administrative remark fields
+            const sessionAdminData = studentData.admin_inputs?.[currentSession] || {};
+            const admin = sessionAdminData[`term${currentTerm}`] || {};
+            
             document.getElementById('res-clean').innerText = admin.cleanliness || "---";
             document.getElementById('res-activities').innerText = admin.activities || "---";
             document.getElementById('res-present').innerText = admin.daysPresent || "---";
@@ -190,15 +228,20 @@
             document.getElementById('master-comment').innerText = admin.formMasterComment || "---";
             document.getElementById('principal-comment').innerText = admin.principalComment || "---";
             
+            const sig = document.getElementById('res-sig');
             if (admin.signatureUrl) {
-                const sig = document.getElementById('res-sig');
                 sig.src = admin.signatureUrl; sig.style.display = "block";
+            } else {
+                sig.style.display = "none";
             }
 
-            const currentScores = studentData.term_data?.[`term${currentTerm}`] || [];
-            const t1_all = studentData.term_data?.['term1'] || [];
-            const t2_all = studentData.term_data?.['term2'] || [];
-            const t3_all = studentData.term_data?.['term3'] || [];
+            // Route execution down to target structural arrays inside selected sessions safely
+            const sessionScores = studentData.term_data?.[currentSession] || {};
+            
+            const currentScores = sessionScores[`term${currentTerm}`] || [];
+            const t1_all = sessionScores['term1'] || [];
+            const t2_all = sessionScores['term2'] || [];
+            const t3_all = sessionScores['term3'] || [];
 
             document.getElementById('subject-rows').innerHTML = currentScores.map(sub => {
                 const currentTotal = (parseFloat(sub.test) || 0) + (parseFloat(sub.exam) || 0);
@@ -217,7 +260,7 @@
                 else if (currentTerm === 2) cum = (v1 + v2) / 2;
                 else if (currentTerm === 3) cum = (v1 + v2 + v3) / 3;
 
-                // Column Visibility Logic
+                // Visibility logic across progressive sequences
                 const t1_display = currentTerm >= 1 ? v1 : '---';
                 const t2_display = currentTerm >= 2 ? v2 : '---';
 
@@ -235,7 +278,7 @@
                     <td class="text-center font-black">${grade}</td>
                     <td class="text-[9px] font-bold">${remark}</td>
                 </tr>`;
-            }).join('') || `<tr><td colspan="9" class="text-center py-4">NO DATA FOUND</td></tr>`;
+            }).join('') || `<tr><td colspan="9" class="text-center py-4 text-slate-400">NO ACADEMIC DATA RECORDED FOR THIS SESSION</td></tr>`;
         }
 
         window.onload = init;
