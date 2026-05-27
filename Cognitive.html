@@ -6,143 +6,339 @@
     <title>Score & Assessment Entry | MSS Admin</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 </head>
-<body class="bg-slate-50 p-6">
-    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border">
-        <!-- Header -->
-        <div class="bg-blue-900 p-6 text-white flex justify-between items-center">
+<body class="bg-slate-50 p-4 sm:p-6 lg:p-8 min-h-screen text-slate-800">
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden border border-slate-100">
+        <div class="bg-blue-900 p-6 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold">Student Assessment Portal</h1>
-                <p class="text-blue-200 text-sm">Update comments, attendance, and behavioral records</p>
+                <h1 class="text-2xl font-extrabold tracking-tight">Student Assessment Portal</h1>
+                <p class="text-blue-200 text-xs font-bold uppercase tracking-wider mt-1">Cognitive, Behavioral & Master Principal Controls</p>
             </div>
-            <button onclick="window.location.href='admin2.html'" class="bg-blue-800 px-4 py-2 rounded-lg hover:bg-blue-700 transition">Return to Dashboard</button>
+            <button onclick="window.location.href='admin2 up.html'" class="bg-blue-800 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-blue-700 transition shadow-sm">
+                Return to Dashboard
+            </button>
         </div>
 
-        <div class="p-8 space-y-6">
-            <!-- Step 1: Select Student & Term -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-6 sm:p-8 space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <div>
-                    <label class="block text-xs font-black uppercase text-slate-500 mb-1">Select Student</label>
-                    <select id="student-select" class="w-full p-3 bg-slate-100 border rounded-xl font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="">Loading students...</option>
+                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-1.5 tracking-wider">Active Academic Session</label>
+                    <select id="session-select" onchange="resetAndLoad()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-sm text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none shadow-xs">
+                        <option value="2025_2026">2025/2026</option>
+                        <option value="2026_2027" selected>2026/2027</option>
+                        <option value="2027_2028">2027/2028</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-black uppercase text-slate-500 mb-1">Select Term</label>
-                    <select id="term-select" class="w-full p-3 bg-slate-100 border rounded-xl font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-1.5 tracking-wider">Active Reporting Term</label>
+                    <select id="term-select" onchange="loadStudentScoresAndMetaData()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-sm text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none shadow-xs">
                         <option value="term1">1st Term</option>
                         <option value="term2">2nd Term</option>
                         <option value="term3">3rd Term</option>
                     </select>
                 </div>
+                <div>
+                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-1.5 tracking-wider">Select Target Student</label>
+                    <select id="student-select" onchange="loadStudentScoresAndMetaData()" class="w-full p-3 bg-white border border-slate-200 rounded-xl font-bold text-sm text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none shadow-xs">
+                        <option value="">Loading student profiles...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="live-stats-bar" class="hidden bg-slate-900 text-white p-4 rounded-xl flex flex-wrap items-center justify-between gap-4 shadow-md">
+                <div class="flex items-center gap-3">
+                    <div id="status-light" class="h-4 w-4 rounded-full bg-amber-400 animate-pulse"></div>
+                    <div>
+                        <span class="text-[10px] uppercase font-black text-slate-400 block tracking-wider">Completeness Signal</span>
+                        <span id="status-text" class="text-xs font-bold uppercase tracking-wide">Evaluating Scores...</span>
+                    </div>
+                </div>
+                <div class="flex gap-6">
+                    <div class="text-right">
+                        <span class="text-[10px] uppercase font-black text-slate-400 block tracking-wider">Aggregate Performance</span>
+                        <span id="stat-total" class="text-sm font-extrabold tracking-tight">0 Marks</span>
+                    </div>
+                    <div class="text-right border-l border-slate-700 pl-6">
+                        <span class="text-[10px] uppercase font-black text-slate-400 block tracking-wider">Term Average</span>
+                        <span id="stat-average" class="text-sm font-extrabold text-emerald-400 tracking-tight">0.0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                    <h4 class="text-xs font-extrabold uppercase text-blue-950 tracking-wider">Principal Remarks Automation Engine</h4>
+                    <p class="text-slate-500 text-xs mt-0.5 font-medium">When active, the portal writes professional performance & promotion summaries automatically.</p>
+                </div>
+                <button type="button" id="auto-comment-toggle" onclick="toggleAutoComment()" class="bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+                    OFF (Manual)
+                </button>
             </div>
 
             <hr class="border-slate-100">
 
-            <!-- Step 2: Assessment Inputs -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Behavioral Section -->
                 <div class="space-y-4">
-                    <h3 class="font-black text-blue-900 uppercase text-xs tracking-widest">Behavioral Assessment</h3>
+                    <h3 class="font-black text-blue-900 uppercase text-xs tracking-widest border-b pb-1 border-slate-100">Behavioral Assessment</h3>
                     <div>
-                        <label class="text-sm font-bold">Cleanliness</label>
-                        <input type="text" id="cleanliness" placeholder="e.g. Excellent / Good" class="w-full p-2 border-b-2 border-slate-200 focus:border-blue-500 outline-none">
+                        <label class="text-xs font-bold text-slate-600 block mb-1">Cleanliness & Neatness</label>
+                        <input type="text" id="cleanliness" placeholder="e.g. Excellent / Exemplary" class="w-full p-2.5 bg-slate-50 rounded-lg border border-slate-200 focus:border-blue-500 focus:bg-white outline-none font-medium transition text-sm">
                     </div>
                     <div>
-                        <label class="text-sm font-bold">Manual Activities</label>
-                        <input type="text" id="activities" placeholder="e.g. Cooperative" class="w-full p-2 border-b-2 border-slate-200 focus:border-blue-500 outline-none">
+                        <label class="text-xs font-bold text-slate-600 block mb-1">Manual Activities & Cooperation</label>
+                        <input type="text" id="activities" placeholder="e.g. Diligent & Helpful" class="w-full p-2.5 bg-slate-50 rounded-lg border border-slate-200 focus:border-blue-500 focus:bg-white outline-none font-medium transition text-sm">
                     </div>
                 </div>
 
-                <!-- Attendance Section -->
                 <div class="space-y-4">
-                    <h3 class="font-black text-blue-900 uppercase text-xs tracking-widest">Attendance & Date</h3>
+                    <h3 class="font-black text-blue-900 uppercase text-xs tracking-widest border-b pb-1 border-slate-100">Attendance Metrics</h3>
                     <div class="flex gap-4">
                         <div class="flex-1">
-                            <label class="text-sm font-bold">Days Present</label>
-                            <input type="number" id="daysPresent" class="w-full p-2 border-b-2 border-slate-200 focus:border-blue-500 outline-none">
+                            <label class="text-xs font-bold text-slate-600 block mb-1">Days Present</label>
+                            <input type="number" id="daysPresent" class="w-full p-2.5 bg-slate-50 rounded-lg border border-slate-200 focus:border-blue-500 focus:bg-white outline-none font-bold transition text-sm">
                         </div>
                         <div class="flex-1">
-                            <label class="text-sm font-bold">Days Absent</label>
-                            <input type="number" id="daysAbsent" class="w-full p-2 border-b-2 border-slate-200 focus:border-blue-500 outline-none">
+                            <label class="text-xs font-bold text-slate-600 block mb-1">Days Absent</label>
+                            <input type="number" id="daysAbsent" class="w-full p-2.5 bg-slate-50 rounded-lg border border-slate-200 focus:border-blue-500 focus:bg-white outline-none font-bold transition text-sm">
                         </div>
                     </div>
                     <div>
-                        <label class="text-sm font-bold text-red-600">Next Term Begins</label>
-                        <input type="text" id="nextTermBegin" placeholder="September 15, 2026" class="w-full p-2 border-b-2 border-slate-200 focus:border-blue-500 outline-none font-bold">
+                        <label class="text-xs font-bold text-red-600 block mb-1">Next Term Resumption Date</label>
+                        <input type="text" id="nextTermBegin" placeholder="September 14, 2026" class="w-full p-2.5 bg-slate-50 rounded-lg border border-slate-200 focus:border-blue-500 focus:bg-white outline-none font-bold transition text-sm text-blue-900">
                     </div>
                 </div>
             </div>
 
-            <!-- Step 3: Comments Section -->
             <div class="space-y-4">
-                <h3 class="font-black text-blue-900 uppercase text-xs tracking-widest">Official Remarks</h3>
+                <h3 class="font-black text-blue-900 uppercase text-xs tracking-widest border-b pb-1 border-slate-100">Official Evaluation Remarks</h3>
                 <div>
-                    <label class="text-sm font-bold">Form Master's Comment</label>
-                    <textarea id="formMasterComment" rows="2" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    <label class="text-xs font-bold text-slate-600 block mb-1">Form Master's Comment</label>
+                    <textarea id="formMasterComment" rows="2" placeholder="Form master notes regarding classroom disposition..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-medium text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition"></textarea>
                 </div>
                 <div>
-                    <label class="text-sm font-bold">Principal's Comment</label>
-                    <textarea id="principalComment" rows="2" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    <label class="text-xs font-bold text-slate-600 block mb-1">Principal's Comment</label>
+                    <textarea id="principalComment" rows="2" placeholder="Final executive authorization comments..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none font-medium text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white transition"></textarea>
                 </div>
             </div>
 
-            <!-- Submit -->
             <div class="pt-4">
-                <button onclick="saveAssessment()" id="save-btn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-200 transition">Save Student Records</button>
+                <button onclick="saveAssessment()" id="save-btn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 shadow-lg shadow-blue-200 transition">
+                    Commit Sheet Records
+                </button>
             </div>
         </div>
     </div>
 
     <script>
         const _supabase = supabase.createClient('https://jqrcoqslmylmubxwfgyt.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU');
+        
+        let localStudentListCache = [];
+        let isAutoCommentActive = false;
 
-        async function loadStudents() {
-            const { data, error } = await _supabase.from('students').select('id, full_name').order('full_name');
+        async function initPortal() {
+            const { data, error } = await _supabase.from('students').select('*').order('full_name');
             if (data) {
+                localStudentListCache = data;
                 const select = document.getElementById('student-select');
                 select.innerHTML = '<option value="">-- Choose a Student --</option>' + 
-                    data.map(s => `<option value="${s.id}">${s.full_name}</option>`).join('');
+                    data.map(s => `<option value="${s.id}">${s.full_name} (${s.grade_level || 'N/A'})</option>`).join('');
             }
+        }
+
+        function resetAndLoad() {
+            document.getElementById('student-select').value = "";
+            document.getElementById('live-stats-bar').classList.add('hidden');
+            clearInputs();
+        }
+
+        function toggleAutoComment() {
+            isAutoCommentActive = !isAutoCommentActive;
+            const toggleBtn = document.getElementById('auto-comment-toggle');
+            const priCommentBox = document.getElementById('principalComment');
+
+            if (isAutoCommentActive) {
+                toggleBtn.innerText = "ON (Automated)";
+                toggleBtn.className = "bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-md shadow-emerald-100";
+                priCommentBox.setAttribute('readonly', 'true');
+                priCommentBox.classList.add('bg-slate-100', 'cursor-not-allowed');
+                generateAutoCommentLogic();
+            } else {
+                toggleBtn.innerText = "OFF (Manual)";
+                toggleBtn.className = "bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all";
+                priCommentBox.removeAttribute('readonly');
+                priCommentBox.classList.remove('bg-slate-100', 'cursor-not-allowed');
+            }
+        }
+
+        function clearInputs() {
+            document.getElementById('cleanliness').value = "";
+            document.getElementById('activities').value = "";
+            document.getElementById('daysPresent').value = "";
+            document.getElementById('daysAbsent').value = "";
+            document.getElementById('nextTermBegin').value = "";
+            document.getElementById('formMasterComment').value = "";
+            document.getElementById('principalComment').value = "";
+        }
+
+        async function loadStudentScoresAndMetaData() {
+            const studentId = document.getElementById('student-select').value;
+            const sessionKey = document.getElementById('session-select').value;
+            const termKey = document.getElementById('term-select').value;
+
+            if (!studentId) {
+                document.getElementById('live-stats-bar').classList.add('hidden');
+                clearInputs();
+                return;
+            }
+
+            const currentStudent = localStudentListCache.find(x => x.id === studentId);
+            if (!currentStudent) return;
+
+            clearInputs();
+
+            // 1. Pull Session-Aware Admin Inputs Safely
+            const sessionInputs = currentStudent.admin_inputs?.[sessionKey]?.[termKey] || {};
+            document.getElementById('cleanliness').value = sessionInputs.cleanliness || "";
+            document.getElementById('activities').value = sessionInputs.activities || "";
+            document.getElementById('daysPresent').value = sessionInputs.daysPresent || "";
+            document.getElementById('daysAbsent').value = sessionInputs.daysAbsent || "";
+            document.getElementById('nextTermBegin').value = sessionInputs.nextTermBegin || "";
+            document.getElementById('formMasterComment').value = sessionInputs.formMasterComment || "";
+            document.getElementById('principalComment').value = sessionInputs.principalComment || "";
+
+            // 2. Compute Live Cumulative Aggregates
+            const currentScoresArray = currentStudent.term_data?.[sessionKey]?.[termKey] || [];
+            
+            let accumulatedMarks = 0;
+            let countedSubjects = currentScoresArray.length;
+            let isAnyMarkFieldEmpty = false;
+
+            currentScoresArray.forEach(sub => {
+                const testVal = parseFloat(sub.test);
+                const examVal = parseFloat(sub.exam);
+                
+                // Track missing inputs
+                if (isNaN(testVal) || isNaN(examVal) || sub.test === "" || sub.exam === "") {
+                    isAnyMarkFieldEmpty = true;
+                }
+                accumulatedMarks += ((testVal || 0) + (examVal || 0));
+            });
+
+            let calculatedAverage = countedSubjects > 0 ? (accumulatedMarks / countedSubjects) : 0;
+
+            document.getElementById('stat-total').innerText = `${accumulatedMarks} Marks`;
+            document.getElementById('stat-average').innerText = `${calculatedAverage.toFixed(1)}%`;
+            document.getElementById('live-stats-bar').classList.remove('hidden');
+
+            // 3. Green Light Completeness Check
+            const visualDot = document.getElementById('status-light');
+            const visualTxt = document.getElementById('status-text');
+
+            if (countedSubjects === 0) {
+                visualDot.className = "h-4 w-4 rounded-full bg-rose-500";
+                visualTxt.innerText = "No Subjects Registered This Term";
+            } else if (isAnyMarkFieldEmpty) {
+                visualDot.className = "h-4 w-4 rounded-full bg-amber-400 animate-pulse";
+                visualTxt.innerText = "Incomplete (Missing Scores Detected)";
+            } else {
+                visualDot.className = "h-4 w-4 rounded-full bg-emerald-500 shadow-lg shadow-emerald-400";
+                visualTxt.innerText = "Ready (All Subject Scores Filled)";
+            }
+
+            // Force evaluate automated comments if switched on
+            if (isAutoCommentActive) {
+                generateAutoCommentLogic();
+            }
+        }
+
+        function generateAutoCommentLogic() {
+            const avgString = document.getElementById('stat-average').innerText;
+            const avg = parseFloat(avgString);
+            const termKey = document.getElementById('term-select').value;
+            const priCommentBox = document.getElementById('principalComment');
+
+            if (isNaN(avg) || avg === 0) {
+                priCommentBox.value = "Awaiting full result entry before writing comment.";
+                return;
+            }
+
+            let generatedRemark = "";
+
+            if (termKey === "term3") {
+                // Promotional Logic for End of Session
+                if (avg >= 50) {
+                    if (avg >= 80) generatedRemark = `An outstanding academic session with an excellent average of ${avg.toFixed(1)}%. Promoted with distinction. Keep it up!`;
+                    else if (avg >= 65) generatedRemark = `A very impressive performance across all subjects. Average: ${avg.toFixed(1)}%. Promoted to the next class.`;
+                    else generatedRemark = `A satisfactory performance this session. Average: ${avg.toFixed(1)}%. Promoted to the next grade level.`;
+                } else {
+                    generatedRemark = `The final aggregate performance falls below standard criteria. Average: ${avg.toFixed(1)}%. Advised to repeat current class level to build a better foundation.`;
+                }
+            } else {
+                // Mid-session standard comments
+                if (avg >= 75) generatedRemark = `Brilliant work! An excellent term score average of ${avg.toFixed(1)}%. Maintain this top rank.`;
+                else if (avg >= 60) generatedRemark = `A strong performance this term with a good average of ${avg.toFixed(1)}%. With more consistency, you can excel further.`;
+                else if (avg >= 45) generatedRemark = `Passed, but performance is average (${avg.toFixed(1)}%). You have the capacity to do much better if you adjust your study habits.`;
+                else generatedRemark = `Poor result profile with an average of ${avg.toFixed(1)}%. Urgent remedial support and close supervision are strongly advised.`;
+            }
+
+            priCommentBox.value = generatedRemark;
         }
 
         async function saveAssessment() {
             const studentId = document.getElementById('student-select').value;
-            const term = document.getElementById('term-select').value;
-            if (!studentId) return alert("Please select a student!");
+            const sessionKey = document.getElementById('session-select').value;
+            const termKey = document.getElementById('term-select').value;
+            
+            if (!studentId) return alert("Please select a student record first!");
 
             const btn = document.getElementById('save-btn');
-            btn.innerText = "Saving...";
+            btn.innerText = "Syncing Records...";
             btn.disabled = true;
 
-            // Get current student data to preserve other terms
+            // Refetch fresh student records directly to preserve structure
             const { data: student } = await _supabase.from('students').select('admin_inputs').eq('id', studentId).single();
             
-            const updatedAdminInputs = {
-                ...(student?.admin_inputs || {}),
-                [term]: {
-                    cleanliness: document.getElementById('cleanliness').value,
-                    activities: document.getElementById('activities').value,
-                    daysPresent: document.getElementById('daysPresent').value,
-                    daysAbsent: document.getElementById('daysAbsent').value,
-                    nextTermBegin: document.getElementById('nextTermBegin').value,
-                    formMasterComment: document.getElementById('formMasterComment').value,
-                    principalComment: document.getElementById('principalComment').value
-                }
+            let masterInputs = student?.admin_inputs || {};
+            
+            // Build safe tree path: sessionKey -> termKey
+            if (!masterInputs[sessionKey]) masterInputs[sessionKey] = {};
+            
+            masterInputs[sessionKey][termKey] = {
+                cleanliness: document.getElementById('cleanliness').value,
+                activities: document.getElementById('activities').value,
+                daysPresent: document.getElementById('daysPresent').value,
+                daysAbsent: document.getElementById('daysAbsent').value,
+                nextTermBegin: document.getElementById('nextTermBegin').value,
+                formMasterComment: document.getElementById('formMasterComment').value,
+                principalComment: document.getElementById('principalComment').value
             };
 
-            const { error } = await _supabase.from('students').update({ admin_inputs: updatedAdminInputs }).eq('id', studentId);
+            const { error } = await _supabase
+                .from('students')
+                .update({ admin_inputs: masterInputs })
+                .eq('id', studentId);
 
             if (!error) {
-                alert("Records updated successfully for " + term);
-                btn.innerText = "Save Student Records";
-                btn.disabled = false;
+                alert("Assessment sheet records updated successfully into session storage.");
+                
+                // Reload list to keep memory accurate
+                const { data: renewedData } = await _supabase.from('students').select('*').order('full_name');
+                if (renewedData) localStudentListCache = renewedData;
+                
+                await loadStudentScoresAndMetaData();
             } else {
-                alert("Error saving: " + error.message);
+                alert("Database Error: " + error.message);
             }
+
+            btn.innerText = "Commit Sheet Records";
+            btn.disabled = false;
         }
 
-        window.onload = loadStudents;
+        window.onload = initPortal;
     </script>
 </body>
 </html>
