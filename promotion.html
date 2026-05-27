@@ -5,7 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Class Promotion Control Center | Mustard Seed</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_PROJECT_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
+        const SUPABASE_ANON_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
+        const _supabaseCheck = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_TOKEN);
+
+        // Instantly verify if an admin session exists before showing anything
+        async function checkSecurityAccess() {
+            const { data: { session } } = await _supabaseCheck.auth.getSession();
+            if (!session) {
+                // No active admin login found, redirect to login page immediately
+                window.location.replace('login.html');
+            }
+        }
+        checkSecurityAccess();
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -31,11 +48,30 @@
                     <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10" alt="MSS Logo">
                     <h1 class="text-xl sm:text-2xl font-extrabold uppercase text-slate-900 tracking-tight">Session Promotion Control</h1>
                 </div>
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Automated End-of-Year Academic Migration Engine</p>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Automated Class Migration & Attendance Reset Engine</p>
             </div>
-            <a href="admin.html" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-xs">
+            <a href="admin2 up.html" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-xs">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
             </a>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm mb-6 flex flex-wrap items-end gap-4">
+            <div class="flex-1 min-w-[240px]">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1.5">Target Academic Cohort / Class Filter</label>
+                <select id="class-filter-select" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="ALL">All Enrolled Classes (Full School Migration)</option>
+                    <option value="JSS 1">JSS 1 Only</option>
+                    <option value="JSS 2">JSS 2 Only</option>
+                    <option value="JSS 3">JSS 3 (BECE Candidates Only)</option>
+                    <option value="SSS 1">SSS 1 Only</option>
+                    <option value="SSS 2">SSS 2 Only</option>
+                    <option value="SSS 3">SSS 3 (WAEC Graduates Only)</option>
+                    <option value="GRADUATED">Graduated Alumni Archive</option>
+                </select>
+            </div>
+            <button onclick="generatePromotionPreview()" id="btn-preview" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md transition">
+                Analyze Filter Queue
+            </button>
         </div>
 
         <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-8 flex flex-col md:flex-row gap-5 items-start">
@@ -45,14 +81,11 @@
             <div>
                 <h3 class="font-extrabold text-sm text-amber-950 uppercase tracking-wide mb-1">Database Modification Disclaimer</h3>
                 <p class="text-amber-800 text-xs font-medium leading-relaxed max-w-3xl">
-                    This automated engine promotes active student populations forward by one academic step (e.g., JSS3 to SSS1, SSS3 to GRADUATED). Running this process will **clear existing term score arrays and teacher remarks** for selected students to initialize the upcoming session. Run a simulation check first.
+                    Executing batch upgrades will advance your filtered target classes forward by one session level. This operation permanently **erases active report card arrays, marks records, and resets attendance parameter indicators (`daysPresent`, `daysAbsent`)** inside your student fields to prevent data conflicts next term.
                 </p>
-                <div class="mt-4 flex flex-wrap gap-3">
-                    <button onclick="generatePromotionPreview()" id="btn-preview" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md transition">
-                        1. Generate Promotion Preview
-                    </button>
-                    <button onclick="executeBatchPromotion()" id="btn-execute" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md transition disabled:opacity-40 disabled:cursor-not-allowed">
-                        2. Commit Session Upgrades
+                <div class="mt-4">
+                    <button onclick="executeBatchPromotion()" id="btn-execute" disabled class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md transition disabled:opacity-40 disabled:cursor-not-allowed">
+                        Commit Batch Upgrades on Filtered List
                     </button>
                 </div>
             </div>
@@ -60,53 +93,53 @@
 
         <div id="summary-cards" class="hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
             <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Evaluated</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Filtered Cohort</span>
                 <span id="cnt-total" class="text-2xl font-extrabold text-slate-800 tracking-tight block mt-0.5">0</span>
             </div>
             <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">To Be Promoted</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Normal Advancing</span>
                 <span id="cnt-promoted" class="text-2xl font-extrabold text-emerald-600 tracking-tight block mt-0.5">0</span>
             </div>
             <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">To Graduate</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Graduation Target</span>
                 <span id="cnt-graduated" class="text-2xl font-extrabold text-blue-600 tracking-tight block mt-0.5">0</span>
             </div>
             <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">BECE to SSS 1</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">JSS3 to SSS1 Track</span>
                 <span id="cnt-bece" class="text-2xl font-extrabold text-purple-600 tracking-tight block mt-0.5">0</span>
             </div>
             <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
-                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Skipped/No Class</span>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Static Unchanged</span>
                 <span id="cnt-skipped" class="text-2xl font-extrabold text-amber-600 tracking-tight block mt-0.5">0</span>
             </div>
             <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Execution Queue</span>
-                <span id="cnt-queue" class="text-2xl font-extrabold text-slate-900 tracking-tight block mt-0.5">Ready</span>
+                <span id="cnt-queue" class="text-sm font-extrabold text-slate-900 block mt-1.5 uppercase">Ready</span>
             </div>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <div class="p-5 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center">
-                <h3 class="font-bold text-xs uppercase tracking-wider text-slate-500">Student Migration Mapping Register</h3>
+                <h3 class="font-bold text-xs uppercase tracking-wider text-slate-500">Filtered Structural Registry Register</h3>
                 <span id="status-tag" class="bg-slate-200 text-slate-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Idle Mode</span>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse min-w-[700px]">
+                <table class="w-full text-left border-collapse min-w-[850px]">
                     <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-400 tracking-wider border-b border-slate-100">
                         <tr>
                             <th class="p-4">Reg ID</th>
                             <th class="p-4">Student Name</th>
                             <th class="p-4 text-center">Current Class</th>
                             <th class="p-4 text-center"></th>
-                            <th class="p-4 text-center">Target Class Upgrade</th>
-                            <th class="p-4">Meta Group Restructure</th>
-                            <th class="p-4 text-right">Data Operations</th>
+                            <th class="p-4 text-center">Target Class Step</th>
+                            <th class="p-4">Meta Status</th>
+                            <th class="p-4 text-center">Selective Individual Action Override</th>
                         </tr>
                     </thead>
                     <tbody id="previewTable" class="divide-y divide-slate-100 text-[14px] text-slate-700">
                         <tr>
                             <td colspan="7" class="p-12 text-center font-medium text-slate-400 italic">
-                                Click "Generate Promotion Preview" above to query Supabase records and check alignment.
+                                Select a class parameter filter alignment above and query records.
                             </td>
                         </tr>
                     </tbody>
@@ -116,46 +149,49 @@
     </div>
 
     <script>
-        // Core Connection Logic
-        const SUPABASE_PROJECT_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
-        const SUPABASE_ANON_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
-        
+        // Core Database Connection parameters using the instantiated client
         const _supabase = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_TOKEN);
-        let rawStudentsList = [];
         let executionMapQueue = [];
 
-        // Definition Matrix for Academic Forward Steps
+        // Definition Matrix for Academic Session Progression Steps
         const promotionMatrix = {
             'JSS 1': 'JSS 2',
             'JSS 2': 'JSS 3',
-            'JSS 3': 'SSS 1', // BECE Progression Point
+            'JSS 3': 'SSS 1',
             'SSS 1': 'SSS 2',
             'SSS 2': 'SSS 3',
-            'SSS 3': 'GRADUATED' // Final Graduation Point
+            'SSS 3': 'GRADUATED'
         };
 
-        window.onload = function() {
-            lucide.createIcons();
-        }
+        const demotionMatrix = {
+            'JSS 2': 'JSS 1',
+            'JSS 3': 'JSS 2',
+            'SSS 1': 'JSS 3',
+            'SSS 2': 'SSS 1',
+            'SSS 3': 'SSS 2',
+            'GRADUATED': 'SSS 3'
+        };
 
-        // STEP 1: Process and Analyze structural targets without executing modifications
+        window.onload = function() { lucide.createIcons(); }
+
+        // STEP 1: Query database records and construct structural modifications list
         async function generatePromotionPreview() {
-            document.getElementById('status-tag').innerText = "Querying Records...";
+            const chosenFilter = document.getElementById('class-filter-select').value;
+            document.getElementById('status-tag').innerText = "Querying Live Records...";
             document.getElementById('status-tag').className = "bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider";
             
-            const { data, error } = await _supabase.from('students').select('*').order('full_name');
-            
-            if(error) {
-                alert("Supabase Fetch Error: " + error.message);
-                return;
+            let query = _supabase.from('students').select('*').order('full_name');
+            if (chosenFilter !== "ALL") {
+                query = query.eq('grade_level', chosenFilter);
             }
+            
+            const { data, error } = await query;
+            if(error) { alert("Supabase Fetch Error: " + error.message); return; }
 
-            rawStudentsList = data || [];
             executionMapQueue = [];
+            let metrics = { total: data.length, promoted: 0, graduated: 0, bece: 0, skipped: 0 };
 
-            let metrics = { total: rawStudentsList.length, promoted: 0, graduated: 0, bece: 0, skipped: 0 };
-
-            rawStudentsList.forEach(student => {
+            data.forEach(student => {
                 let currentClass = student.grade_level;
                 let targetClass = promotionMatrix[currentClass] || null;
                 let actionNeeded = "UPDATE";
@@ -169,7 +205,7 @@
                 } else if (currentClass === "JSS 3") {
                     metrics.bece++;
                     metrics.promoted++;
-                    groupChange = "RESET TO GENERAL"; // Re-evaluate core tracks at Senior Levels
+                    groupChange = "RESET TO GENERAL";
                 } else {
                     metrics.promoted++;
                 }
@@ -185,36 +221,32 @@
                 });
             });
 
-            // Update UI Counters
             document.getElementById('cnt-total').innerText = metrics.total;
             document.getElementById('cnt-promoted').innerText = metrics.promoted;
             document.getElementById('cnt-graduated').innerText = metrics.graduated;
             document.getElementById('cnt-bece').innerText = metrics.bece;
             document.getElementById('cnt-skipped').innerText = metrics.skipped;
-            
             document.getElementById('summary-cards').classList.remove('hidden');
 
-            // Render Preview Table
             renderPreviewRows();
 
-            // Enable processing authorization
-            document.getElementById('btn-execute').disabled = false;
-            document.getElementById('status-tag').innerText = "Preview Active";
+            document.getElementById('btn-execute').disabled = metrics.total === 0;
+            document.getElementById('status-tag').innerText = "Filter Queue Compiled";
             document.getElementById('status-tag').className = "bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider";
         }
 
         function renderPreviewRows() {
             const tableBody = document.getElementById('previewTable');
             if(executionMapQueue.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No active students identified for processing queue.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No active student profiles match the configured class matrix filter.</td></tr>`;
                 return;
             }
 
-            tableBody.innerHTML = executionMapQueue.map(item => {
+            tableBody.innerHTML = executionMapQueue.map((item, idx) => {
                 let badgeClass = "bg-slate-100 text-slate-700";
                 if(item.action === "SKIP") badgeClass = "bg-rose-50 text-rose-600 font-bold";
-                if(item.newClass === "GRADUATED") badgeClass = "bg-blue-50 text-blue-600 font-bold";
-                if(item.oldClass === "JSS 3") badgeClass = "bg-purple-50 text-purple-600 font-bold";
+                if(item.newClass === "GRADUATED") badgeClass = "bg-purple-50 text-purple-600 font-bold";
+                if(item.oldClass === "JSS 3") badgeClass = "bg-blue-50 text-blue-600 font-bold";
 
                 return `
                     <tr class="hover:bg-slate-50/80 transition-colors">
@@ -224,12 +256,17 @@
                         <td class="p-4 text-center text-slate-300"><i data-lucide="chevrons-right" class="w-4 h-4 mx-auto"></i></td>
                         <td class="p-4 text-center"><span class="px-2.5 py-1 rounded-xl text-xs ${badgeClass}">${item.newClass}</span></td>
                         <td class="p-4">
-                            <span class="text-[11px] font-bold px-2 py-0.5 rounded ${item.groupAction.includes('RESET') ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-600'}">
-                                ${item.groupAction === 'RESET TO GENERAL' ? 'RESET (GENERAL)' : item.currentGroup}
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">
+                                ${item.currentGroup}
                             </span>
                         </td>
-                        <td class="p-4 text-right font-bold text-[11px] uppercase ${item.action === 'SKIP' ? 'text-amber-500' : 'text-emerald-500'}">
-                            ${item.action === 'SKIP' ? 'No Action' : 'Wipe Logs & Advance'}
+                        <td class="p-4 flex justify-center gap-2">
+                            <button onclick="individualPromote('${item.id}', ${idx})" class="flex items-center gap-1 bg-emerald-50 hover:bg-emerald-600 hover:text-white text-emerald-600 px-3 py-1.5 rounded-lg font-black text-[10px] uppercase transition shadow-2xs">
+                                <i data-lucide="arrow-up-circle" class="w-3.5 h-3.5"></i> Promote
+                            </button>
+                            <button onclick="individualDemote('${item.id}', ${idx})" class="flex items-center gap-1 bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-600 px-3 py-1.5 rounded-lg font-black text-[10px] uppercase transition shadow-2xs">
+                                <i data-lucide="arrow-down-circle" class="w-3.5 h-3.5"></i> Demote
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -237,16 +274,67 @@
             lucide.createIcons();
         }
 
-        // STEP 2: Loop over evaluated items and execute batch update updates down to Supabase storage
+        // INDIVIDUAL OPERATION: Promote single student on demand
+        async function individualPromote(studentId, index) {
+            const currentClass = executionMapQueue[index].oldClass;
+            const targetClass = promotionMatrix[currentClass];
+            if(!targetClass) { alert("This student is already at the maximum graduation archive tier."); return; }
+
+            const conf = confirm(`Promote individual student ${executionMapQueue[index].name} to ${targetClass}?\nThis resets their attendance counters and marks scores arrays for the upcoming session.`);
+            if(!conf) return;
+
+            let payload = {
+                grade_level: targetClass,
+                term_data: {},
+                teacher_remark: "",
+                admin_inputs: {} 
+            };
+            if(currentClass === "JSS 3") payload.student_group = "GENERAL";
+
+            const { error } = await _supabase.from('students').update(payload).eq('id', studentId);
+            if(!error) {
+                alert("Student Record Promoted & Reset Successfully.");
+                await generatePromotionPreview();
+            } else {
+                alert("Update Error: " + error.message);
+            }
+        }
+
+        // INDIVIDUAL OPERATION: Demote single student on demand
+        async function individualDemote(studentId, index) {
+            const currentClass = executionMapQueue[index].oldClass;
+            const targetClass = demotionMatrix[currentClass];
+            if(!targetClass) { alert("This student cannot be demoted lower than JSS 1."); return; }
+
+            const conf = confirm(`DEMOTE individual student ${executionMapQueue[index].name} backward to ${targetClass}?\nThis resets their attendance parameters and marks records.`);
+            if(!conf) return;
+
+            let payload = {
+                grade_level: targetClass,
+                term_data: {},
+                teacher_remark: "",
+                admin_inputs: {} 
+            };
+
+            const { error } = await _supabase.from('students').update(payload).eq('id', studentId);
+            if(!error) {
+                alert("Student Record Demoted Backward.");
+                await generatePromotionPreview();
+            } else {
+                alert("Update Error: " + error.message);
+            }
+        }
+
+        // STEP 2: Process batch updates for every element matching active configuration
         async function executeBatchPromotion() {
             if(executionMapQueue.length === 0) return;
             
-            const doubleCheck = confirm("CRITICAL OPERATION:\n\nAre you absolutely positive you want to commit these promotions to the live database?\nThis will clear current term scores for promoted students to start the new session fresh.");
+            const doubleCheck = confirm("CRITICAL CORE ADMINISTRATIVE BATCH OPERATION:\n\nAre you completely certain you want to advance all selected students inside the filter queue?\n\nThis will instantly wipe term score dictionaries and attendance tallies inside the registry database!");
             if(!doubleCheck) return;
 
             document.getElementById('btn-preview').disabled = true;
             document.getElementById('btn-execute').disabled = true;
-            document.getElementById('status-tag').innerText = "Processing Updates...";
+            document.getElementById('status-tag').innerText = "Syncing Batch Upgrades...";
             document.getElementById('status-tag').className = "bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider";
 
             let processedCount = 0;
@@ -254,19 +342,17 @@
 
             for(let i = 0; i < executionMapQueue.length; i++) {
                 let task = executionMapQueue[i];
-                
                 if(task.action === "SKIP") continue;
 
                 document.getElementById('cnt-queue').innerText = `${processedCount + 1} / ${totalQueueItems}`;
 
-                // Construct blank payload for upcoming academic session
                 let updatePayload = {
                     grade_level: task.newClass,
-                    term_data: {}, // Erases all score sheets cleanly for terms 1, 2, and 3
-                    teacher_remark: "" // Erases general comment register
+                    term_data: {}, 
+                    teacher_remark: "",
+                    admin_inputs: {} 
                 };
 
-                // Handle clear action down on JSS3 Concentration flags tracking up to SSS level
                 if(task.groupAction === "RESET TO GENERAL") {
                     updatePayload.student_group = "GENERAL";
                 }
@@ -276,20 +362,15 @@
                     .update(updatePayload)
                     .eq('id', task.id);
 
-                if(error) {
-                    console.error(`Execution error for Student ID ${task.id}: ${error.message}`);
-                } else {
-                    processedCount++;
-                }
+                if(!error) processedCount++;
             }
 
             document.getElementById('cnt-queue').innerText = "Finished";
-            document.getElementById('status-tag').innerText = "Sync Completed";
+            document.getElementById('status-tag').innerText = "Batch Sync Completed";
             document.getElementById('status-tag').className = "bg-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider";
             
-            alert(`Success! Session migration finalized.\nSuccessfully processed modifications for ${processedCount} student profiles inside your system.`);
+            alert(`Success! Session batch upgrades committed.\nProcessed parameters clean-out configurations for ${processedCount} records.`);
             
-            // Reload visualization tracking registers
             await generatePromotionPreview();
             document.getElementById('btn-preview').disabled = false;
         }
