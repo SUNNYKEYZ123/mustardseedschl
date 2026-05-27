@@ -5,6 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local Admission Feed | Mustard Seed</title>
+    
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link class="no-print" rel="apple-touch-icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png">
+
+    <link class="no-print" rel="manifest" href='data:application/manifest+json,{
+        "name": "Mustard Seed Admission Desk",
+        "short_name": "MSS Live",
+        "start_url": ".",
+        "display": "standalone",
+        "background_color": "#0f172a",
+        "theme_color": "#0f172a",
+        "orientation": "portrait-primary",
+        "icons": [
+            {
+                "src": "https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any maskable"
+            }
+        ]
+    }'>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -30,6 +54,9 @@
         </div>
         
         <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <button id="pwaInstallBtn" class="hidden text-[10px] bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black uppercase tracking-wider px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-1.5 transition-all">
+                <i data-lucide="download-cloud" class="w-3.5 h-3.5"></i> Install App
+            </button>
             <div id="networkStatusBadge" class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest">
                 <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> Online
             </div>
@@ -139,6 +166,7 @@
         let _supabase;
         let audioPermissionArmed = false;
         let localAdmissionsLog = [];
+        let deferredAppPrompt = null;
 
         function initApp() {
             lucide.createIcons();
@@ -151,20 +179,22 @@
             // 2. Hydrate logs from hardware disk memory
             loadLocalHistoryCache();
 
-            // 3. Connect DB endpoint safely
+            // 3. Handle PWA installation engines
+            setupPWAEngine();
+
+            // 4. Connect DB endpoint safely
             try {
                 _supabase = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_TOKEN);
                 connectRealtimePipeline();
             } catch(e) { console.error("Database connection deferred offline."); }
         }
 
-        // MONITORS SYSTEM NETWORK CHANNELS IN REAL TIME
+        // MONITORS SYSTEM NETWORK CHANNELS IN REAL TIME & SYNCS RECENT ITEMS
         async function updateNetworkStatusIndicator() {
             const badge = document.getElementById('networkStatusBadge');
             if (navigator.onLine) {
                 badge.className = "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest";
                 badge.innerHTML = `<span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span> Online`;
-                // Automatically perform an online sync if connected to update history logs
                 if(_supabase) {
                     const { data } = await _supabase.from('students').select('*').order('created_at', { ascending: false }).limit(20);
                     if(data) data.reverse().forEach(record => saveRecordToLocalMemory(record, false));
@@ -172,6 +202,29 @@
             } else {
                 badge.className = "bg-rose-500/10 border border-rose-500/30 text-rose-400 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest";
                 badge.innerHTML = `<span class="w-2 h-2 bg-rose-400 rounded-full"></span> Offline Mode`;
+            }
+        }
+
+        // HANDLES COLD SYSTEM ONBOARDING FOR HOME SCREEN INSTALLATION
+        function setupPWAEngine() {
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredAppPrompt = e;
+                document.getElementById('pwaInstallBtn')?.classList.remove('hidden');
+            });
+
+            document.getElementById('pwaInstallBtn')?.addEventListener('click', async () => {
+                if (!deferredAppPrompt) return;
+                deferredAppPrompt.prompt();
+                const { outcome } = await deferredAppPrompt.userChoice;
+                if (outcome === 'accepted') document.getElementById('pwaInstallBtn').classList.add('hidden');
+                deferredAppPrompt = null;
+            });
+
+            if ('serviceWorker' in navigator) {
+                const swCode = 'self.addEventListener("fetch", function(e){});';
+                const blob = new Blob([swCode], {type: 'text/javascript'});
+                navigator.serviceWorker.register(URL.createObjectURL(blob), { scope: './' }).catch(()=>{});
             }
         }
 
@@ -196,12 +249,9 @@
                 .subscribe();
         }
 
-        // STORES INCOMING AND HISTORICAL PROFILES INTO HARD DISK MEMORY STORAGE
         function saveRecordToLocalMemory(student, shouldTriggerAlert) {
-            // Check for duplicate matching items
             if (localAdmissionsLog.some(item => item.id === student.id)) return;
 
-            // Push item up front and throttle max index array size to 50 items
             localAdmissionsLog.unshift(student);
             if (localAdmissionsLog.length > 50) localAdmissionsLog.pop();
 
@@ -228,7 +278,6 @@
             }
         }
 
-        // BUILDS THE LEFT SIDE LOG ITEMS DYNAMICALY
         function renderHistoryLogPanel() {
             const container = document.getElementById('offlineHistoryList');
             document.getElementById('logCounterBadge').innerText = localAdmissionsLog.length;
@@ -249,7 +298,6 @@
             `).join('');
         }
 
-        // DISPLAYS SELECT LOG ITEMS INTO THE DIGITAL PDF CARD CONTAINER VIEW
         function populateDocumentView(studentId) {
             const targetStudent = localAdmissionsLog.find(item => item.id === studentId);
             if (!targetStudent) return;
