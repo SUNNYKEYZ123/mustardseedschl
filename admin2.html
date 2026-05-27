@@ -9,8 +9,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
         
         /* Sidebar Responsive Classes */
         .sidebar { width: 260px; background: #0f172a; z-index: 100; transition: transform 0.3s ease-in-out; }
@@ -104,24 +104,14 @@
                 <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Institutional Overview & Real-Time Academic Metrics</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-10">
                 <div onclick="handleViewChange('directory')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-blue-200 transition-all duration-200 group">
                     <div>
-                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-1">Active Enrolled Students</p>
+                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-1">Total Enrolled Students</p>
                         <h3 id="dash-total-students" class="text-4xl font-extrabold text-slate-900 tracking-tight">0</h3>
                     </div>
                     <div class="p-3.5 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all duration-200">
                         <i data-lucide="users" class="w-6 h-6"></i>
-                    </div>
-                </div>
-
-                <div onclick="handleViewChange('directory'); filterDirectory('GRADUATED');" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-purple-200 transition-all duration-200 group">
-                    <div>
-                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-1">Graduated Alumni</p>
-                        <h3 id="dash-graduated-students" class="text-4xl font-extrabold text-purple-600 tracking-tight">0</h3>
-                    </div>
-                    <div class="p-3.5 bg-purple-50 text-purple-600 rounded-xl group-hover:bg-purple-600 group-hover:text-white transition-all duration-200">
-                        <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                     </div>
                 </div>
 
@@ -138,7 +128,7 @@
                 <div onclick="handleViewChange('engine')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-amber-200 transition-all duration-200 group">
                     <div>
                         <p class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-1">Operational Tracking</p>
-                        <h3 class="text-xl font-black text-amber-600 uppercase tracking-tight mt-2">Score Entry</h3>
+                        <h3 class="text-xl font-black text-amber-600 uppercase tracking-tight mt-2">Score Entry Room</h3>
                     </div>
                     <div class="p-3.5 bg-amber-50 text-amber-600 rounded-xl group-hover:bg-amber-500 group-hover:text-slate-950 transition-all duration-200">
                         <i data-lucide="award" class="w-6 h-6"></i>
@@ -184,7 +174,7 @@
                     <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Assign Academic Groups & Identification Records</p>
                 </div>
                 <div class="relative w-full sm:w-auto">
-                    <input type="text" id="dirSearchInput" oninput="filterDirectory(this.value)" placeholder="Search Name, ID, or Class..." class="px-4 py-2.5 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-medium w-full sm:w-64 tracking-wide focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="text" oninput="filterDirectory(this.value)" placeholder="Search Name or ID..." class="px-4 py-2.5 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-medium w-full sm:w-64 tracking-wide focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
             </div>
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-x-auto">
@@ -257,7 +247,12 @@
 
         <section id="view-engine" class="view-section">
             <div class="flex flex-wrap gap-4 mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
-                <div class="flex-1 min-w-[200px]">
+                <div class="flex-1 min-w-[150px]">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">Academic Calendar Session</label>
+                    <select id="engineSessionFilter" onchange="setSession(this.value)" class="w-full p-3 rounded-xl bg-purple-50 border-none ring-1 ring-purple-200 font-bold text-sm text-purple-700 focus:ring-2 focus:ring-purple-500 outline-none">
+                        </select>
+                </div>
+                <div class="flex-1 min-w-[150px]">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">Filter Allocation By Class</label>
                     <select id="engineClassFilter" onchange="filterByClass(this.value)" class="w-full p-3 rounded-xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                         <option value="ALL">All Enrolled Classes</option>
@@ -265,7 +260,7 @@
                         <option>SSS 1</option><option>SSS 2</option><option>SSS 3</option>
                     </select>
                 </div>
-                <div class="flex-1 min-w-[200px]">
+                <div class="flex-1 min-w-[150px]">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">Target Assessment Term</label>
                     <select id="engineTermFilter" onchange="setTerm(this.value)" class="w-full p-3 rounded-xl bg-blue-50 border-none ring-1 ring-blue-200 font-bold text-sm text-blue-700 focus:ring-2 focus:ring-blue-500 outline-none">
                         <option value="1">First Academic Term</option>
@@ -287,9 +282,10 @@
                     <div class="p-4 sm:p-6 bg-slate-900 text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800">
                         <div>
                             <h2 id="editName" class="text-lg sm:text-xl font-black uppercase leading-tight tracking-tight">---</h2>
-                            <div class="flex gap-2 items-center mt-1.5">
+                            <div class="flex flex-wrap gap-2 items-center mt-1.5">
                                 <span id="editClass" class="text-blue-400 text-[10px] font-black uppercase tracking-widest">---</span>
                                 <span id="editGroupTag" class="bg-slate-800 border border-slate-700 px-2 py-0.5 rounded text-[9px] font-black text-slate-300">---</span>
+                                <span id="activeSessionTag" class="bg-purple-600 px-2 py-0.5 rounded text-[9px] font-black text-white">SESSION ---</span>
                                 <span id="activeTermTag" class="bg-amber-500 px-2 py-0.5 rounded text-[9px] font-black text-slate-950">TERM 1</span>
                             </div>
                         </div>
@@ -358,9 +354,39 @@
         const SUPABASE_ANON_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
         
         const _supabase = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_TOKEN);
-        let students = [], curriculum = [], activeId = null, currentTerm = "1";
+        let students = [], curriculum = [], activeId = null, currentTerm = "1", currentSession = "";
 
-        async function init() { await loadData(); }
+        // Autogenerate session timeline based on contemporary deployment time
+        function setupSessionDropdown() {
+            const selectEl = document.getElementById('engineSessionFilter');
+            const currentYear = new Date().getFullYear(); // Gets calendar anchor layer (e.g. 2026)
+            
+            let optionsHTML = '';
+            // Generate historical buffers down to 2024 up to subsequent years ahead
+            for(let y = 2024; y <= currentYear + 3; y++) {
+                let valueStr = `${y}_${y+1}`;
+                let labelStr = `${y}/${y+1}`;
+                optionsHTML += `<option value="${valueStr}">${labelStr}</option>`;
+            }
+            selectEl.innerHTML = optionsHTML;
+
+            // Anchor selection state directly to current timeline default bracket
+            let defaultSessionVal = `${currentYear - 1}_${currentYear}`; // e.g. 2025_2026
+            
+            // Safety validation ensuring value fallback exits smoothly inside select boundaries
+            if (!selectEl.querySelector(`option[value="${defaultSessionVal}"]`)) {
+                defaultSessionVal = `${currentYear}_${currentYear + 1}`;
+            }
+            
+            selectEl.value = defaultSessionVal;
+            currentSession = defaultSessionVal;
+            document.getElementById('activeSessionTag').innerText = `SESSION ${defaultSessionVal.replace('_', '/')}`;
+        }
+
+        async function init() { 
+            setupSessionDropdown();
+            await loadData(); 
+        }
 
         async function loadData() {
             const { data: st } = await _supabase.from('students').select('*').order('full_name');
@@ -369,11 +395,9 @@
             curriculum = cu || [];
             
             calculateDashboardMetrics();
-            renderDirectory(students); 
+            renderDirectory(); 
             renderCurriculum(); 
-            // Score entry room should only show active student classes, hiding graduates
-            const activeStudents = students.filter(s => s.grade_level !== 'GRADUATED');
-            renderEngineList(activeStudents);
+            renderEngineList(students);
             lucide.createIcons();
         }
 
@@ -395,7 +419,6 @@
 
         function handleViewChange(viewName) {
             showView(viewName);
-            // Auto close the sidebar menu if we are executing views on a mobile viewport
             const sidebar = document.getElementById('admin-sidebar');
             if (sidebar.classList.contains('mobile-open')) {
                 toggleMobileSidebar();
@@ -403,12 +426,7 @@
         }
 
         function calculateDashboardMetrics() {
-            // Count active students (excluding GRADUATED tier)
-            const activeCount = students.filter(s => s.grade_level !== 'GRADUATED').length;
-            const graduatedCount = students.filter(s => s.grade_level === 'GRADUATED').length;
-            
-            document.getElementById('dash-total-students').innerText = activeCount;
-            document.getElementById('dash-graduated-students').innerText = graduatedCount;
+            document.getElementById('dash-total-students').innerText = students.length;
             document.getElementById('dash-total-subjects').innerText = curriculum.length;
             
             document.getElementById('count-jss1').innerText = students.filter(s => s.grade_level === 'JSS 1').length;
@@ -438,28 +456,30 @@
             if(activeId) openEditor(activeId);
         }
 
+        function setSession(s) {
+            currentSession = s;
+            document.getElementById('activeSessionTag').innerText = `SESSION ${s.replace('_', '/')}`;
+            if(activeId) openEditor(activeId);
+        }
+
         function filterByClass(cls) {
-            const list = cls === "ALL" ? students.filter(s => s.grade_level !== 'GRADUATED') : students.filter(s => s.grade_level === cls);
+            const list = cls === "ALL" ? students : students.filter(s => s.grade_level === cls);
             renderEngineList(list);
         }
 
-        function renderDirectory(list) {
-            document.getElementById('directoryTable').innerHTML = list.map(s => {
-                const isGrad = s.grade_level === 'GRADUATED';
-                const classBadge = isGrad ? 'bg-purple-100 text-purple-800 font-extrabold' : 'text-slate-500 font-medium';
-                return `
-                    <tr class="hover:bg-slate-50/80 transition-colors">
-                        <td class="p-4 font-mono text-blue-600 font-bold">MS-${s.id.substring(0,5)}</td>
-                        <td class="p-4 tracking-wide font-semibold text-slate-800">${s.full_name}</td>
-                        <td class="p-4"><span class="px-2 py-0.5 rounded text-xs ${classBadge}">${s.grade_level || '---'}</span></td>
-                        <td class="p-4"><span class="px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold tracking-wider text-slate-600">${s.student_group || 'GENERAL'}</span></td>
-                        <td class="p-4 text-right flex justify-end gap-2">
-                            <button onclick="openGroupModal('${s.id}', '${s.full_name}', '${s.student_group}')" class="p-2 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-600 transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                            <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+        function renderDirectory() {
+            document.getElementById('directoryTable').innerHTML = students.map(s => `
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="p-4 font-mono text-blue-600 font-bold">MS-${s.id.substring(0,5)}</td>
+                    <td class="p-4 tracking-wide font-semibold text-slate-800">${s.full_name}</td>
+                    <td class="p-4 text-slate-500 font-medium">${s.grade_level || '---'}</td>
+                    <td class="p-4"><span class="px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold tracking-wider text-slate-600">${s.student_group || 'GENERAL'}</span></td>
+                    <td class="p-4 text-right flex justify-end gap-2">
+                        <button onclick="openGroupModal('${s.id}', '${s.full_name}', '${s.student_group}')" class="p-2 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-600 transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                        <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                </tr>
+            `).join('');
             lucide.createIcons();
         }
 
@@ -504,10 +524,22 @@
             
             const allowed = curriculum.filter(c => c.class_name === s.grade_level && (c.subject_group === 'GENERAL' || c.subject_group === sGroup));
             const termKey = `term${currentTerm}`;
-            const existingScores = s.term_data?.[termKey] || [];
+            
+            // Extract the session wrapper, fallback cleanly if structure is completely brand new
+            const sessionData = s.term_data?.[currentSession] || {};
+            const existingScores = sessionData[termKey] || [];
 
             document.getElementById('scoreRows').innerHTML = allowed.map(cs => {
-                const score = existingScores.find(e => e.name === cs.subject_name) || { test: "-", exam: "-" };
+                const score = existingScores.find(e => e.name === cs.subject_name) || { test: "", exam: "" };
+                
+                // Convert 0 values to visual empty spaces so placeholders are exposed nicely
+                let testVal = (score.test === 0 || score.test === "0") ? "" : score.test;
+                let examVal = (score.exam === 0 || score.exam === "0") ? "" : score.exam;
+                
+                // If the old data explicitly stored a literal dash, empty it to reveal the placeholder cleanly
+                if(testVal === "-") testVal = "";
+                if(examVal === "-") examVal = "";
+
                 return `
                     <tr class="bg-slate-50/50 border-b border-white hover:bg-slate-50 transition-colors">
                         <td class="p-4">
@@ -515,16 +547,15 @@
                             <span class="text-[10px] text-slate-400 font-medium block mt-0.5">${cs.assigned_teacher || 'No Instructor Assigned'}</span>
                         </td>
                         <td class="p-3">
-                            <input type="text" data-subject="${cs.subject_name}" value="${score.test}" placeholder="-" class="st w-full p-2.5 rounded-lg bg-white border border-slate-200 text-center font-black text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all">
+                            <input type="text" data-subject="${cs.subject_name}" value="${testVal}" placeholder="- " class="st w-full p-2.5 rounded-lg bg-white border border-slate-200 text-center font-black text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all">
                         </td>
                         <td class="p-3">
-                            <input type="text" data-subject="${cs.subject_name}" value="${score.exam}" placeholder="-" class="se w-full p-2.5 rounded-lg bg-white border border-slate-200 text-center font-black text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all">
+                            <input type="text" data-subject="${cs.subject_name}" value="${examVal}" placeholder="- " class="se w-full p-2.5 rounded-lg bg-white border border-slate-200 text-center font-black text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all">
                         </td>
                     </tr>
                 `;
             }).join('');
             
-            // On small viewports, automatically scroll smoothly down to the score editor form when a student is tapped
             if(window.innerWidth < 1024) {
                 document.getElementById('editorPanel').scrollIntoView({ behavior: 'smooth' });
             }
@@ -536,25 +567,61 @@
             const termKey = `term${currentTerm}`;
             const termScores = [];
             
+            let marksValidationError = false;
+            let validationErrorMessage = "";
+
             document.querySelectorAll('#scoreRows tr').forEach(row => {
                 const testInput = row.querySelector('.st');
                 const examInput = row.querySelector('.se');
                 
-                if (testInput && examInput) {
+                if (testInput && examInput && !marksValidationError) {
                     const subjectName = testInput.getAttribute('data-subject');
-                    const testRaw = testInput.value;
-                    const examRaw = examInput.value;
+                    const testRaw = testInput.value.trim();
+                    const examRaw = examInput.value.trim();
                     
+                    // Validation Rule Check: Convert input fields or dynamic dashes to zero numeric types
+                    let testNum = (testRaw === "-" || testRaw === "") ? 0 : parseFloat(testRaw);
+                    let examNum = (examRaw === "-" || examRaw === "") ? 0 : parseFloat(examRaw);
+
+                    // Ensure literal character inputs are mapped to absolute zeros rather than broken NaN values
+                    if (isNaN(testNum)) testNum = 0;
+                    if (isNaN(examNum)) examNum = 0;
+
+                    // Hard Ceiling Validation: Enforce strict boundaries (Max 30 for Test, Max 70 for Exams)
+                    if (testNum > 30) {
+                        marksValidationError = true;
+                        validationErrorMessage = `Inadmissible entry detected for ${subjectName}:\nContinuous Assessment (Test) marks cannot exceed 30! You entered ${testRaw}. Changes discarded.`;
+                        testInput.focus();
+                        testInput.classList.add('border-red-500', 'ring-2', 'ring-red-100');
+                        return;
+                    }
+                    if (examNum > 70) {
+                        marksValidationError = true;
+                        validationErrorMessage = `Inadmissible entry detected for ${subjectName}:\nFinal Examination marks cannot exceed 70! You entered ${examRaw}. Changes discarded.`;
+                        examInput.focus();
+                        examInput.classList.add('border-red-500', 'ring-2', 'ring-red-100');
+                        return;
+                    }
+
                     termScores.push({
                         name: subjectName,
-                        test: testRaw === "-" || testRaw === "" ? 0 : parseFloat(testRaw),
-                        exam: examRaw === "-" || examRaw === "" ? 0 : parseFloat(examRaw)
+                        test: testNum,
+                        exam: examNum
                     });
                 }
             });
 
+            // Prevent synchronization if validation error triggers
+            if (marksValidationError) {
+                alert(validationErrorMessage);
+                return;
+            }
+
+            // Construct structural session-nesting map safely inside Supabase record object
             if(!s.term_data) s.term_data = {};
-            s.term_data[termKey] = termScores;
+            if(!s.term_data[currentSession]) s.term_data[currentSession] = {};
+            
+            s.term_data[currentSession][termKey] = termScores;
 
             const { error } = await _supabase.from('students').update({ 
                 term_data: s.term_data,
@@ -609,18 +676,29 @@
             } 
         }
         
-        function filterEngine(v) { 
-            const activeStudents = students.filter(s => s.grade_level !== 'GRADUATED');
-            renderEngineList(activeStudents.filter(s => s.full_name.toLowerCase().includes(v.toLowerCase()))); 
-        }
-        
+        function filterEngine(v) { renderEngineList(students.filter(s => s.full_name.toLowerCase().includes(v.toLowerCase()))); }
         function filterDirectory(v) {
             const filtered = students.filter(s => 
                 s.full_name.toLowerCase().includes(v.toLowerCase()) || 
-                s.id.toLowerCase().includes(v.toLowerCase()) ||
-                s.grade_level.toLowerCase().includes(v.toLowerCase())
+                s.id.toLowerCase().includes(v.toLowerCase())
             );
-            renderDirectory(filtered);
+            renderDirectoryFiltered(filtered);
+        }
+
+        function renderDirectoryFiltered(list) {
+            document.getElementById('directoryTable').innerHTML = list.map(s => `
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="p-4 font-mono text-blue-600 font-bold">MS-${s.id.substring(0,5)}</td>
+                    <td class="p-4 tracking-wide font-semibold text-slate-800">${s.full_name}</td>
+                    <td class="p-4 text-slate-500 font-medium">${s.grade_level || '---'}</td>
+                    <td class="p-4"><span class="px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold tracking-wider text-slate-600">${s.student_group || 'GENERAL'}</span></td>
+                    <td class="p-4 text-right flex justify-end gap-2">
+                        <button onclick="openGroupModal('${s.id}', '${s.full_name}', '${s.student_group}')" class="p-2 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-600 transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                        <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
         }
 
         function handleLogout() { 
