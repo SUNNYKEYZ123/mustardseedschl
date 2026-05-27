@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Promotion Control Center | Mustard Seed</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            letter-spacing: -0.01em;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-900 antialiased p-4 sm:p-6 lg:p-8">
+
+    <div class="max-w-6xl mx-auto">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" class="h-10 w-10" alt="MSS Logo">
+                    <h1 class="text-xl sm:text-2xl font-extrabold uppercase text-slate-900 tracking-tight">Session Promotion Control</h1>
+                </div>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Automated End-of-Year Academic Migration Engine</p>
+            </div>
+            <a href="admin.html" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-xs">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-8 flex flex-col md:flex-row gap-5 items-start">
+            <div class="p-3 bg-amber-500 text-white rounded-xl shadow-md shrink-0">
+                <i data-lucide="shield-alert" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h3 class="font-extrabold text-sm text-amber-950 uppercase tracking-wide mb-1">Database Modification Disclaimer</h3>
+                <p class="text-amber-800 text-xs font-medium leading-relaxed max-w-3xl">
+                    This automated engine promotes active student populations forward by one academic step (e.g., JSS3 to SSS1, SSS3 to GRADUATED). Running this process will **clear existing term score arrays and teacher remarks** for selected students to initialize the upcoming session. Run a simulation check first.
+                </p>
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <button onclick="generatePromotionPreview()" id="btn-preview" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md transition">
+                        1. Generate Promotion Preview
+                    </button>
+                    <button onclick="executeBatchPromotion()" id="btn-execute" disabled class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md transition disabled:opacity-40 disabled:cursor-not-allowed">
+                        2. Commit Session Upgrades
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="summary-cards" class="hidden grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Evaluated</span>
+                <span id="cnt-total" class="text-2xl font-extrabold text-slate-800 tracking-tight block mt-0.5">0</span>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">To Be Promoted</span>
+                <span id="cnt-promoted" class="text-2xl font-extrabold text-emerald-600 tracking-tight block mt-0.5">0</span>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">To Graduate</span>
+                <span id="cnt-graduated" class="text-2xl font-extrabold text-blue-600 tracking-tight block mt-0.5">0</span>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">BECE to SSS 1</span>
+                <span id="cnt-bece" class="text-2xl font-extrabold text-purple-600 tracking-tight block mt-0.5">0</span>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Skipped/No Class</span>
+                <span id="cnt-skipped" class="text-2xl font-extrabold text-amber-600 tracking-tight block mt-0.5">0</span>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-xs">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Execution Queue</span>
+                <span id="cnt-queue" class="text-2xl font-extrabold text-slate-900 tracking-tight block mt-0.5">Ready</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="p-5 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center">
+                <h3 class="font-bold text-xs uppercase tracking-wider text-slate-500">Student Migration Mapping Register</h3>
+                <span id="status-tag" class="bg-slate-200 text-slate-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Idle Mode</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[700px]">
+                    <thead class="bg-slate-50 text-[11px] uppercase font-bold text-slate-400 tracking-wider border-b border-slate-100">
+                        <tr>
+                            <th class="p-4">Reg ID</th>
+                            <th class="p-4">Student Name</th>
+                            <th class="p-4 text-center">Current Class</th>
+                            <th class="p-4 text-center"></th>
+                            <th class="p-4 text-center">Target Class Upgrade</th>
+                            <th class="p-4">Meta Group Restructure</th>
+                            <th class="p-4 text-right">Data Operations</th>
+                        </tr>
+                    </thead>
+                    <tbody id="previewTable" class="divide-y divide-slate-100 text-[14px] text-slate-700">
+                        <tr>
+                            <td colspan="7" class="p-12 text-center font-medium text-slate-400 italic">
+                                Click "Generate Promotion Preview" above to query Supabase records and check alignment.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Core Connection Logic
+        const SUPABASE_PROJECT_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
+        const SUPABASE_ANON_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
+        
+        const _supabase = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_TOKEN);
+        let rawStudentsList = [];
+        let executionMapQueue = [];
+
+        // Definition Matrix for Academic Forward Steps
+        const promotionMatrix = {
+            'JSS 1': 'JSS 2',
+            'JSS 2': 'JSS 3',
+            'JSS 3': 'SSS 1', // BECE Progression Point
+            'SSS 1': 'SSS 2',
+            'SSS 2': 'SSS 3',
+            'SSS 3': 'GRADUATED' // Final Graduation Point
+        };
+
+        window.onload = function() {
+            lucide.createIcons();
+        }
+
+        // STEP 1: Process and Analyze structural targets without executing modifications
+        async function generatePromotionPreview() {
+            document.getElementById('status-tag').innerText = "Querying Records...";
+            document.getElementById('status-tag').className = "bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider";
+            
+            const { data, error } = await _supabase.from('students').select('*').order('full_name');
+            
+            if(error) {
+                alert("Supabase Fetch Error: " + error.message);
+                return;
+            }
+
+            rawStudentsList = data || [];
+            executionMapQueue = [];
+
+            let metrics = { total: rawStudentsList.length, promoted: 0, graduated: 0, bece: 0, skipped: 0 };
+
+            rawStudentsList.forEach(student => {
+                let currentClass = student.grade_level;
+                let targetClass = promotionMatrix[currentClass] || null;
+                let actionNeeded = "UPDATE";
+                let groupChange = "MAINTAIN CURRENT";
+
+                if (!targetClass) {
+                    actionNeeded = "SKIP";
+                    metrics.skipped++;
+                } else if (targetClass === "GRADUATED") {
+                    metrics.graduated++;
+                } else if (currentClass === "JSS 3") {
+                    metrics.bece++;
+                    metrics.promoted++;
+                    groupChange = "RESET TO GENERAL"; // Re-evaluate core tracks at Senior Levels
+                } else {
+                    metrics.promoted++;
+                }
+
+                executionMapQueue.push({
+                    id: student.id,
+                    name: student.full_name,
+                    oldClass: currentClass,
+                    newClass: targetClass || currentClass,
+                    action: actionNeeded,
+                    groupAction: groupChange,
+                    currentGroup: student.student_group || 'GENERAL'
+                });
+            });
+
+            // Update UI Counters
+            document.getElementById('cnt-total').innerText = metrics.total;
+            document.getElementById('cnt-promoted').innerText = metrics.promoted;
+            document.getElementById('cnt-graduated').innerText = metrics.graduated;
+            document.getElementById('cnt-bece').innerText = metrics.bece;
+            document.getElementById('cnt-skipped').innerText = metrics.skipped;
+            
+            document.getElementById('summary-cards').classList.remove('hidden');
+
+            // Render Preview Table
+            renderPreviewRows();
+
+            // Enable processing authorization
+            document.getElementById('btn-execute').disabled = false;
+            document.getElementById('status-tag').innerText = "Preview Active";
+            document.getElementById('status-tag').className = "bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider";
+        }
+
+        function renderPreviewRows() {
+            const tableBody = document.getElementById('previewTable');
+            if(executionMapQueue.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">No active students identified for processing queue.</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = executionMapQueue.map(item => {
+                let badgeClass = "bg-slate-100 text-slate-700";
+                if(item.action === "SKIP") badgeClass = "bg-rose-50 text-rose-600 font-bold";
+                if(item.newClass === "GRADUATED") badgeClass = "bg-blue-50 text-blue-600 font-bold";
+                if(item.oldClass === "JSS 3") badgeClass = "bg-purple-50 text-purple-600 font-bold";
+
+                return `
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                        <td class="p-4 font-mono text-xs font-bold text-blue-600">MS-${item.id.substring(0,5)}</td>
+                        <td class="p-4 font-bold text-slate-800 tracking-wide uppercase text-xs">${item.name}</td>
+                        <td class="p-4 text-center font-bold text-slate-500 text-xs">${item.oldClass || 'UNASSIGNED'}</td>
+                        <td class="p-4 text-center text-slate-300"><i data-lucide="chevrons-right" class="w-4 h-4 mx-auto"></i></td>
+                        <td class="p-4 text-center"><span class="px-2.5 py-1 rounded-xl text-xs ${badgeClass}">${item.newClass}</span></td>
+                        <td class="p-4">
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded ${item.groupAction.includes('RESET') ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-600'}">
+                                ${item.groupAction === 'RESET TO GENERAL' ? 'RESET (GENERAL)' : item.currentGroup}
+                            </span>
+                        </td>
+                        <td class="p-4 text-right font-bold text-[11px] uppercase ${item.action === 'SKIP' ? 'text-amber-500' : 'text-emerald-500'}">
+                            ${item.action === 'SKIP' ? 'No Action' : 'Wipe Logs & Advance'}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // STEP 2: Loop over evaluated items and execute batch update updates down to Supabase storage
+        async function executeBatchPromotion() {
+            if(executionMapQueue.length === 0) return;
+            
+            const doubleCheck = confirm("CRITICAL OPERATION:\n\nAre you absolutely positive you want to commit these promotions to the live database?\nThis will clear current term scores for promoted students to start the new session fresh.");
+            if(!doubleCheck) return;
+
+            document.getElementById('btn-preview').disabled = true;
+            document.getElementById('btn-execute').disabled = true;
+            document.getElementById('status-tag').innerText = "Processing Updates...";
+            document.getElementById('status-tag').className = "bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider";
+
+            let processedCount = 0;
+            let totalQueueItems = executionMapQueue.filter(i => i.action === "UPDATE").length;
+
+            for(let i = 0; i < executionMapQueue.length; i++) {
+                let task = executionMapQueue[i];
+                
+                if(task.action === "SKIP") continue;
+
+                document.getElementById('cnt-queue').innerText = `${processedCount + 1} / ${totalQueueItems}`;
+
+                // Construct blank payload for upcoming academic session
+                let updatePayload = {
+                    grade_level: task.newClass,
+                    term_data: {}, // Erases all score sheets cleanly for terms 1, 2, and 3
+                    teacher_remark: "" // Erases general comment register
+                };
+
+                // Handle clear action down on JSS3 Concentration flags tracking up to SSS level
+                if(task.groupAction === "RESET TO GENERAL") {
+                    updatePayload.student_group = "GENERAL";
+                }
+
+                const { error } = await _supabase
+                    .from('students')
+                    .update(updatePayload)
+                    .eq('id', task.id);
+
+                if(error) {
+                    console.error(`Execution error for Student ID ${task.id}: ${error.message}`);
+                } else {
+                    processedCount++;
+                }
+            }
+
+            document.getElementById('cnt-queue').innerText = "Finished";
+            document.getElementById('status-tag').innerText = "Sync Completed";
+            document.getElementById('status-tag').className = "bg-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider";
+            
+            alert(`Success! Session migration finalized.\nSuccessfully processed modifications for ${processedCount} student profiles inside your system.`);
+            
+            // Reload visualization tracking registers
+            await generatePromotionPreview();
+            document.getElementById('btn-preview').disabled = false;
+        }
+    </script>
+</body>
+</html>
