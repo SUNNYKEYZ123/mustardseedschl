@@ -29,7 +29,7 @@
                 <i data-lucide="volume-2" class="text-amber-400 w-3.5 h-3.5"></i> Test Voice
             </button>
 
-            <button id="armMonitorBtn" onclick="armLiveSpeechEngine()" class="text-[10px] bg-red-600 hover:bg-red-700 border border-red-500 font-black uppercase tracking-wider px-4 py-1.5 rounded-xl flex items-center gap-1.5 shadow-lg transition-all animate-pulse">
+            <button id="armMonitorBtn" onclick="toggleMonitorState()" class="text-[10px] bg-red-600 hover:bg-red-700 border border-red-500 font-black uppercase tracking-wider px-4 py-1.5 rounded-xl flex items-center gap-1.5 shadow-lg transition-all animate-pulse">
                 <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Tap to Arm Monitor
             </button>
 
@@ -128,6 +128,7 @@
         function initApp() {
             lucide.createIcons();
             loadLocalHistoryCache();
+            checkSavedArmedStatus(); // Check if it was green before reload
 
             try {
                 _supabase = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_TOKEN);
@@ -158,16 +159,41 @@
             }
         }
 
-        // UNLOCKS BROWSER PERMISSIONS ON CLICK
-        function armLiveSpeechEngine() {
-            isEngineArmed = true;
-            
+        // LOOKS AT STORAGE TO SEE IF IT SHOULD AUTO-ARM
+        function checkSavedArmedStatus() {
+            const savedState = localStorage.getItem('mss_monitor_armed');
+            if (savedState === 'true') {
+                setButtonToArmedVisuals();
+                isEngineArmed = true;
+            }
+        }
+
+        function setButtonToArmedVisuals() {
             const btn = document.getElementById('armMonitorBtn');
             btn.className = "text-[10px] bg-emerald-600 border border-emerald-500 text-white font-bold px-4 py-1.5 rounded-xl flex items-center gap-1.5 transition-all";
             btn.innerHTML = `<i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Monitor Fully Armed`;
             lucide.createIcons();
+        }
 
-            triggerVoiceNotification("Admission feed monitor is fully armed and listening.");
+        function setButtonToDisarmedVisuals() {
+            const btn = document.getElementById('armMonitorBtn');
+            btn.className = "text-[10px] bg-red-600 hover:bg-red-700 border border-red-500 font-black uppercase tracking-wider px-4 py-1.5 rounded-xl flex items-center gap-1.5 shadow-lg transition-all animate-pulse";
+            btn.innerHTML = `<i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Tap to Arm Monitor`;
+            lucide.createIcons();
+        }
+
+        // TOGGLES STATE AND SAVES TO MEMORY
+        function toggleMonitorState() {
+            if (!isEngineArmed) {
+                isEngineArmed = true;
+                localStorage.setItem('mss_monitor_armed', 'true');
+                setButtonToArmedVisuals();
+                triggerVoiceNotification("Admission feed monitor is fully armed and listening.");
+            } else {
+                isEngineArmed = false;
+                localStorage.setItem('mss_monitor_armed', 'false');
+                setButtonToDisarmedVisuals();
+            }
         }
 
         function testSystemVoice() {
@@ -179,12 +205,9 @@
             _supabase
                 .channel('realtime-admission-hook')
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'students' }, (payload) => {
-                    console.log("Captured submission:", payload.new);
                     saveRecordToLocalMemory(payload.new, true);
                 })
-                .subscribe((status) => {
-                    console.log("Pipeline status:", status);
-                });
+                .subscribe();
         }
 
         function saveRecordToLocalMemory(student, shouldTriggerAlert) {
@@ -199,11 +222,11 @@
             if (shouldTriggerAlert) {
                 const studentName = student.full_name || "A new student";
                 
-                // Fallback explicit notice banner
-                alert(`🔔 NEW ADMISSION ENROLLED:\n${studentName}\nClass: ${student.grade_level || 'General'}`);
-                
-                // Audio announce execution loop
-                triggerVoiceNotification(`Attention! ${studentName} has just registered.`);
+                // Only trigger sound/popup if armed status matches true
+                if (isEngineArmed) {
+                    alert(`🔔 NEW ADMISSION ENROLLED:\n${studentName}\nClass: ${student.grade_level || 'General'}`);
+                    triggerVoiceNotification(`Attention! ${studentName} has just registered.`);
+                }
                 
                 populateDocumentView(student.id);
             }
