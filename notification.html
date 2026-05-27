@@ -26,7 +26,7 @@
         
         <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
             <button onclick="testSystemVoice()" class="text-[10px] bg-slate-700 hover:bg-slate-600 border border-slate-600 font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all">
-                <i data-lucide="volume-2" class="text-amber-400 w-3.5 h-3.5"></i> Test Voice
+                <i data-lucide="volume-2" class="text-amber-400 w-3.5 h-3.5"></i> Test Force Notification
             </button>
 
             <button id="armMonitorBtn" onclick="toggleMonitorState()" class="text-[10px] bg-red-600 hover:bg-red-700 border border-red-500 font-black uppercase tracking-wider px-4 py-1.5 rounded-xl flex items-center gap-1.5 shadow-lg transition-all animate-pulse">
@@ -34,7 +34,7 @@
             </button>
 
             <div id="networkStatusBadge" class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-widest">
-                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> Connected
+                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span> Pipeline Connected
             </div>
         </div>
     </header>
@@ -56,7 +56,7 @@
                     <i data-lucide="radio" class="w-6 h-6 animate-pulse text-blue-500"></i>
                 </div>
                 <h3 class="text-sm font-bold text-slate-300">Awaiting Live Admissions</h3>
-                <p class="text-xs text-slate-500 mt-1">When a student submits their form, the desk will announce it out loud and load their card here.</p>
+                <p class="text-xs text-slate-500 mt-1">When a student submits their form, the desk will alert out loud and drop the notification banner instantly.</p>
             </div>
 
             <div id="admissionDocumentContainer" class="w-full bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 hidden relative">
@@ -128,7 +128,7 @@
         function initApp() {
             lucide.createIcons();
             loadLocalHistoryCache();
-            checkSavedArmedStatus(); // Check if it was green before reload
+            checkSavedArmedStatus();
 
             try {
                 _supabase = supabase.createClient(SUPABASE_PROJECT_URL, SUPABASE_ANON_TOKEN);
@@ -159,7 +159,6 @@
             }
         }
 
-        // LOOKS AT STORAGE TO SEE IF IT SHOULD AUTO-ARM
         function checkSavedArmedStatus() {
             const savedState = localStorage.getItem('mss_monitor_armed');
             if (savedState === 'true') {
@@ -182,7 +181,6 @@
             lucide.createIcons();
         }
 
-        // TOGGLES STATE AND SAVES TO MEMORY
         function toggleMonitorState() {
             if (!isEngineArmed) {
                 isEngineArmed = true;
@@ -198,16 +196,35 @@
 
         function testSystemVoice() {
             triggerVoiceNotification("Testing voice alert channels.");
-            alert("Test Window: Notification popup pathways are functional!");
+            alert("Test Banner: Notification popup display pathway functional!");
         }
 
+        // ARMORED PIPELINE: Realtime triggers an internal direct query request to fetch the clean data
         function connectRealtimePipeline() {
             _supabase
                 .channel('realtime-admission-hook')
-                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'students' }, (payload) => {
-                    saveRecordToLocalMemory(payload.new, true);
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'students' }, async (payload) => {
+                    console.log("Realtime raw sync event caught:", payload);
+                    
+                    // Fallback to manual target select query if payload object fields are anonymized
+                    if (payload.new && payload.new.id) {
+                        fetchSpecificTargetRecord(payload.new.id);
+                    } else {
+                        // Extreme recovery mode: refetch last record if ID is blank
+                        const { data } = await _supabase.from('students').select('*').order('created_at', { ascending: false }).limit(1);
+                        if (data && data[0]) saveRecordToLocalMemory(data[0], true);
+                    }
                 })
                 .subscribe();
+        }
+
+        async function fetchSpecificTargetRecord(rowId) {
+            try {
+                const { data, error } = await _supabase.from('students').select('*').eq('id', rowId).single();
+                if (!error && data) {
+                    saveRecordToLocalMemory(data, true);
+                }
+            } catch (e) { console.error(e); }
         }
 
         function saveRecordToLocalMemory(student, shouldTriggerAlert) {
@@ -222,13 +239,14 @@
             if (shouldTriggerAlert) {
                 const studentName = student.full_name || "A new student";
                 
-                // Only trigger sound/popup if armed status matches true
+                populateDocumentView(student.id);
+
                 if (isEngineArmed) {
+                    // Show banner popup box
                     alert(`🔔 NEW ADMISSION ENROLLED:\n${studentName}\nClass: ${student.grade_level || 'General'}`);
+                    // Trigger sound voice out loud
                     triggerVoiceNotification(`Attention! ${studentName} has just registered.`);
                 }
-                
-                populateDocumentView(student.id);
             }
         }
 
