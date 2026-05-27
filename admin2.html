@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .sidebar { width: 260px; background: #0f172a; z-index: 50; }
         .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; color: #94a3b8; transition: all 0.2s ease-in-out; font-weight: 700; font-size: 13px; width: 100%; text-align: left; }
@@ -32,7 +32,10 @@
         </div>
         
         <nav class="space-y-2 flex-1">
-            <button onclick="showView('directory')" id="btn-directory" class="nav-link active">
+            <button onclick="showView('dashboard')" id="btn-dashboard" class="nav-link active">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+            </button>
+            <button onclick="showView('directory')" id="btn-directory" class="nav-link">
                 <i data-lucide="users" class="w-4 h-4"></i> Students List
             </button>
             <button onclick="showView('curriculum')" id="btn-curriculum" class="nav-link">
@@ -65,14 +68,83 @@
 
     <main class="flex-1 ml-[260px] p-8">
         
-        <section id="view-directory" class="view-section active">
+        <section id="view-dashboard" class="view-section active">
+            <div class="mb-8">
+                <h1 class="text-3xl font-black uppercase text-slate-900 tracking-tight">Main Dashboard</h1>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Institutional Overview & Real-Time Academic Metrics</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                <div onclick="showView('directory')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-blue-200 transition-all duration-200 group">
+                    <div>
+                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-1">Total Enrolled Students</p>
+                        <h3 id="dash-total-students" class="text-4xl font-extrabold text-slate-900 tracking-tight">0</h3>
+                    </div>
+                    <div class="p-3.5 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-blue-600 group-hover:text-white transition-all duration-200">
+                        <i data-lucide="users" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div onclick="showView('curriculum')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-emerald-200 transition-all duration-200 group">
+                    <div>
+                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-1">Configured Courses</p>
+                        <h3 id="dash-total-subjects" class="text-4xl font-extrabold text-slate-900 tracking-tight">0</h3>
+                    </div>
+                    <div class="p-3.5 bg-emerald-50 text-emerald-600 rounded-xl group-hover:bg-emerald-600 group-hover:text-white transition-all duration-200">
+                        <i data-lucide="book-open" class="w-6 h-6"></i>
+                    </div>
+                </div>
+
+                <div onclick="showView('engine')" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-amber-200 transition-all duration-200 group">
+                    <div>
+                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-wider mb-1">Operational Tracking</p>
+                        <h3 class="text-xl font-black text-amber-600 uppercase tracking-tight mt-2">Score Entry Room</h3>
+                    </div>
+                    <div class="p-3.5 bg-amber-50 text-amber-600 rounded-xl group-hover:bg-amber-500 group-hover:text-slate-950 transition-all duration-200">
+                        <i data-lucide="award" class="w-6 h-6"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="text-xs font-black uppercase tracking-widest text-slate-400 mb-4">Class Distribution Breakdown</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div onclick="showView('engine'); document.getElementById('engineClassFilter').value = 'JSS 1'; filterByClass('JSS 1');" class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm cursor-pointer hover:border-blue-400 transition-all">
+                        <span class="text-[10px] font-black text-slate-400 tracking-wider block">JSS 1</span>
+                        <span id="count-jss1" class="text-2xl font-black text-slate-800 tracking-tight block mt-1">0</span>
+                    </div>
+                    <div onclick="showView('engine'); document.getElementById('engineClassFilter').value = 'JSS 2'; filterByClass('JSS 2');" class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm cursor-pointer hover:border-blue-400 transition-all">
+                        <span class="text-[10px] font-black text-slate-400 tracking-wider block">JSS 2</span>
+                        <span id="count-jss2" class="text-2xl font-black text-slate-800 tracking-tight block mt-1">0</span>
+                    </div>
+                    <div onclick="showView('engine'); document.getElementById('engineClassFilter').value = 'JSS 3'; filterByClass('JSS 3');" class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm cursor-pointer hover:border-blue-400 transition-all">
+                        <span class="text-[10px] font-black text-slate-400 tracking-wider block">JSS 3</span>
+                        <span id="count-jss3" class="text-2xl font-black text-slate-800 tracking-tight block mt-1">0</span>
+                    </div>
+                    <div onclick="showView('engine'); document.getElementById('engineClassFilter').value = 'SSS 1'; filterByClass('SSS 1');" class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm cursor-pointer hover:border-blue-400 transition-all">
+                        <span class="text-[10px] font-black text-slate-400 tracking-wider block">SSS 1</span>
+                        <span id="count-sss1" class="text-2xl font-black text-slate-800 tracking-tight block mt-1">0</span>
+                    </div>
+                    <div onclick="showView('engine'); document.getElementById('engineClassFilter').value = 'SSS 2'; filterByClass('SSS 2');" class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm cursor-pointer hover:border-blue-400 transition-all">
+                        <span class="text-[10px] font-black text-slate-400 tracking-wider block">SSS 2</span>
+                        <span id="count-sss2" class="text-2xl font-black text-slate-800 tracking-tight block mt-1">0</span>
+                    </div>
+                    <div onclick="showView('engine'); document.getElementById('engineClassFilter').value = 'SSS 3'; filterByClass('SSS 3');" class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm cursor-pointer hover:border-blue-400 transition-all">
+                        <span class="text-[10px] font-black text-slate-400 tracking-wider block">SSS 3</span>
+                        <span id="count-sss3" class="text-2xl font-black text-slate-800 tracking-tight block mt-1">0</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="view-directory" class="view-section">
             <div class="flex justify-between items-end mb-8">
                 <div>
                     <h1 class="text-3xl font-black uppercase text-slate-900 tracking-tight">Directory</h1>
                     <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Assign Academic Groups & Identification Records</p>
                 </div>
                 <div class="relative">
-                    <input type="text" oninput="filterDirectory(this.value)" placeholder="Search Name or ID..." class="px-4 py-2.5 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-bold w-64 uppercase tracking-wide focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="text" oninput="filterDirectory(this.value)" placeholder="Search Name or ID..." class="px-4 py-2.5 rounded-xl border-none shadow-sm ring-1 ring-slate-200 text-sm font-medium w-64 tracking-wide focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
             </div>
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
@@ -86,7 +158,7 @@
                             <th class="p-4 text-right">Administrative Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="directoryTable" class="divide-y divide-slate-100 uppercase text-[11px] font-bold text-slate-700"></tbody>
+                    <tbody id="directoryTable" class="divide-y divide-slate-100 text-[13px] font-medium text-slate-700"></tbody>
                 </table>
             </div>
         </section>
@@ -137,7 +209,7 @@
                                 <th class="p-4 text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody id="curriculumTable" class="text-[10px] font-bold divide-y divide-slate-100 uppercase text-slate-700"></tbody>
+                        <tbody id="curriculumTable" class="text-[12px] font-medium divide-y divide-slate-100 uppercase text-slate-700"></tbody>
                     </table>
                 </div>
             </div>
@@ -225,9 +297,9 @@
             <div class="mb-6">
                 <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1.5">Academic Allocation Group</label>
                 <select id="modalGroupSelect" class="w-full p-3 rounded-xl bg-slate-50 ring-1 ring-slate-200 border-none font-bold text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    <option value="GENERAL">GENERAL</option>
-                    <option value="ART">ART</option>
-                    <option value="SCIENCE">SCIENCE</option>
+                    <option value="GENERAL">GENERAL CURRICULUM</option>
+                    <option value="ART">ART CONCENTRATION</option>
+                    <option value="SCIENCE">SCIENCE CONCENTRATION</option>
                 </select>
             </div>
             
@@ -253,10 +325,26 @@
             const { data: cu } = await _supabase.from('school_curriculum').select('*').order('class_name');
             students = st || []; 
             curriculum = cu || [];
+            
+            calculateDashboardMetrics();
             renderDirectory(); 
             renderCurriculum(); 
             renderEngineList(students);
             lucide.createIcons();
+        }
+
+        function calculateDashboardMetrics() {
+            // Master summary totals
+            document.getElementById('dash-total-students').innerText = students.length;
+            document.getElementById('dash-total-subjects').innerText = curriculum.length;
+            
+            // Class-by-class aggregations
+            document.getElementById('count-jss1').innerText = students.filter(s => s.grade_level === 'JSS 1').length;
+            document.getElementById('count-jss2').innerText = students.filter(s => s.grade_level === 'JSS 2').length;
+            document.getElementById('count-jss3').innerText = students.filter(s => s.grade_level === 'JSS 3').length;
+            document.getElementById('count-sss1').innerText = students.filter(s => s.grade_level === 'SSS 1').length;
+            document.getElementById('count-sss2').innerText = students.filter(s => s.grade_level === 'SSS 2').length;
+            document.getElementById('count-sss3').innerText = students.filter(s => s.grade_level === 'SSS 3').length;
         }
 
         function showView(v) {
@@ -288,8 +376,8 @@
                 <tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-4 font-mono text-blue-600 font-bold">MS-${s.id.substring(0,5)}</td>
                     <td class="p-4 tracking-wide font-semibold text-slate-800">${s.full_name}</td>
-                    <td class="p-4 text-slate-500">${s.grade_level || '---'}</td>
-                    <td class="p-4"><span class="px-2 py-1 rounded-md bg-slate-100 text-[9px] font-black tracking-wider text-slate-600">${s.student_group || 'GENERAL'}</span></td>
+                    <td class="p-4 text-slate-500 font-medium">${s.grade_level || '---'}</td>
+                    <td class="p-4"><span class="px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold tracking-wider text-slate-600">${s.student_group || 'GENERAL'}</span></td>
                     <td class="p-4 text-right flex justify-end gap-2">
                         <button onclick="openGroupModal('${s.id}', '${s.full_name}', '${s.student_group}')" class="p-2 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-600 transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
                         <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
@@ -319,8 +407,8 @@
             document.getElementById('engineList').innerHTML = l.map(s => `
                 <div onclick="openEditor('${s.id}')" class="p-4 hover:bg-blue-50/50 cursor-pointer flex justify-between items-center group transition-colors duration-150">
                     <div class="uppercase">
-                        <p class="text-[11px] font-black text-slate-800 tracking-wide">${s.full_name}</p>
-                        <p class="text-[9px] font-bold text-slate-400 mt-0.5">${s.grade_level} • ${s.student_group || 'GENERAL'}</p>
+                        <p class="text-[12px] font-bold text-slate-800 tracking-wide">${s.full_name}</p>
+                        <p class="text-[10px] font-semibold text-slate-400 mt-0.5">${s.grade_level} • ${s.student_group || 'GENERAL'}</p>
                     </div>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-200 group-hover:text-blue-500 transform group-hover:translate-x-0.5 transition-all"></i>
                 </div>
@@ -347,8 +435,8 @@
                 return `
                     <tr class="bg-slate-50/50 border-b border-white hover:bg-slate-50 transition-colors">
                         <td class="p-4">
-                            <span class="font-black text-[11px] uppercase block text-slate-800 tracking-wide">${cs.subject_name}</span>
-                            <span class="text-[9px] text-slate-400 font-medium block mt-0.5">${cs.assigned_teacher || 'No Instructor Assigned'}</span>
+                            <span class="font-bold text-[12px] uppercase block text-slate-800 tracking-wide">${cs.subject_name}</span>
+                            <span class="text-[10px] text-slate-400 font-medium block mt-0.5">${cs.assigned_teacher || 'No Instructor Assigned'}</span>
                         </td>
                         <td class="p-3">
                             <input type="text" data-subject="${cs.subject_name}" value="${score.test}" placeholder="-" class="st w-full p-2.5 rounded-lg bg-white border border-slate-200 text-center font-black text-xs outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all">
@@ -367,7 +455,6 @@
             const termKey = `term${currentTerm}`;
             const termScores = [];
             
-            // Fixed the innerText DOM row element tracking bug using explicit dataset queries
             document.querySelectorAll('#scoreRows tr').forEach(row => {
                 const testInput = row.querySelector('.st');
                 const examInput = row.querySelector('.se');
@@ -417,9 +504,9 @@
         function renderCurriculum() {
             document.getElementById('curriculumTable').innerHTML = curriculum.map(c => `
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="p-4 font-black text-slate-800">${c.class_name}</td>
+                    <td class="p-4 font-bold text-slate-800">${c.class_name}</td>
                     <td class="p-4 text-blue-600 font-bold tracking-wide">${c.subject_group}</td>
-                    <td class="p-4 tracking-wide font-medium">${c.subject_name}</td>
+                    <td class="p-4 tracking-wide font-medium text-slate-700">${c.subject_name}</td>
                     <td class="p-4 text-slate-400 italic font-medium">${c.assigned_teacher || '---'}</td>
                     <td class="p-4 text-right">
                         <button onclick="deleteCurr('${c.id}')" class="text-slate-300 hover:text-red-500 transition-colors"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
@@ -455,8 +542,8 @@
                 <tr class="hover:bg-slate-50/80 transition-colors">
                     <td class="p-4 font-mono text-blue-600 font-bold">MS-${s.id.substring(0,5)}</td>
                     <td class="p-4 tracking-wide font-semibold text-slate-800">${s.full_name}</td>
-                    <td class="p-4 text-slate-500">${s.grade_level || '---'}</td>
-                    <td class="p-4"><span class="px-2 py-1 rounded-md bg-slate-100 text-[9px] font-black tracking-wider text-slate-600">${s.student_group || 'GENERAL'}</span></td>
+                    <td class="p-4 text-slate-500 font-medium">${s.grade_level || '---'}</td>
+                    <td class="p-4"><span class="px-2 py-1 rounded-md bg-slate-100 text-[10px] font-bold tracking-wider text-slate-600">${s.student_group || 'GENERAL'}</span></td>
                     <td class="p-4 text-right flex justify-end gap-2">
                         <button onclick="openGroupModal('${s.id}', '${s.full_name}', '${s.student_group}')" class="p-2 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-600 transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
                         <button onclick="deleteStudent('${s.id}')" class="p-2 bg-red-50 hover:bg-red-100 rounded-xl text-red-600 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
