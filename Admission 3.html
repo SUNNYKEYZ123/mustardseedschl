@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mustard Seed School Admission</title>
-    <link rel="icon" type="image/x-icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png">
+    <link class="school-logo-favicon" rel="icon" type="image/x-icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -69,6 +69,7 @@
         </div>
 
         <form id="admissionForm" class="bg-white rounded-lg shadow-md p-6" novalidate>
+            
             <div class="form-section active" id="section1">
                 <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2"><i data-feather="user" class="inline mr-2"></i>Student Information</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -81,20 +82,22 @@
                         <input type="text" id="lastName" required class="w-full px-3 py-2 border rounded-md">
                     </div>
                 </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700">Date of Birth*</label>
-                    <input type="date" id="dob" required class="w-full px-3 py-2 border rounded-md">
-                </div>
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700">Gender*</label>
-                    <div class="flex space-x-4">
-                        <label><input type="radio" name="gender" value="male" checked> Male</label>
-                        <label><input type="radio" name="gender" value="female"> Female</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Date of Birth*</label>
+                        <input type="date" id="dob" required class="w-full px-3 py-2 border rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Gender*</label>
+                        <select id="gender" class="w-full px-3 py-2 border rounded-md bg-white">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
                     </div>
                 </div>
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700">Nationality*</label>
-                    <input type="text" id="nationality" required class="w-full px-3 py-2 border rounded-md">
+                    <input type="text" id="nationality" value="Nigerian" required class="w-full px-3 py-2 border rounded-md">
                 </div>
                 <div class="mt-6 flex justify-end">
                     <button type="button" onclick="nextStep(1)" class="px-6 py-2 bg-blue-600 text-white rounded-md">Next</button>
@@ -104,16 +107,16 @@
             <div class="form-section" id="section2">
                 <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2"><i data-feather="home" class="inline mr-2"></i>Contact Details</h3>
                 <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700">Address*</label>
+                    <label class="block text-sm font-medium text-gray-700">Home Residential Address*</label>
                     <textarea id="address" rows="3" required class="w-full px-3 py-2 border rounded-md"></textarea>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Phone*</label>
+                        <label class="block text-sm font-medium text-gray-700">Primary Phone Line*</label>
                         <input type="tel" id="phone" required class="w-full px-3 py-2 border rounded-md">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <label class="block text-sm font-medium text-gray-700">Email Address (Optional)</label>
                         <input type="email" id="email" class="w-full px-3 py-2 border rounded-md">
                     </div>
                 </div>
@@ -126,13 +129,13 @@
             <div class="form-section" id="section3">
                 <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2"><i data-feather="book" class="inline mr-2"></i>Academic Information</h3>
                 <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700">Previous School*</label>
+                    <label class="block text-sm font-medium text-gray-700">Previous School Attended*</label>
                     <input type="text" id="previousSchool" required class="w-full px-3 py-2 border rounded-md">
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Applying for Grade*</label>
-                        <select id="applyingFor" onchange="handleGradeLevelChange()" required class="w-full px-3 py-2 border rounded-md">
+                        <select id="applyingFor" onchange="handleClassFieldChange()" required class="w-full px-3 py-2 border rounded-md">
                             <option value="JSS 1">JSS 1</option>
                             <option value="JSS 2">JSS 2</option>
                             <option value="JSS 3">JSS 3</option>
@@ -141,13 +144,14 @@
                             <option value="SSS 3">SSS 3</option>
                         </select>
                     </div>
-                    <div id="studyFieldContainer" class="hidden">
-                        <label class="block text-sm font-bold text-blue-800">Field of Study / Department*</label>
-                        <select id="department" class="w-full px-3 py-2 border border-blue-300 bg-blue-50 text-blue-900 rounded-md font-semibold">
-                            <option value="General" selected>General Studies</option>
-                            <option value="Science">Science Department</option>
-                            <option value="Arts">Arts Department</option>
-                            <option value="Commercial">Commercial Department</option>
+                    
+                    <div id="studentGroupContainer" class="hidden">
+                        <label class="block text-sm font-bold text-blue-800">Academic Target Group*</label>
+                        <select id="studentGroup" class="w-full px-3 py-2 border border-blue-300 bg-blue-50 text-blue-900 rounded-md font-semibold">
+                            <option value="GENERAL" selected>GENERAL CURRICULUM</option>
+                            <option value="ART">ART CONCENTRATION</option>
+                            <option value="SCIENCE">SCIENCE CONCENTRATION</option>
+                            <option value="COMMERCIAL">COMMERCIAL CONCENTRATION</option>
                         </select>
                     </div>
                 </div>
@@ -160,38 +164,37 @@
             <div class="form-section" id="section4">
                 <h3 class="text-xl font-semibold mb-4 text-blue-700 border-b pb-2"><i data-feather="users" class="inline mr-2"></i>Parent Info & Activation</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="parentFirstName" placeholder="First Name" class="w-full px-3 py-2 border rounded-md">
-                    <input type="text" id="parentLastName" placeholder="Last Name" class="w-full px-3 py-2 border rounded-md">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Parent First Name</label>
+                        <input type="text" id="parentFirstName" placeholder="First Name" class="w-full px-3 py-2 border rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Parent Last Name</label>
+                        <input type="text" id="parentLastName" placeholder="Last Name" class="w-full px-3 py-2 border rounded-md">
+                    </div>
                 </div>
                 <div class="mt-4 mb-6">
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Parent Phone Number*</label>
                     <input type="tel" id="parentPhone" placeholder="Phone Number" class="w-full px-3 py-2 border rounded-md">
                 </div>
 
-                <div class="p-5 bg-blue-50 border border-blue-200 rounded-xl mb-6 space-y-4">
+                <div class="p-5 bg-red-50 border border-red-200 rounded-xl mb-6 space-y-3">
                     <div class="flex items-start gap-3">
-                        <i data-feather="credit-card" class="text-blue-700 mt-0.5"></i>
+                        <div class="bg-red-100 text-red-700 p-1.5 rounded-lg animate-pulse">
+                            <i data-feather="alert-triangle" class="w-5 h-5"></i>
+                        </div>
                         <div>
-                            <h4 class="text-sm font-bold text-blue-950 uppercase tracking-wide">Application Fee Processing</h4>
-                            <p class="text-gray-500 text-xs">Kindly fulfill your application fee via bank transfer to initialize administrative enrollment.</p>
+                            <h4 class="text-sm font-black text-red-950 uppercase tracking-wide">Portal Under Construction</h4>
+                            <p class="text-red-700 text-xs font-medium mt-1">
+                                The automated verification system and financial transfer routes are currently being developed.
+                                <strong class="block mt-1 text-red-900 font-extrabold">⚠️ PLEASE DO NOT TRANSFER ANY MONEY RIGHT NOW.</strong>
+                            </p>
                         </div>
                     </div>
                     
-                    <div class="bg-white p-3.5 border border-blue-100 rounded-lg text-sm space-y-1.5 shadow-xs">
-                        <div class="flex justify-between"><span class="text-gray-400 text-xs font-semibold">BANK NAME:</span> <span class="font-bold text-gray-800">WEMA BANK</span></div>
-                        <div class="flex justify-between"><span class="text-gray-400 text-xs font-semibold">ACCOUNT NAME:</span> <span class="font-bold text-gray-800 text-right">MUSTARD SEED INT SCHOOLS</span></div>
-                        <div class="flex justify-between"><span class="text-gray-400 text-xs font-semibold">ACCOUNT NUMBER:</span> <span class="font-bold text-blue-700 font-mono tracking-wider text-base">0123456789</span></div>
-                        <div class="flex justify-between pt-1 border-t border-gray-100"><span class="text-red-500 font-bold text-xs">AMOUNT DUE:</span> <span class="font-extrabold text-red-600 text-base">₦3,000</span></div>
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wide">Attach Bank Transfer Screenshot*</label>
-                        <div class="relative bg-white border border-dashed border-gray-300 rounded-lg p-3 text-center cursor-pointer hover:border-blue-500 transition">
-                            <input type="file" id="receiptFile" accept="image/*" onchange="syncFileInputLabel()" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" required>
-                            <div class="flex justify-center items-center gap-2 text-xs font-bold text-gray-600" id="receiptDisplayLabel">
-                                <i data-feather="image" class="w-4 h-4 text-gray-400"></i>
-                                <span>Choose Payment Receipt Image</span>
-                            </div>
-                        </div>
+                    <div class="bg-gray-100 p-3 border border-gray-200 rounded-lg text-xs space-y-1 opacity-60 pointer-events-none">
+                        <div class="flex justify-between"><span class="text-gray-400 font-bold">REGISTRATION PORTAL:</span> <span class="font-extrabold text-gray-500">MAINTENANCE RUNS ACTIVE</span></div>
+                        <div class="flex justify-between"><span class="text-gray-400 font-bold">VERIFICATION CODE:</span> <span class="font-mono text-gray-500">SANDBOX TEST MODE</span></div>
                     </div>
                 </div>
 
@@ -224,33 +227,20 @@
 
         feather.replace();
 
-        // Dynamic Class Department Controller
-        function handleGradeLevelChange() {
-            const classValue = document.getElementById('applyingFor').value;
-            const container = document.getElementById('studyFieldContainer');
-            const deptSelect = document.getElementById('department');
-
-            if (classValue.includes('SSS')) {
-                container.classList.remove('hidden');
-                deptSelect.setAttribute('required', 'true');
+        // Handles conditional presentation of target groups based on class selections
+        function handleClassFieldChange() {
+            const currentClass = document.getElementById('applyingFor').value;
+            const containerBox = document.getElementById('studentGroupContainer');
+            
+            if (currentClass.startsWith("SSS")) {
+                containerBox.classList.remove('hidden');
             } else {
-                container.classList.add('hidden');
-                deptSelect.removeAttribute('required');
-                deptSelect.value = "General";
+                containerBox.classList.add('hidden');
+                document.getElementById('studentGroup').value = "GENERAL";
             }
         }
 
-        // Updates label displaying the selected receipt file name
-        function syncFileInputLabel() {
-            const fileInput = document.getElementById('receiptFile');
-            const textLabel = document.getElementById('receiptDisplayLabel');
-            if(fileInput.files.length > 0) {
-                textLabel.innerHTML = `<i data-feather="check" class="w-4 h-4 text-emerald-500"></i><span class="text-emerald-600">Selected: ${fileInput.files[0].name}</span>`;
-                feather.replace();
-            }
-        }
-
-        // 1. SECURITY GATE LOGIC
+        // IDENTITY IDENTITY VALIDATION WALL SECURITY GATE
         async function checkGateID() {
             const input = document.getElementById('gate-id-input').value.trim().toUpperCase();
             const { data: { user } } = await _supabase.auth.getUser();
@@ -261,7 +251,6 @@
                 return;
             }
 
-            // Generate correct MS-ID
             const correctID = "MS-" + user.id.substring(0, 5).toUpperCase();
 
             if (input === correctID) {
@@ -278,29 +267,27 @@
             window.location.href = 'login.html';
         }
 
-        // 2. Navigation Functions
+        // Sequential multi-stage navigation controller handlers
         function nextStep(curr) {
             document.getElementById(`section${curr}`).classList.remove('active');
             document.getElementById(`section${curr+1}`).classList.add('active');
             document.querySelector(`[data-step="${curr+1}"]`).classList.add('active');
+            document.querySelector(`[data-step="${curr}"]`).classList.add('completed');
         }
+        
         function prevStep(curr) {
             document.getElementById(`section${curr}`).classList.remove('active');
             document.getElementById(`section${curr-1}`).classList.add('active');
             document.querySelector(`[data-step="${curr}"]`).classList.remove('active');
+            document.querySelector(`[data-step="${curr-1}"]`).classList.remove('completed');
         }
 
-        // 3. Form Submit Logic
+        // DATA ROUTING DATABASE FORM SUBMISSION PROCESSOR
         document.getElementById('admissionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             const loader = document.getElementById('btnLoader');
             const btnText = document.getElementById('btnText');
-            const fileInput = document.getElementById('receiptFile');
-
-            if(fileInput.files.length === 0) {
-                return alert("Please upload your bank transfer receipt snapshot to complete admission activation!");
-            }
 
             btn.disabled = true;
             loader.classList.remove('hidden');
@@ -309,43 +296,19 @@
             const { data: { user } } = await _supabase.auth.getUser();
             if(!user) return alert("Session expired.");
 
-            let calculatedReceiptUrl = "";
-            
-            // FREE UPLOAD: Process screenshot directly to Supabase storage bucket
-            try {
-                const targetFile = fileInput.files[0];
-                const fileExtension = targetFile.name.split('.').pop();
-                const fileStoragePath = `receipts/${user.id}_${Date.now()}.${fileExtension}`;
-                
-                const { data: storageData, error: storageError } = await _supabase.storage
-                    .from('admission-receipts')
-                    .upload(fileStoragePath, targetFile, { cacheControl: '3600', upsert: true });
-
-                if (storageError) throw storageError;
-
-                const { data: urlData } = _supabase.storage.from('admission-receipts').getPublicUrl(fileStoragePath);
-                calculatedReceiptUrl = urlData.publicUrl;
-            } catch (err) {
-                console.log("Storage bucket configuration fallback:", err.message);
-                // Fallback to secure placeholder string if bucket isn't provisioned yet
-                calculatedReceiptUrl = "Attached (Pending Verification)";
-            }
-
-            const fullNameString = document.getElementById('firstName').value + " " + document.getElementById('lastName').value;
-            const chosenGrade = document.getElementById('applyingFor').value;
-            const chosenDept = document.getElementById('department').value;
+            // Directly aligns with your database table column tracking schema!
+            const chosenTargetGroup = document.getElementById('studentGroup').value;
 
             const admissionData = {
                 id: user.id,
-                full_name: fullNameString,
+                full_name: document.getElementById('firstName').value + " " + document.getElementById('lastName').value,
                 date_of_birth: document.getElementById('dob').value,
-                gender: document.querySelector('input[name="gender"]:checked').value,
+                gender: document.getElementById('gender').value,
                 nationality: document.getElementById('nationality').value,
                 address: document.getElementById('address').value,
                 phone: document.getElementById('phone').value,
-                grade_level: chosenGrade, 
-                department: chosenDept, // Saves field track directly to record row
-                receipt_url: calculatedReceiptUrl, // Passes file reference to database column
+                grade_level: document.getElementById('applyingFor').value,
+                student_group: chosenTargetGroup, // Matches s.student_group cleanly inside admin2 dashboard schema!
                 parent_name: document.getElementById('parentFirstName').value + " " + document.getElementById('parentLastName').value,
                 parent_phone: document.getElementById('parentPhone').value,
                 previous_school: document.getElementById('previousSchool').value,
@@ -354,26 +317,13 @@
 
             const { error } = await _supabase.from('students').upsert(admissionData);
 
-            if (error) {
-                alert("Error: " + error.message);
-                loader.classList.add('hidden');
-                btn.disabled = false;
-                btnText.textContent = "Submit Application";
-            } else {
-                // REAL-TIME BROADCAST NOTIFICATION: Sends instant ping notification alert into open admin panels (admin2.html)
-                await _supabase.channel('admin-alerts').send({
-                    type: 'broadcast',
-                    event: 'new-admission',
-                    payload: { 
-                        studentName: fullNameString, 
-                        grade: chosenGrade,
-                        department: chosenDept
-                    }
-                });
+            loader.classList.add('hidden');
+            btn.disabled = false;
+            btnText.textContent = "Submit Application";
 
-                loader.classList.add('hidden');
-                btn.disabled = false;
-                btnText.textContent = "Submit Application";
+            if (error) {
+                alert("Error encountered saving profile: " + error.message);
+            } else {
                 document.getElementById('successModal').classList.remove('hidden');
             }
         });
