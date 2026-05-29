@@ -287,7 +287,7 @@
             if(!targetSession || targetSession.trim() === "") { alert("Operation cancelled. Valid Session format required."); return; }
             const sessionKey = targetSession.trim();
 
-            const conf = confirm(`Promote individual student ${executionMapQueue[index].name} to ${targetClass} for Session ${sessionKey.replace('_', '/') فوتبال}?`);
+            const conf = confirm(`Promote individual student ${executionMapQueue[index].name} to ${targetClass} for Session ${sessionKey.replace('_', '/')}?`);
             if(!conf) return;
 
             // Deep clone historic states to avoid side mutations
