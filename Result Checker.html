@@ -8,7 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         .animate-fade { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -21,7 +20,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Using your verified Firebase credentials
         const firebaseConfig = {
             apiKey: "AIzaSyDOO3uHmzOuAxJcdLxu-OImzlH12A6FpeY",
             authDomain: "my-project-a6208.firebaseapp.com",
@@ -35,101 +33,111 @@
         window.fb = { db: getFirestore(app), collection, getDocs, query, where };
     </script>
 
-    <script type="text/babel">
+    <script>
+        const e = React.createElement;
+
         const ResultChecker = () => {
             const [msId, setMsId] = React.useState('');
             const [result, setResult] = React.useState(null);
             const [loading, setLoading] = React.useState(false);
+            const [firebaseReady, setFirebaseReady] = React.useState(false);
+
+            React.useEffect(() => {
+                const checkFirebase = setInterval(() => {
+                    if (window.fb) {
+                        setFirebaseReady(true);
+                        clearInterval(checkFirebase);
+                    }
+                }, 50);
+                return () => clearInterval(checkFirebase);
+            }, []);
 
             const handleCheck = async () => {
-                if(!msId) return alert("Please enter your Student ID");
+                if (!window.fb) return alert("System database syncing. Please wait a moment.");
+                if (!msId) return alert("Please enter your Student ID");
+                
                 setLoading(true);
                 setResult(null);
-                
                 const inputId = msId.toUpperCase().trim();
                 
                 try {
-                    // Logic: Querying the 'scores' collection by studentId
-                    const q = window.fb.query(
-                        window.fb.collection(window.fb.db, "artifacts/my-project-a6208/scores"), 
-                        window.fb.where("studentId", "==", inputId)
+                    const fb = window.fb;
+                    const q = fb.query(
+                        fb.collection(fb.db, "artifacts/my-project-a6208/scores"), 
+                        fb.where("studentId", "==", inputId)
                     );
-                    const snap = await window.fb.getDocs(q);
+                    const snap = await fb.getDocs(q);
                     
                     if (!snap.empty) {
-                        // Sort by date to get the most recent attempt
                         const docs = snap.docs.map(d => d.data()).sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
                         setResult(docs[0]);
                     } else {
                         alert("No result found for " + inputId);
                     }
-                } catch (e) { 
+                } catch (err) { 
                     alert("System error. Please try again."); 
                 }
                 setLoading(false);
             };
 
-            return (
-                <div className="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 animate-fade">
-                    <div className="bg-white p-8 sm:p-12 rounded-[3rem] shadow-2xl border w-full max-w-md text-center">
-                        <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" className="w-20 mx-auto mb-6" />
-                        <h1 className="text-3xl font-black mb-2 uppercase tracking-tighter text-slate-900">Result Portal</h1>
-                        <p className="text-slate-400 mb-10 text-[10px] font-black uppercase tracking-[0.3em]">Mustard Seed School</p>
+            if (!firebaseReady) {
+                return e('div', { className: 'h-screen flex flex-col items-center justify-center bg-slate-50 font-black text-blue-600 uppercase tracking-[0.3em]' },
+                    e('img', { src: 'https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png', className: 'w-16 mb-4 animate-bounce' }),
+                    e('span', null, 'Connecting Portal...')
+                );
+            }
+
+            return e('div', { className: 'flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 animate-fade' },
+                e('div', { className: 'bg-white p-8 sm:p-12 rounded-[3rem] shadow-2xl border w-full max-w-md text-center' },
+                    e('img', { src: 'https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png', className: 'w-20 mx-auto mb-6' }),
+                    e('h1', { className: 'text-3xl font-black mb-2 uppercase tracking-tighter text-slate-900' }, 'Result Portal'),
+                    e('p', { className: 'text-slate-400 mb-10 text-[10px] font-black uppercase tracking-[0.3em]' }, 'Mustard Seed School'),
+                    
+                    e('div', { className: 'space-y-4' },
+                        e('input', { 
+                            className: 'w-full p-5 border-2 border-slate-100 rounded-2xl uppercase text-center font-black bg-slate-50 text-blue-600 outline-none focus:border-blue-400', 
+                            placeholder: 'ENTER MS-ID', 
+                            value: msId,
+                            onChange: e => setMsId(e.target.value) 
+                        }),
+                        e('button', { 
+                            onClick: handleCheck, 
+                            className: 'w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-blue-600 transition-colors'
+                        }, loading ? "Searching..." : "Check Result")
+                    ),
+
+                    result && e('div', { className: 'mt-12 bg-blue-50/50 p-8 rounded-[2.5rem] border border-blue-100 text-left animate-fade' },
+                        e('p', { className: 'text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1' }, 'Student Name'),
+                        e('h3', { className: 'text-xl font-black text-slate-800 mb-8 uppercase leading-tight' }, result.studentName),
                         
-                        <div className="space-y-4">
-                            <input 
-                                className="w-full p-5 border-2 border-slate-100 rounded-2xl uppercase text-center font-black bg-slate-50 text-blue-600 outline-none focus:border-blue-400" 
-                                placeholder="ENTER MS-ID" 
-                                value={msId}
-                                onChange={e => setMsId(e.target.value)} 
-                            />
-                            <button 
-                                onClick={handleCheck} 
-                                className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-blue-600 transition-colors"
-                            >
-                                {loading ? "Searching..." : "Check Result"}
-                            </button>
-                        </div>
+                        e('div', { className: 'grid grid-cols-2 gap-4 mb-8' },
+                            e('div', { className: 'bg-white p-5 rounded-3xl border border-blue-100/50 shadow-sm' },
+                                e('p', { className: 'text-[8px] font-black text-slate-400 uppercase mb-2' }, 'Section A'),
+                                e('p', { className: 'text-2xl font-black text-slate-800' }, result.objScore || 0),
+                                e('p', { className: 'text-[8px] font-bold text-slate-300 uppercase italic' }, 'Objective')
+                            ),
+                            e('div', { className: 'bg-white p-5 rounded-3xl border border-blue-100/50 shadow-sm' },
+                                e('p', { className: 'text-[8px] font-black text-slate-400 uppercase mb-2' }, 'Section B'),
+                                e('p', { className: 'text-2xl font-black text-slate-800' }, result.theoryScore || 0),
+                                e('p', { className: 'text-[8px] font-bold text-slate-300 uppercase italic' }, 'Theory')
+                            )
+                        ),
 
-                        {result && (
-                            <div className="mt-12 bg-blue-50/50 p-8 rounded-[2.5rem] border border-blue-100 text-left animate-fade">
-                                <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1">Student Name</p>
-                                <h3 className="text-xl font-black text-slate-800 mb-8 uppercase leading-tight">{result.studentName}</h3>
-                                
-                                <div className="grid grid-cols-2 gap-4 mb-8">
-                                    <div className="bg-white p-5 rounded-3xl border border-blue-100/50 shadow-sm">
-                                        <p className="text-[8px] font-black text-slate-400 uppercase mb-2">Section A</p>
-                                        <p className="text-2xl font-black text-slate-800">{result.objScore || 0}</p>
-                                        <p className="text-[8px] font-bold text-slate-300 uppercase italic">Objective</p>
-                                    </div>
-                                    <div className="bg-white p-5 rounded-3xl border border-blue-100/50 shadow-sm">
-                                        <p className="text-[8px] font-black text-slate-400 uppercase mb-2">Section B</p>
-                                        <p className="text-2xl font-black text-slate-800">{result.theoryScore || 0}</p>
-                                        <p className="text-[8px] font-bold text-slate-300 uppercase italic">Theory</p>
-                                    </div>
-                                </div>
-
-                                <div className="border-t border-blue-200/30 pt-8 text-center">
-                                    <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-2">Final Cumulative Score</p>
-                                    {/* Displays the totalScore field which is (obj + theory) */}
-                                    <div className="text-7xl font-black text-slate-900 tracking-tighter">
-                                        {result.totalScore || (result.objScore + result.theoryScore) || 0}
-                                    </div>
-                                    <div className="mt-6 inline-block bg-green-100 text-green-700 px-4 py-1 rounded-full text-[9px] font-black uppercase">
-                                        Verified Result
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    <p className="mt-10 text-[9px] font-black text-slate-300 uppercase tracking-widest">
-                        Mustard Seed School Ibokun • Examination Unit
-                    </p>
-                </div>
+                        e('div', { className: 'border-t border-blue-200/30 pt-8 text-center' },
+                            e('p', { className: 'text-[10px] font-black text-blue-500 uppercase tracking-widest mb-2' }, 'Final Cumulative Score'),
+                            e('div', { className: 'text-7xl font-black text-slate-900 tracking-tighter' }, 
+                                result.totalScore || (result.objScore + result.theoryScore) || 0
+                            ),
+                            e('div', { className: 'mt-6 inline-block bg-green-100 text-green-700 px-4 py-1 rounded-full text-[9px] font-black uppercase' }, 'Verified Result')
+                        )
+                    )
+                ),
+                e('p', { className: 'mt-10 text-[9px] font-black text-slate-300 uppercase tracking-widest' }, 'Mustard Seed School Ibokun • Examination Unit')
             );
         };
 
-        ReactDOM.createRoot(document.getElementById('root')).render(<ResultChecker />);
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(e(ResultChecker));
     </script>
 </body>
 </html>
