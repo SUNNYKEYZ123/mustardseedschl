@@ -4,25 +4,19 @@
     <link rel="icon" type="image/x-icon" href="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mustard Seed CBT - Professional Portal</title>
+    <title>Mustard Seed CBT - Secure Bulk Upload</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        @media print { .no-print { display: none !important; } body { background: white; } }
-        textarea::-webkit-scrollbar { width: 8px; }
-        textarea::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    </style>
 </head>
-<body class="bg-gray-50">
-    <div id="root"></div>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex items-center justify-center p-4">
+    <div id="root" class="w-full max-w-2xl"></div>
 
+    <!-- Firebase Configuration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where, setDoc, writeBatch, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDOO3uHmzOuAxJcdLxu-OImzlH12A6FpeY",
@@ -34,65 +28,36 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        window.fb = {
-            db: getFirestore(app), auth: getAuth(app),
-            collection, addDoc, getDocs, doc, deleteDoc, onSnapshot, query, where, signInAnonymously, onAuthStateChanged, setDoc, writeBatch, updateDoc
-        };
+        window.fb = { db: getFirestore(app), collection, addDoc };
     </script>
 
+    <!-- React App Container -->
     <script type="text/babel">
-        const { createClient } = window.supabase;
-        const SB_URL = 'https://jqrcoqslmylmubxwfgyt.supabase.co';
-        const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcmNvcXNsbXlsbXVieHdmZ3l0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2ODc2NzgsImV4cCI6MjA4MDI2MzY3OH0.4bXOY35R3eGYZjPxtuJzvwifPEfHXr5UEdzFbB-caKU';
-        const _supabase = createClient(SB_URL, SB_KEY);
-
-        const AppContext = React.createContext(null);
         const ADMIN_PASSWORD = 'SUNNYKEYZ2025@';
         const CLASSES = ['SSS 1', 'SSS 2', 'SSS 3', 'JSS 1', 'JSS 2', 'JSS 3'];
 
-        const AdminPage = () => {
-            const [auth, setAuth] = React.useState(false);
-            const [pass, setPass] = React.useState('');
-            const [activeTab, setActiveTab] = React.useState('dashboard'); 
-            const [isNavOpen, setIsNavOpen] = React.useState(false); 
-            const [scores, setScores] = React.useState([]);
-            const [questions, setQuestions] = React.useState([]);
-            const [settings, setSettings] = React.useState({ isLive: false, duration: 40, globalObjMark: 2 });
-            const [resFilter, setResFilter] = React.useState('ALL');
-            const [searchQuery, setSearchQuery] = React.useState('');
-            const [reviewData, setReviewData] = React.useState(null);
-            const [manualThyScore, setManualThyScore] = React.useState('');
-            const [newQ, setNewQ] = React.useState({ text: '', options: ['', '', '', ''], correct: 0, className: 'SSS 1', type: 'obj', keywords: '', points: 5 });
-            
-            // Batch State Management
+        const BulkUploadApp = () => {
+            const [isAuthorized, setIsAuthorized] = React.useState(null);
+            const [selectedClass, setSelectedClass] = React.useState('SSS 1');
             const [batchText, setBatchText] = React.useState('');
-            const [batchClass, setBatchClass] = React.useState('SSS 1');
             const [uploading, setUploading] = React.useState(false);
 
+            // Security check on mount
             React.useEffect(() => {
-                if (!auth) return;
-                fb.onSnapshot(fb.collection(fb.db, "artifacts/my-project-a6208/scores"), (s) => setScores(s.docs.map(d => ({id: d.id, ...d.data()}))));
-                fb.onSnapshot(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"), (s) => setQuestions(s.docs.map(d => ({id: d.id, ...d.data()}))));
-                fb.onSnapshot(fb.doc(fb.db, "artifacts/my-project-a6208/settings/examControl"), (doc) => { 
-                    if (doc.exists()) {
-                        const data = doc.data();
-                        setSettings({
-                            isLive: data.isLive || false,
-                            duration: data.duration || 40,
-                            globalObjMark: data.globalObjMark !== undefined ? data.globalObjMark : 2
-                        });
-                    } 
-                });
-            }, [auth]);
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('token');
 
-            const updateTheoryGrade = async () => {
-                const newThy = parseInt(manualThyScore);
-                const newTotal = (reviewData.objScore || 0) + newThy;
-                await fb.updateDoc(fb.doc(fb.db, "artifacts/my-project-a6208/scores", reviewData.id), { theoryScore: newThy, totalScore: newTotal });
-                alert("Score Updated!"); setReviewData(null);
-            };
+                if (token === ADMIN_PASSWORD) {
+                    setIsAuthorized(true);
+                } else {
+                    setIsAuthorized(false);
+                    // Kick them out after 3 seconds back to home page
+                    setTimeout(() => {
+                        window.location.href = "CBT (5).html"; 
+                    }, 3000);
+                }
+            }, []);
 
-            // Custom raw parser matching options a, b, d, e explicitly
             const parseRawText = (text) => {
                 if (!text.trim()) return [];
                 const structuralBlocks = text.split(/\n(?=\d+[\)\.]\s*)/);
@@ -125,470 +90,96 @@
                         formattedQuestions.push({
                             questionText: questionText,
                             options: options,
-                            correctOptionIndex: correctIndex,
-                            type: 'obj',
-                            keywords: [],
-                            points: settings.globalObjMark || 2
+                            correctOptionIndex: correctIndex
                         });
                     }
                 });
-
                 return formattedQuestions;
             };
 
-            const filteredScores = scores
-                .filter(s => (resFilter === 'ALL' || s.className === resFilter) && (s.studentName.toLowerCase().includes(searchQuery.toLowerCase()) || s.studentId.toLowerCase().includes(searchQuery.toLowerCase())))
-                .sort((a, b) => (b.date?.seconds || 0) - (a.date?.seconds || 0));
+            if (isAuthorized === null) {
+                return <div className="text-center font-black tracking-widest animate-pulse">VERIFYING SECURITY...</div>;
+            }
 
-            if (!auth) return (
-                <div className="flex items-center justify-center min-h-screen bg-slate-900 p-4">
-                    <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-sm text-center">
-                        <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" className="w-16 mx-auto mb-6" />
-                        <input type="password" placeholder="Passcode" className="w-full p-4 border-2 rounded-xl mb-4 text-center font-bold" onChange={e => setPass(e.target.value)} />
-                        <button onClick={() => pass === ADMIN_PASSWORD ? setAuth(true) : alert("Denied")} className="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase">Admin Login</button>
+            if (isAuthorized === false) {
+                return (
+                    <div className="bg-red-950 border border-red-500 text-red-200 p-8 rounded-3xl text-center shadow-2xl">
+                        <h1 className="text-2xl font-black mb-2">⛔ ACCESS DENIED</h1>
+                        <p className="text-sm font-bold opacity-80 uppercase tracking-wider">Invalid security token. Redirecting to safety...</p>
                     </div>
-                </div>
-            );
+                );
+            }
+
+            const parsedCount = parseRawText(batchText).length;
 
             return (
-                <div className="flex min-h-screen bg-gray-50">
-                    <aside className="w-64 bg-slate-900 text-white p-6 fixed h-full hidden md:block no-print">
-                        <h1 className="text-xs font-black text-blue-400 uppercase tracking-widest mb-10 text-center">Mustard Seed CBT</h1>
-                        <nav className="space-y-2">
-                            <button onClick={()=>setActiveTab('dashboard')} className={`w-full text-left p-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition ${activeTab==='dashboard'?'bg-blue-600':'text-gray-500 hover:text-white'}`}>Dashboard</button>
-                            
-                            <div>
-                                <button onClick={() => setIsNavOpen(!isNavOpen)} className="w-full text-left p-4 rounded-xl font-black text-[10px] uppercase tracking-widest text-gray-500 hover:text-white flex justify-between items-center transition">
-                                    <span>Question Bank</span>
-                                    <span className="text-[8px]">{isNavOpen ? '▲' : '▼'}</span>
-                                </button>
-                                {isNavOpen && (
-                                    <div className="pl-4 mt-1 space-y-1 border-l-2 border-slate-700">
-                                        <button onClick={()=>{setActiveTab('questions'); setIsNavOpen(false);}} className={`w-full text-left p-3 rounded-lg font-bold text-[9px] uppercase tracking-wider transition ${activeTab==='questions'?'bg-slate-800 text-blue-400':'text-gray-400 hover:text-white'}`}>
-                                            Manage Single Bank
-                                        </button>
-                                        <button onClick={()=>{setActiveTab('batch_upload'); setIsNavOpen(false);}} className={`w-full text-left p-3 rounded-lg font-bold text-[9px] uppercase tracking-wider transition ${activeTab==='batch_upload'?'bg-slate-800 text-blue-400':'text-gray-400 hover:text-white'}`}>
-                                            Batch Raw Uploader
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
+                <div className="bg-white text-slate-900 p-8 rounded-[2.5rem] shadow-2xl border">
+                    <div className="flex items-center justify-between mb-6 border-b pb-4">
+                        <div>
+                            <h2 className="text-xl font-black uppercase tracking-tight text-emerald-600">Secure Bulk Parser</h2>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase">Authenticated Session</p>
+                        </div>
+                        <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" className="w-12" />
+                    </div>
 
-                            <button onClick={()=>setActiveTab('results')} className={`w-full text-left p-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition ${activeTab==='results'?'bg-blue-600':'text-gray-500 hover:text-white'}`}>Results</button>
-                        </nav>
-                    </aside>
+                    <div className="mb-4">
+                        <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2">Target Class Channel</label>
+                        <select className="w-full p-4 border rounded-2xl font-black text-xs uppercase bg-emerald-50 outline-none" value={selectedClass} onChange={e => setSelectedClass(e.target.value)}>
+                            {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                    </div>
 
-                    <main className="flex-1 md:ml-64 p-4 md:p-10">
-                        {activeTab === 'dashboard' && (
-                            <div className="space-y-8">
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                                    <div className="bg-white p-6 rounded-3xl border shadow-sm">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase mb-2">Portal Status</p>
-                                        <h3 className={`text-2xl font-black ${settings.isLive?'text-green-500':'text-red-500'}`}>{settings.isLive?'LIVE':'OFFLINE'}</h3>
-                                        <button onClick={async()=>await fb.setDoc(fb.doc(fb.doc(fb.db,"artifacts/my-project-a6208/settings/examControl")),{...settings, isLive:!settings.isLive})} className="mt-4 w-full bg-slate-900 text-white py-2 rounded-lg text-[10px] font-black uppercase">Switch</button>
-                                    </div>
-                                    
-                                    <div className="bg-white p-6 rounded-3xl border shadow-sm">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase mb-2">Exam Duration (Mins)</p>
-                                        <div className="flex gap-2">
-                                            <input type="number" className="w-full p-2 border-2 rounded-lg font-black text-blue-600 text-sm" value={settings.duration} onChange={e => setSettings({...settings, duration: parseInt(e.target.value) || 0})} />
-                                            <button onClick={async()=>await fb.setDoc(fb.doc(fb.db,"artifacts/my-project-a6208/settings/examControl"), settings)} className="bg-blue-600 text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase">Set</button>
-                                        </div>
-                                    </div>
+                    <div className="mb-4">
+                        <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2">Raw Question Data Pasteboard</label>
+                        <textarea 
+                            className="w-full p-4 border rounded-2xl bg-slate-50 font-mono text-xs h-64 outline-none focus:border-emerald-500 transition leading-relaxed" 
+                            placeholder={"1. Computer part used to type is?\na) Monitor\nb) Keyboard\nd) Mouse\ne) Printer\nCorrect: b"} 
+                            value={batchText} 
+                            onChange={e => setBatchText(e.target.value)} 
+                        />
+                    </div>
 
-                                    <div className="bg-white p-6 rounded-3xl border shadow-sm">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase mb-2">Marks Per OBJ Question</p>
-                                        <div className="flex gap-2">
-                                            <input type="number" className="w-full p-2 border-2 rounded-lg font-black text-emerald-600 text-sm" value={settings.globalObjMark} onChange={e => setSettings({...settings, globalObjMark: parseInt(e.target.value) || 0})} />
-                                            <button onClick={async()=>await fb.setDoc(fb.doc(fb.db,"artifacts/my-project-a6208/settings/examControl"), settings)} className="bg-emerald-600 text-white px-3 py-2 rounded-lg text-[10px] font-black uppercase">Assign</button>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white p-6 rounded-3xl border shadow-sm text-center">
-                                        <p className="text-[10px] font-black text-gray-400 uppercase mb-2">Submissions</p>
-                                        <h3 className="text-4xl font-black text-blue-600">{scores.length}</h3>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white p-8 rounded-[2rem] border shadow-sm">
-                                    <h2 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 border-b pb-4">Question Count Per Class</h2>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
-                                        {CLASSES.map(c => (
-                                            <div key={c} className="bg-slate-50 p-4 rounded-2xl border">
-                                                <p className="text-xs font-black text-slate-900 mb-1">{c}</p>
-                                                <p className="text-2xl font-black text-blue-500">{questions.filter(q => q.className === c).length}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'results' && (
-                            <div className="space-y-4">
-                                <div className="flex flex-wrap gap-2 items-center justify-between no-print">
-                                    <h2 className="text-2xl font-black uppercase tracking-tighter">Results</h2>
-                                    <div className="flex gap-2">
-                                        <input type="text" placeholder="Search..." className="p-2 border rounded-lg text-xs" onChange={e=>setSearchQuery(e.target.value)} />
-                                        <select value={resFilter} onChange={e=>setResFilter(e.target.value)} className="p-2 border rounded-lg text-xs">
-                                            <option value="ALL">All Classes</option>
-                                            {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
-                                        </select>
-                                        <button onClick={() => window.print()} className="bg-slate-800 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase">Print</button>
-                                    </div>
-                                </div>
-                                <div className="bg-white rounded-3xl border shadow-sm overflow-hidden">
-                                    <table className="w-full text-left">
-                                        <thead className="bg-slate-50 border-b text-[9px] font-black uppercase text-gray-400">
-                                            <tr>
-                                                <th class="p-5 tracking-widest">Student</th>
-                                                <th class="p-5">OBJ</th>
-                                                <th class="p-5">THY</th>
-                                                <th class="p-5">Total</th>
-                                                <th class="p-5">Time/Date</th>
-                                                <th class="p-5 no-print">Delete</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="text-sm">
-                                            {filteredScores.map(s=>(
-                                                <tr key={s.id} className="border-b hover:bg-blue-50/50 cursor-pointer" onClick={() => { setReviewData(s); setManualThyScore(s.theoryScore || 0); }}>
-                                                    <td className="p-5"><p className="font-black uppercase">{s.studentName}</p><span className="text-[9px] font-bold text-blue-500">{s.studentId} • {s.className}</span></td>
-                                                    <td className="p-5 font-bold text-slate-400">{s.objScore || 0}</td>
-                                                    <td className="p-5 font-bold text-slate-400">{s.theoryScore || 0}</td>
-                                                    <td className="p-5"><span className="bg-blue-600 text-white px-3 py-1 rounded-full font-black text-xs">{s.totalScore || 0}</span></td>
-                                                    <td className="p-5 text-[10px] font-bold text-gray-400">
-                                                        {s.date?.seconds ? new Date(s.date.seconds * 1000).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '--:--'}
-                                                    </td>
-                                                    <td className="p-5 no-print">
-                                                        <button onClick={(e)=> {e.stopPropagation(); if(confirm("Del?")) fb.deleteDoc(fb.doc(fb.db,"artifacts/my-project-a6208/scores",s.id))}} className="text-red-400 text-xs font-black">X</button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                {reviewData && (
-                                    <div className="fixed inset-0 bg-slate-900/90 flex items-center justify-center p-4 z-50 no-print">
-                                        <div className="bg-white w-full max-w-2xl rounded-3xl p-8 max-h-[85vh] overflow-y-auto text-slate-900">
-                                            <div className="flex justify-between items-center mb-6">
-                                                <h3 className="font-black text-xl uppercase tracking-tighter">{reviewData.studentName}</h3>
-                                                <button onClick={()=>setReviewData(null)} className="text-red-500 font-black text-xs uppercase">Close</button>
-                                            </div>
-                                            <div className="bg-blue-50 p-4 rounded-2xl mb-6 flex items-center justify-between border">
-                                                <p className="text-xs font-black uppercase text-blue-500">Manual Grade</p>
-                                                <div className="flex gap-2">
-                                                    <input type="number" className="p-2 border rounded-xl w-20 text-center font-black" value={manualThyScore} onChange={e=>setManualThyScore(e.target.value)} />
-                                                    <button onClick={updateTheoryGrade} className="bg-blue-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase">Update</button>
-                                                </div>
-                                            </div>
-                                            <div className="space-y-4">
-                                                {reviewData.theoryResponses ? Object.entries(reviewData.theoryResponses).map(([q, a]) => (
-                                                    <div key={q} className="p-4 border rounded-2xl bg-slate-50">
-                                                        <p className="font-bold text-xs mb-2 text-slate-600">{q}</p>
-                                                        <p className="bg-white p-4 rounded-xl border italic text-sm text-slate-900 leading-relaxed">"{a}"</p>
-                                                    </div>
-                                                )) : <p className="text-center font-black text-slate-300">No theory recorded</p>}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* BATCH UPLOADER TAB INTERFACE */}
-                        {activeTab === 'batch_upload' && (
-                            <div className="max-w-3xl mx-auto bg-white p-8 rounded-3xl border shadow-sm text-slate-900">
-                                <h2 className="text-xl font-black mb-1 uppercase tracking-tight">Bulk Paste Assessment Input</h2>
-                                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">Pasted options mapping to A, B, D, E labels automatically</p>
-
-                                <div className="mb-6">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider block mb-2">Target Class Level</label>
-                                    <select className="w-full p-4 border rounded-xl font-black text-xs uppercase bg-blue-50 outline-none" value={batchClass} onChange={e => setBatchClass(e.target.value)}>
-                                        {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
-                                    </select>
-                                </div>
-
-                                <div className="mb-6">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider block mb-2">Paste Questions Block Below</label>
-                                    <textarea 
-                                        className="w-full p-5 border-2 rounded-2xl bg-slate-50 font-mono text-xs h-[350px] outline-none focus:border-blue-400 transition leading-relaxed" 
-                                        placeholder={"1. What is the brain of the computer?\na) Monitor\nb) CPU\nd) Keyboard\ne) Mouse\nCorrect: b"} 
-                                        value={batchText} 
-                                        onChange={e => setBatchText(e.target.value)} 
-                                    />
-                                </div>
-
-                                <div className="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-dashed">
-                                    <p className="text-xs font-black text-slate-600 uppercase">
-                                        {parseRawText(batchText).length} questions detected in layout workspace.
-                                    </p>
-                                    <button 
-                                        onClick={async () => {
-                                            const parsed = parseRawText(batchText);
-                                            if(parsed.length === 0) return alert("No valid structured parameters found.");
-                                            if(!confirm(`Upload ${parsed.length} questions instantly to ${batchClass}?`)) return;
-                                            
-                                            setUploading(true);
-                                            try {
-                                                for(let q of parsed) {
-                                                    await fb.addDoc(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"), {
-                                                        className: batchClass,
-                                                        questionText: q.questionText,
-                                                        options: q.options,
-                                                        correctOptionIndex: q.correctOptionIndex,
-                                                        type: 'obj',
-                                                        keywords: [],
-                                                        points: settings.globalObjMark || 2
-                                                    });
-                                                }
-                                                alert(`Success! Successfully processed and uploaded ${parsed.length} items.`);
-                                                setBatchText('');
-                                            } catch(err) {
-                                                alert("Database Action Denied: " + err.message);
-                                            }
-                                            setUploading(false);
-                                        }} 
-                                        disabled={uploading}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl font-black uppercase text-xs tracking-wider shadow-md transition disabled:opacity-50"
-                                    >
-                                        {uploading ? "Writing..." : "Upload Batch"}
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'questions' && (
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                                <section className="bg-white p-8 rounded-3xl border shadow-sm h-fit sticky top-10 text-slate-900">
-                                    <h2 className="text-xl font-black mb-6 uppercase">Add Question</h2>
-                                    <div className="flex gap-2 mb-4">
-                                        {['obj', 'theory'].map(t => (
-                                            <button key={t} onClick={()=>setNewQ({...newQ, type:t})} className="flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition text-gray-400 bg-gray-100 data-[active=true]:bg-slate-900 data-[active=true]:text-white" data-active={newQ.type===t}>{t}</button>
-                                        ))}
-                                    </div>
-                                    <textarea className="w-full p-4 border rounded-2xl mb-4 bg-slate-50 text-sm h-32" placeholder="Question Text..." value={newQ.text} onChange={e=>setNewQ({...newQ, text:e.target.value})} />
-                                    {newQ.type === 'obj' ? (
-                                        <div className="grid grid-cols-2 gap-2 mb-4">
-                                            {newQ.options.map((o,i)=>(<input key={i} className="p-3 border rounded-xl text-xs font-bold" placeholder={`Option ${['A','B','D','E'][i]}`} value={o} onChange={e=>{let c=[...newQ.options];c[i]=e.target.value;setNewQ({...newQ,options:c})}} />))}
-                                            <select className="col-span-2 p-3 border rounded-xl font-black text-xs bg-slate-100" value={newQ.correct} onChange={e=>setNewQ({...newQ,correct:parseInt(e.target.value)})}>
-                                                {[0,1,2,3].map(i=><option key={i} value={i}>Correct: {['A','B','D','E'][i]}</option>)}
-                                            </select>
-                                        </div>
-                                    ) : (
-                                        <div className="mb-4 space-y-2">
-                                            <input className="w-full p-3 border rounded-xl text-xs font-bold" placeholder="Keywords (e.g. clay, pottery)" value={newQ.keywords} onChange={e=>setNewQ({...newQ, keywords: e.target.value})} />
-                                            <input type="number" className="w-full p-3 border rounded-xl text-xs font-bold" placeholder="Marks" value={newQ.points} onChange={e=>setNewQ({...newQ, points: parseInt(e.target.value) || 0})} />
-                                        </div>
-                                    )}
-                                    <select className="w-full p-4 border rounded-xl font-black mb-6 text-xs uppercase bg-blue-50" value={newQ.className} onChange={e=>setNewQ({...newQ, className: e.target.value})}>
-                                        {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
-                                    </select>
-                                    <button onClick={async()=>{
-                                        if(!newQ.text) return;
+                    <div className="bg-slate-50 p-4 rounded-2xl border border-dashed text-center">
+                        <p className="text-xs font-black text-slate-600 uppercase mb-3">
+                            {parsedCount} questions identified in string framework.
+                        </p>
+                        <button 
+                            onClick={async () => {
+                                const parsed = parseRawText(batchText);
+                                if(parsed.length === 0) return alert("No valid question schemas extracted.");
+                                if(!confirm(`Commit ${parsed.length} items to database for ${selectedClass}?`)) return;
+                                
+                                setUploading(true);
+                                try {
+                                    for(let q of parsed) {
                                         await fb.addDoc(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"), {
-                                            questionText: newQ.text, options: newQ.type==='obj'?newQ.options:[], 
-                                            correctOptionIndex: newQ.type==='obj'?newQ.correct:null, className: newQ.className,
-                                            type: newQ.type, keywords: newQ.type==='theory'?newQ.keywords.split(',').map(k=>k.trim().toLowerCase()):[], points: newQ.points
+                                            className: selectedClass,
+                                            questionText: q.questionText,
+                                            options: q.options,
+                                            correctOptionIndex: q.correctOptionIndex,
+                                            type: 'obj',
+                                            keywords: [],
+                                            points: 2
                                         });
-                                        setNewQ({ ...newQ, text: '', options: ['', '', '', ''], keywords: '', points: 5 });
-                                    }} className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase shadow-xl">Save to Bank</button>
-                                </section>
-                                <div className="space-y-2">
-                                    <h2 className="font-black text-gray-400 text-[10px] uppercase mb-4">Question List</h2>
-                                    {questions.sort((a,b)=>a.className > b.className ? 1 : -1).map((q)=>(
-                                        <div key={q.id} className="bg-white p-4 rounded-2xl border flex flex-col gap-2 shadow-sm">
-                                            <div className="flex justify-between items-start">
-                                                <div className="pr-4">
-                                                    <span className="text-[8px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded uppercase">{q.className} | {q.type || 'obj'}</span>
-                                                    <p className="font-bold text-xs mt-1 text-slate-700">{q.questionText}</p>
-                                                </div>
-                                                <button onClick={async()=> {if(confirm("Del?")) await fb.deleteDoc(fb.doc(fb.db,"artifacts/my-project-a6208/public/data/questions",q.id))}} className="text-red-400 font-black text-xs">X</button>
-                                            </div>
-                                            
-                                            {(!q.type || q.type === 'obj') && q.options && q.options[q.correctOptionIndex] !== undefined && (
-                                                <div className="bg-emerald-50 text-emerald-800 p-2 rounded-xl text-[11px] font-black tracking-wide border border-emerald-100">
-                                                    Correct Option: {['A','B','D','E'][parseInt(q.correctOptionIndex)]}; {q.options[q.correctOptionIndex]}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </main>
-                </div>
-            );
-        };
-
-        const StudentExamPage = () => {
-            const [settings, setSettings] = React.useState({ isLive: null, duration: 40, globalObjMark: 2 });
-            const [msId, setMsId] = React.useState('');
-            const [student, setStudent] = React.useState(null);
-            const [questions, setQuestions] = React.useState([]);
-            const [index, setIndex] = React.useState(0);
-            const [answers, setAnswers] = React.useState({});
-            const [timeLeft, setTimeLeft] = React.useState(0);
-            const [loading, setLoading] = React.useState(false);
-            const [finished, setFinished] = React.useState(false);
-
-            React.useEffect(() => {
-                fb.onSnapshot(fb.doc(fb.db, "artifacts/my-project-a6208/settings/examControl"), (doc) => {
-                    if (doc.exists()) {
-                        const data = doc.data(); 
-                        const activeControl = {
-                            isLive: data.isLive,
-                            duration: data.duration || 40,
-                            globalObjMark: data.globalObjMark !== undefined ? data.globalObjMark : 2
-                        };
-                        setSettings(activeControl);
-                        if (timeLeft === 0 && !student) setTimeLeft(activeControl.duration * 60);
-                    }
-                });
-            }, []);
-
-            React.useEffect(() => {
-                if (student && timeLeft > 0 && !finished) {
-                    const t = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
-                    return () => clearInterval(t);
-                } else if (timeLeft === 0 && student && !finished) { submit(); }
-            }, [timeLeft, student, finished]);
-
-            const verify = async () => {
-                setLoading(true); const inputId = msId.toUpperCase().trim();
-                try {
-                    const { data } = await _supabase.from('students').select('*').eq('status', 'Enrolled');
-                    const found = data?.find(s => ("MS-" + s.id.substring(0, 5).toUpperCase()) === inputId);
-                    if (found) {
-                        const scoreSnap = await fb.getDocs(fb.query(fb.collection(fb.db, "artifacts/my-project-a6208/scores"), fb.where("studentId", "==", inputId)));
-                        if (!scoreSnap.empty) { alert("Already Submitted."); setLoading(false); return; }
-                        const rawClass = found.grade_level || found.class || 'SSS 1';
-                        setStudent({ name: found.full_name, id: inputId, className: rawClass });
-                        const snap = await fb.getDocs(fb.query(fb.collection(fb.db, "artifacts/my-project-a6208/public/data/questions"), fb.where("className", "==", rawClass)));
-                        setQuestions(snap.docs.map(d => ({id: d.id, ...d.data()})).sort((a,b) => a.type === 'theory' ? 1 : -1));
-                    } else alert("Invalid Student ID.");
-                } catch (e) { alert("System Error."); }
-                setLoading(false);
-            };
-
-            const submit = async () => {
-                let obj = 0; let thy = 0; let theoryResponses = {};
-                const currentMarkPerQuestion = settings.globalObjMark !== undefined ? settings.globalObjMark : 2;
-                
-                questions.forEach((q, i) => {
-                    const ans = answers[i]; if (ans === undefined || ans === null || ans === '') return;
-                    if (q.type === 'obj' || !q.type) { 
-                        if (ans === q.correctOptionIndex) obj += currentMarkPerQuestion; 
-                    }
-                    else { 
-                        theoryResponses[q.questionText] = ans; 
-                        const hits = q.keywords.filter(w => ans.toLowerCase().includes(w)).length; 
-                        if (hits >= Math.ceil(q.keywords.length * 0.5)) thy += (q.points || 5); 
-                    }
-                });
-                await fb.addDoc(fb.collection(fb.db, "artifacts/my-project-a6208/scores"), { studentName: student.name, studentId: student.id, className: student.className, objScore: obj, theoryScore: thy, totalScore: obj + thy, date: new Date(), theoryResponses });
-                setFinished(true);
-            };
-
-            if (settings.isLive === false) return <div className="h-screen flex items-center justify-center bg-slate-900 text-white font-black uppercase tracking-[0.5em]">Portal Offline/Exam has not Started!</div>;
-            
-            if (finished) return (
-                <div className="flex flex-col items-center justify-center min-h-screen bg-white p-6 text-center text-slate-900">
-                    <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" className="w-16 mb-8" />
-                    <h1 className="text-3xl font-black uppercase tracking-tighter text-slate-800 mb-4">Congratulations 🎉</h1>
-                    <p className="text-sm font-bold text-slate-500 mb-10 max-w-xs uppercase tracking-tight">Exam submitted successfully. Go to portal to check results.</p>
-                    <button onClick={() => window.location.reload()} className="bg-slate-900 text-white px-12 py-4 rounded-2xl font-black uppercase text-xs">Logout</button>
-                </div>
-            );
-
-            if (!student) return (
-                <div className="flex items-center justify-center min-h-screen bg-slate-50 p-4 text-slate-900">
-                    <div className="bg-white p-10 rounded-[2.5rem] shadow-2xl w-full max-w-sm border text-center">
-                        <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" className="w-20 mx-auto mb-8" />
-                        <h2 className="text-2xl font-black mb-8 uppercase tracking-tighter text-slate-900">Student Portal</h2>
-                        <input className="w-full p-5 border-2 rounded-2xl mb-4 uppercase text-center font-black bg-slate-50 text-blue-600 outline-none focus:border-blue-400" placeholder="MS-XXXXX" onChange={e => setMsId(e.target.value)} />
-                        <button onClick={verify} className="w-full py-5 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest">{loading ? "Wait..." : "Enter Exam"}</button>
-                    </div>
-                </div>
-            );
-
-            const q = questions[index];
-            const formatTime = (s) => `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
-
-            return (
-                <div className="max-w-4xl mx-auto p-4 md:p-8 text-slate-900">
-                    <div className="flex justify-between items-center mb-6 bg-slate-900 text-white p-4 rounded-2xl shadow-lg">
-                        <div className="flex items-center gap-3">
-                            <span className="bg-blue-600 px-2 py-1 rounded text-[9px] font-black uppercase tracking-tighter">{student.className}</span>
-                            <h2 className="text-xs font-black uppercase tracking-tight truncate max-w-[150px] md:max-w-none">{student.name}</h2>
-                        </div>
-                        <div className={`flex items-center gap-2 px-3 py-1 rounded-full border border-white/20 font-black text-xs ${timeLeft < 300 ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-800 text-blue-400'}`}>
-                            <span className="text-[8px] uppercase tracking-tighter opacity-60">Timer:</span>
-                            <span>{formatTime(timeLeft)}</span>
-                        </div>
-                    </div>
-
-                    {questions.length > 0 ? (
-                        <div className="bg-white p-6 md:p-10 rounded-[2rem] shadow-sm border border-slate-100 min-h-[500px] flex flex-col">
-                            <div className="mb-8">
-                                <p className="text-[9px] font-black text-blue-500 uppercase mb-2 tracking-[0.2em]">{q.type === 'theory' ? 'Section B: Theory Writing' : 'Section A: Multiple Choice'}</p>
-                                <p className="text-xl md:text-2xl font-black text-slate-800 leading-tight">{q.questionText}</p>
-                            </div>
-
-                            <div className="flex-grow">
-                                {q.type === 'theory' ? (
-                                    <textarea className="w-full p-6 border-2 rounded-2xl h-[300px] bg-slate-50 outline-none text-base font-medium focus:border-blue-400 transition" placeholder="Provide your detailed answer here..." value={answers[index] || ''} onChange={e=>setAnswers({...answers, [index]: e.target.value})} />
-                                ) : (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {q.options.map((opt, i) => (
-                                            <button key={i} onClick={() => setAnswers({...answers, [index]: i})} className="p-6 text-left rounded-2xl border-2 transition font-black text-sm uppercase text-slate-600 bg-white border-slate-100 hover:border-blue-200 data-[selected=true]:bg-blue-600 data-[selected=true]:text-white data-[selected=true]:border-blue-600 data-[selected=true]:shadow-xl" data-selected={answers[index] === i}>
-                                                <span className="mr-3 opacity-30">{['A','B','D','E'][i]}.</span> {opt}
-                                            </button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="mt-10 flex justify-between items-center border-t pt-6">
-                                <button onClick={() => setIndex(i => i - 1)} disabled={index === 0} className="text-slate-300 font-black disabled:opacity-0 uppercase text-[10px]">Back</button>
-                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{index + 1} / {questions.length}</div>
-                                {index === questions.length - 1 ? 
-                                    <button onClick={() => confirm("Finish exam?") && submit()} className="bg-green-600 text-white px-10 py-4 rounded-2xl font-black uppercase text-[10px] shadow-lg">Submit Final</button> : 
-                                    <button onClick={() => setIndex(i => i + 1)} className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black uppercase text-[10px] shadow-lg">Continue</button>
+                                    }
+                                    alert(`Successfully pushed ${parsed.length} database entries!`);
+                                    setBatchText('');
+                                } catch(err) {
+                                    alert("Database write error: " + err.message);
                                 }
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="text-center py-20 font-black text-slate-300 uppercase tracking-widest">Preparing Assessment...</div>
-                    )}
+                                setUploading(false);
+                            }} 
+                            disabled={uploading || parsedCount === 0}
+                            className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white py-4 rounded-xl font-black uppercase text-xs tracking-wider transition shadow-lg"
+                        >
+                            {uploading ? "Executing System Write..." : `Deploy Bulk Upload to ${selectedClass}`}
+                        </button>
+                    </div>
                 </div>
             );
         };
 
-        const App = () => {
-            const [page, setPage] = React.useState('home');
-            const [ready, setReady] = React.useState(false);
-            React.useEffect(() => { const i = setInterval(() => { if(window.fb) { setReady(true); clearInterval(i); }}, 100); }, []);
-            if (!ready) return <div className="h-screen flex items-center justify-center font-black text-blue-600 uppercase tracking-[0.5em] animate-pulse">Syncing...</div>;
-
-            return (
-                <AppContext.Provider value={{ setPage }}>
-                    {page === 'home' && (
-                        <div className="flex flex-col items-center justify-center min-h-screen text-center p-6 bg-slate-50 text-slate-900">
-                            <img src="https://sunnykeyz123.github.io/mustardseedschl/images/Logo.png" className="w-28 mb-8" />
-                            <h1 className="text-5xl font-black mb-2 uppercase tracking-tighter text-slate-900">MUSTARD SEED</h1>
-                            <p className="text-slate-400 font-black text-[10px] tracking-[0.4em] uppercase mb-16">Advanced Computer Assessment Portal</p>
-                            <div className="flex flex-col sm:flex-row gap-6">
-                                <button onClick={() => setPage('exam')} className="bg-blue-600 text-white px-16 py-5 rounded-[2rem] font-black uppercase tracking-widest shadow-2xl shadow-blue-200">Start Exam</button>
-                                <button onClick={() => setPage('admin')} className="bg-white text-slate-400 px-16 py-5 rounded-[2rem] font-black uppercase tracking-widest border">Admin</button>
-                            </div>
-                        </div>
-                    )}
-                    {page === 'exam' && <StudentExamPage />}
-                    {page === 'admin' && <AdminPage />}
-                </AppContext.Provider>
-            );
-        };
-        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+        ReactDOM.createRoot(document.getElementById('root')).render(<BulkUploadApp />);
     </script>
 </body>
 </html>
