@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+   <script>
+    // Instantly send visitors to Netlify if they land on GitHub
+    if (window.location.hostname.includes("github.io") || window.location.hostname.includes("github.com")) {
+        window.location.replace("https://mustardseedschool.netlify.app");
+    }
+</script> 
     <meta charset="UTF-8">
     <meta name="google-site-verification" content="NqJQiBFvtIFf8A_kN4D04x5AsZoYQew-0pSqVgVWeS8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
