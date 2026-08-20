@@ -82,14 +82,14 @@
 
             if (!firebaseReady) {
                 return e('div', { className: 'h-screen flex flex-col items-center justify-center bg-slate-50 font-black text-blue-600 uppercase tracking-[0.3em]' },
-                    e('img', { src: '<img src="images/Logo.png" alt="School Logo">', className: 'w-16 mb-4 animate-bounce' }),
-                    e('span', null, 'Connecting Portal...')
+                    e('img', { src: 'images/Logo.png', className: 'w-16 mb-4 animate-bounce', alt: 'School Logo' }),
+                         e('span', null, 'Connecting Portal...')
                 );
             }
 
             return e('div', { className: 'flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 animate-fade' },
                 e('div', { className: 'bg-white p-8 sm:p-12 rounded-[3rem] shadow-2xl border w-full max-w-md text-center' },
-                    e('img', { src: '<img src="images/Logo.png" alt="School Logo">', className: 'w-20 mx-auto mb-6' }),
+                    e('img', { src: 'images/Logo.png', className: 'w-20 mx-auto mb-6', alt: 'School Logo' }),
                     e('h1', { className: 'text-3xl font-black mb-2 uppercase tracking-tighter text-slate-900' }, 'Result Portal'),
                     e('p', { className: 'text-slate-400 mb-10 text-[10px] font-black uppercase tracking-[0.3em]' }, 'Mustard Seed School'),
                     
