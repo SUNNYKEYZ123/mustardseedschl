@@ -286,13 +286,13 @@
         let response = "I'm not quite sure about that. Please contact the school administrative office in Ibokun for more details.";
 
         if (query.includes('resumption') || query.includes('resume') || query.includes('date')) {
-            response = "The official resumption date for the new term is Monday, September 21, 2026.";
+            response = "The official resumption date for the new term is Monday, September 14th, 2026. Already resumed!";
         } else if (query.includes('login') || query.includes('portal') || query.includes('password')) {
-            response = "You can access student results and CBT exams by clicking 'Student Portal Login' on the homepage. If you forgot your password, use the account recovery option on the login page.";
+            response = "You can access student results and CBT exams by clicking 'Student Portal Login' on the homepage. If you forgot your password, use the account recovery option on the login page, or call ICT D. 08102800846";
         } else if (query.includes('fees') || query.includes('school fees') || query.includes('payment')) {
             response = "School fees details can be verified directly through the school admin office or your student portal account profile.";
         } else if (query.includes('location') || query.includes('where') || query.includes('address')) {
-            response = "Mustard Seed International Group of Schools is located in Ibokun, Osun State.";
+            response = "Mustard Seed International Group of Schools is located in Ibokun, Alafia Estate Behind Gadmis Hotel Osun State.";
         }
 
         setTimeout(() => {
